@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} - {{.ProductName}}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  {{if .IsMap}}
+  <meta http-equiv="Content-Security-Policy" content="{{.MapReportCSP}}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.4/ol.css">
+  {{end}}
+  <script>
+    window.VIEWER_CLOSE_URL = "{{.CloseURL}}";
+    window.ACUGIS_EMBED_MODE = {{if .EmbedMode}}true{{else}}false{{end}};
+    window.ACUGIS_EMBED_ALLOWED_ORIGINS = {{if .EmbedAllowedOriginsJS}}{{.EmbedAllowedOriginsJS}}{{else}}[]{{end}};
+    window.ACUGIS_EMBED_BOUND_PARAMETERS = {{if .EmbedBoundParametersJS}}{{.EmbedBoundParametersJS}}{{else}}[]{{end}};
+    window.ACUGIS_EMBED_UI = {
+      toolbar: {{if .EmbedMode}}{{if .EmbedToolbar}}true{{else}}false{{end}}{{else}}true{{end}},
+      parameters: {{if .EmbedMode}}{{if .EmbedParameters}}true{{else}}false{{end}}{{else}}true{{end}},
+      export: {{if .EmbedMode}}{{if .EmbedExport}}true{{else}}false{{end}}{{else}}true{{end}},
+      zoom: {{if .EmbedMode}}{{if .EmbedZoom}}true{{else}}false{{end}}{{else}}true{{end}},
+      close: {{if .EmbedMode}}{{if .EmbedClose}}true{{else}}false{{end}}{{else}}true{{end}},
+      autoResize: {{if .EmbedMode}}{{if .EmbedAutoResize}}true{{else}}false{{end}}{{else}}false{{end}}
+    };
+  </script>
+  {{if .EmbedMode}}
+  <base href="{{.ReportsBaseURL}}/">
+  {{end}}
+  <style>
+body {
+  margin: 0;
+  font-family: "Roboto", Arial, sans-serif;
+  background: #f4f6f9;
+}
+body.acugis-embed-mode { background: #fff; }
+body.acugis-embed-mode.acugis-embed-hide-parameters .sidebar { display: none !important; }
+body.acugis-embed-mode.acugis-embed-hide-toolbar .report-header { display: none !important; }
+body.acugis-embed-mode.acugis-embed-hide-export .btn-export { display: none !important; }
+body.acugis-embed-mode.acugis-embed-hide-zoom .zoom-controls,
+body.acugis-embed-mode.acugis-embed-hide-zoom .zoom-controls-sep { display: none !important; }
+body.acugis-embed-mode.acugis-embed-hide-close .btn-close-report { display: none !important; }
+body.acugis-embed-mode.acugis-embed-hide-toolbar .content { height: 100vh; }
+body.acugis-embed-mode.acugis-embed-hide-parameters .content { width: 100%; }
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 320px;
+  background: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.05);
+  overflow-y: auto;
+}
+
+.sidebar.hidden {
+  display: none;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #26a69a;
+  outline: none;
+  background: #fff;
+}
+
+.field.cascade-disabled input,
+.field.cascade-disabled select {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+#applyBtn {
+  background: #26a69a;
+  color: white;
+}
+
+#applyBtn:hover {
+  background: #219388;
+}
+
+#resetBtn {
+  background: #e0e0e0;
+}
+
+#resetBtn:hover {
+  background: #d5d5d5;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.report-header {
+  background: #ffffff;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.report-header-title {
+  color: #2c3e50;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.zoom-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 4px;
+}
+
+.zoom-controls-sep {
+  width: 1px;
+  height: 22px;
+  background: #cfd8dc;
+  margin: 0 4px 0 6px;
+  flex-shrink: 0;
+}
+
+.btn-zoom {
+  padding: 4px 10px;
+  min-width: 28px;
+  border-radius: 5px;
+  border: 1px solid #cfd8dc;
+  background: #fff;
+  color: #546e7a;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.btn-zoom:hover:not(:disabled) {
+  background: #eceff1;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.btn-zoom:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-zoom-fit {
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #cfd8dc;
+  background: #fff;
+  color: #546e7a;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.btn-zoom-fit:hover {
+  background: #eceff1;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.btn-zoom-fit.active {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.zoom-level-label {
+  min-width: 40px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: #546e7a;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.btn-export {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  background: #34495e;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-export:hover {
+  background: #2c3e50;
+}
+
+.btn-close-report {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid #cfd8dc;
+  background: #fff;
+  color: #546e7a;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-close-report:hover {
+  background: #eceff1;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.spatial-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.spatial-toolbar[hidden] {
+  display: none !important;
+}
+
+.spatial-toolbar button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #37474f;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.spatial-toolbar button:hover:not(:disabled) {
+  background: #eef5ff;
+  border-color: #c5dafc;
+}
+
+.spatial-toolbar button.active {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+
+.spatial-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+#map.jrs-spatial-drawing,
+.jrs-spatial-drawing {
+  cursor: crosshair !important;
+}
+
+iframe {
+  flex: 1;
+  border: none;
+  background: white;
+  width: 100%;
+  min-height: 0;
+}
+
+.report-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(244, 246, 249, 0.92);
+}
+
+.report-loading[hidden] {
+  display: none !important;
+}
+
+.report-loading-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid #cfd8dc;
+  border-top-color: #26a69a;
+  border-radius: 50%;
+  animation: report-spin 0.8s linear infinite;
+}
+
+.report-loading-text {
+  font-size: 14px;
+  color: #546e7a;
+  font-weight: 500;
+}
+
+@keyframes report-spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  color: #c0392b;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.split-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  position: relative;
+}
+
+.map-pane {
+  width: 40%;
+  min-width: 180px;
+  position: relative;
+  background: #e8eef3;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+.split-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: #d0d7de;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.split-divider:hover,
+.split-divider.active {
+  background: #26a69a;
+}
+
+.report-pane {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.map-status {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 1;
+  background: rgba(255,255,255,0.92);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #546e7a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  max-width: calc(100% - 20px);
+}
+
+.map-status.error {
+  color: #c0392b;
+}
+
+.ol-popup {
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  bottom: 12px;
+  left: -50px;
+  min-width: 160px;
+  display: none;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.ol-popup:after, .ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.ol-popup:after {
+  border-top-color: #fff;
+  border-width: 8px;
+  left: 48px;
+  margin-left: -8px;
+}
+
+.ol-popup-closer {
+  float: right;
+  text-decoration: none;
+  color: #90a4ae;
+  font-size: 16px;
+  line-height: 1;
+  margin: -4px -2px 0 8px;
+}
+
+#mapLegendHost {
+  position: absolute;
+  top: 52px;
+  right: 10px;
+  z-index: 2;
+  max-width: min(240px, calc(100% - 20px));
+  max-height: calc(100% - 98px);
+  overflow: auto;
+  pointer-events: auto;
+}
+
+.jrs-map-legend {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  padding: 8px 10px;
+  font: 12px Roboto, Arial, sans-serif;
+  color: #37474f;
+}
+
+.jrs-legend-title {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #263238;
+  word-break: break-word;
+}
+
+.jrs-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0;
+}
+
+.jrs-legend-row.jrs-legend-prop {
+  align-items: flex-end;
+  min-height: 28px;
+}
+
+.jrs-legend-swatch {
+  width: 16px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.jrs-legend-circle {
+  display: inline-block;
+  border-radius: 50%;
+  border: 1.5px solid;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.jrs-legend-label {
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.jrs-legend-empty {
+  color: #90a4ae;
+  font-style: italic;
+}
+
+.jrs-legend-ramp-bar {
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: linear-gradient(to right, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);
+  margin-bottom: 4px;
+}
+
+.jrs-legend-ramp-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #546e7a;
+}
+
+#mapTooltip {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  max-width: 260px;
+  padding: 6px 8px;
+  background: rgba(38, 50, 56, 0.92);
+  color: #fff;
+  font: 12px Roboto, Arial, sans-serif;
+  border-radius: 4px;
+  white-space: pre-line;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+  </style>
+</head>
+<body data-federation-no-shell{{if .EmbedMode}} class="acugis-embed-mode"{{end}}>
+<div id="reportLoading" class="report-loading" role="status" aria-live="polite" aria-busy="true">
+  <div class="report-loading-spinner" aria-hidden="true"></div>
+  <div class="report-loading-text">Loading report…</div>
+</div>
+<div class="container">
+  <div class="sidebar" id="paramSidebar">
+    <h3>Options</h3>
+    <form id="paramForm"></form>
+    <div class="actions" id="paramActions">
+      <button type="button" id="applyBtn">Apply</button>
+      <button type="button" id="resetBtn">Reset</button>
+    </div>
+    <p id="errorBox" class="error"></p>
+  </div>
+  <div class="content">
+    <div class="report-header">
+      <span class="report-header-title">{{if .IsMap}}Map Report Viewer{{else}}Report Viewer{{end}}</span>
+      <div class="toolbar-actions">
+        <div class="zoom-controls" role="group" aria-label="Report zoom">
+          <button type="button" id="rv-btn-zoom-out" class="btn-zoom" title="Zoom out" aria-label="Zoom out">−</button>
+          <span id="rv-zoom-label" class="zoom-level-label" aria-live="polite">100%</span>
+          <button type="button" id="rv-btn-zoom-in" class="btn-zoom" title="Zoom in" aria-label="Zoom in">+</button>
+          <button type="button" id="rv-btn-zoom-fit" class="btn-zoom-fit" title="Fit report width to viewer">Fit Width</button>
+        </div>
+        <span class="zoom-controls-sep" aria-hidden="true"></span>
+        <button type="button" id="rv-btn-close" class="btn-close-report">Close</button>
+        <button type="button" onclick="exportReport('pdf')" class="btn-export">Export PDF</button>
+        <button type="button" onclick="exportReport('xlsx')" class="btn-export">Export Excel</button>
+      </div>
+    </div>
+    {{if .IsMap}}
+    <div class="split-body" id="splitBody">
+      <div class="map-pane" id="mapPane">
+        <div id="map"></div>
+        <div id="spatialToolbar" class="spatial-toolbar" hidden>
+          <button type="button" data-tool="rectangle" title="Draw rectangle selection">&#9633; Rectangle</button>
+          <button type="button" data-tool="circle" title="Draw circle selection">&#9675; Circle</button>
+          <button type="button" data-tool="clear" title="Clear selection and restore report">&#10005; Clear</button>
+        </div>
+        <div id="popup" class="ol-popup">
+          <a href="#" id="popup-closer" class="ol-popup-closer" aria-label="Close">x</a>
+          <div id="popup-content"></div>
+        </div>
+        <div id="mapLegendHost"></div>
+        <div id="mapTooltip"></div>
+        <div class="map-status" id="mapStatus">Loading map&hellip;</div>
+      </div>
+      <div class="split-divider" id="splitDivider" title="Drag to resize"></div>
+      <div class="report-pane">
+        <iframe id="reportFrame" title="Report output"></iframe>
+      </div>
+    </div>
+    {{else}}
+    <iframe id="reportFrame" title="Report output"></iframe>
+    {{end}}
+  </div>
+</div>
+
+{{if .IsMap}}
+<script src="https://cdn.jsdelivr.net/npm/ol@v9.2.4/dist/ol.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ol-mapbox-style@12.6.1/dist/olms.js"></script>
+<script src="../assets/js/map-style.js"></script>
+{{end}}
+<script src="../assets/js/report-param-submit.js"></script>
+<script>
+const reportName = {{.ReportJS}};
+const datasource = {{.DatasourceJS}};
+const reportEndpoint = {{.ReportEndpointJS}};
+const isMapReport = {{.IsMapJS}};
+const CLOSE_URL = window.VIEWER_CLOSE_URL || "{{.CloseURL}}";
+let waitingForReportFrame = false;
+
+function resolveCloseTarget() {
+  try {
+    var stored = sessionStorage.getItem('jrsCatalogReturn');
+    if (stored) {
+      sessionStorage.removeItem('jrsCatalogReturn');
+      return stored;
+    }
+  } catch (_e) {}
+  var target = CLOSE_URL;
+  if (document.referrer) {
+    try {
+      var ref = new URL(document.referrer);
+      var viewerRe = /\/reports\/(?!index\.php$)[^/.]+\/?$/;
+      if (ref.origin === location.origin && !viewerRe.test(ref.pathname)) {
+        target = document.referrer;
+      }
+    } catch (_e) {}
+  }
+  return target;
+}
+
+function closeReport() {
+  location.replace(resolveCloseTarget());
+}
+
+document.getElementById('rv-btn-close').addEventListener('click', closeReport);
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' || e.keyCode === 27) {
+    e.preventDefault();
+    closeReport();
+  }
+});
+
+/** Discrete viewer-only zoom levels (percent). Does not affect Jasper export. */
+var ZOOM_LEVELS = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 175, 200];
+var currentZoomPercent = 120;
+var fitWidthActive = false;
+var zoomApplyTimer = null;
+
+function getReportFrameDoc() {
+  var frame = document.getElementById('reportFrame');
+  if (!frame) return null;
+  try {
+    var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+    if (!doc || !doc.body) return null;
+    // Ignore about:blank / empty shells before a real report loads.
+    if (!doc.body.childNodes.length && (!doc.body.innerHTML || !doc.body.innerHTML.trim())) {
+      return null;
+    }
+    return doc;
+  } catch (_e) {
+    return null;
+  }
+}
+
+function ensureZoomStyle(doc) {
+  var styleEl = doc.getElementById('rv-zoom-style');
+  if (!styleEl) {
+    styleEl = doc.createElement('style');
+    styleEl.id = 'rv-zoom-style';
+    (doc.head || doc.documentElement).appendChild(styleEl);
+  }
+  // Host replaces Jasper's 50%|page|50% centering shell while zoomed so pages
+  // stay centered and horizontal scrolling works when larger than the viewport.
+  // width:fit-content + margin:auto centers when small; when larger than the
+  // viewport the host overflows to the right (scrollable) instead of clipping.
+  styleEl.textContent =
+    'html, body { margin: 0; padding: 0; overflow: auto !important; }' +
+    '#rv-zoom-host {' +
+    '  display: flex; flex-direction: column; align-items: center;' +
+    '  box-sizing: border-box; width: fit-content; max-width: none;' +
+    '  margin: 0 auto; padding: 8px 0; gap: 12px;' +
+    '}' +
+    '.rv-zoom-page-outer { overflow: hidden; flex: 0 0 auto; }' +
+    '.rv-zoom-page-inner { transform-origin: top left; }' +
+    '.rv-zoom-marker { display: none !important; }';
+  return styleEl;
+}
+
+/**
+ * Restore Jasper HTML exactly: put pages back at markers, show the centering
+ * shell again, remove the zoom host.
+ */
+function unwrapReportZoom(doc) {
+  var host = doc.getElementById('rv-zoom-host');
+  if (host) {
+    var outers = host.querySelectorAll('.rv-zoom-page-outer');
+    var markers = doc.querySelectorAll('.rv-zoom-marker');
+    for (var i = 0; i < outers.length; i++) {
+      var inner = outers[i].querySelector('.rv-zoom-page-inner');
+      var page = inner ? inner.firstChild : null;
+      var marker = markers[i];
+      if (page && marker && marker.parentNode) {
+        marker.parentNode.insertBefore(page, marker);
+        marker.parentNode.removeChild(marker);
+      } else if (page) {
+        doc.body.appendChild(page);
+      }
+    }
+    if (host.parentNode) host.parentNode.removeChild(host);
+  }
+
+  // Show Jasper shell content that was hidden while zoomed.
+  var hidden = doc.querySelectorAll('[data-rv-zoom-hidden]');
+  for (var h = 0; h < hidden.length; h++) {
+    hidden[h].style.display = '';
+    hidden[h].removeAttribute('data-rv-zoom-hidden');
+  }
+
+  // Legacy whole-document wrapper cleanup.
+  var legacyOuter = doc.getElementById('rv-zoom-outer');
+  var legacyInner = doc.getElementById('rv-zoom-inner');
+  if (legacyOuter && legacyInner) {
+    while (legacyInner.firstChild) {
+      doc.body.insertBefore(legacyInner.firstChild, legacyOuter);
+    }
+    if (legacyOuter.parentNode) legacyOuter.parentNode.removeChild(legacyOuter);
+  }
+  var strayOuters = doc.querySelectorAll('.rv-zoom-page-outer');
+  for (var s = 0; s < strayOuters.length; s++) {
+    var so = strayOuters[s];
+    var si = so.querySelector('.rv-zoom-page-inner') || so;
+    while (si.firstChild) {
+      so.parentNode.insertBefore(si.firstChild, so);
+    }
+    if (so.parentNode) so.parentNode.removeChild(so);
+  }
+  var styleEl = doc.getElementById('rv-zoom-style');
+  if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+}
+
+/**
+ * Jasper page tables: prefer .jrPage, else fixed-width tables that are not the
+ * full-width centering shell (width="100%").
+ */
+function findReportPages(doc) {
+  var pages = doc.querySelectorAll('table.jrPage');
+  if (pages.length) return Array.prototype.slice.call(pages);
+
+  var tables = doc.getElementsByTagName('table');
+  var found = [];
+  for (var i = 0; i < tables.length; i++) {
+    var t = tables[i];
+    if (t.closest && (t.closest('.rv-zoom-page-inner') || t.closest('#rv-zoom-host'))) continue;
+    var attrW = (t.getAttribute('width') || '').trim();
+    if (attrW === '100%' || attrW === '100') continue;
+    var styleW = (t.style && t.style.width) || '';
+    var hasFixedStyle = /px|pt/i.test(styleW);
+    var ow = t.offsetWidth || 0;
+    if (ow < 360) continue;
+    if (!hasFixedStyle && !attrW && ow < 400) continue;
+    found.push(t);
+  }
+  var top = found.filter(function (t) {
+    return !found.some(function (other) {
+      return other !== t && other.contains(t);
+    });
+  });
+  if (top.length) return top;
+
+  var best = null;
+  var bestW = 0;
+  for (var j = 0; j < tables.length; j++) {
+    var cand = tables[j];
+    if (cand.closest && cand.closest('#rv-zoom-host')) continue;
+    var aw = (cand.getAttribute('width') || '').trim();
+    if (aw === '100%' || aw === '100') continue;
+    var cw = cand.offsetWidth || 0;
+    if (cw > bestW) {
+      bestW = cw;
+      best = cand;
+    }
+  }
+  return best ? [best] : [];
+}
+
+function measureReportPageWidth(doc) {
+  unwrapReportZoom(doc);
+  var pages = findReportPages(doc);
+  if (pages.length && pages[0].offsetWidth) return pages[0].offsetWidth;
+  return Math.max(doc.body.scrollWidth, 1);
+}
+
+function applyReportZoom() {
+  var doc = getReportFrameDoc();
+  if (!doc) {
+    updateZoomToolbar();
+    return;
+  }
+
+  var scale = currentZoomPercent / 100;
+  unwrapReportZoom(doc);
+
+  // At 100%, leave Jasper HTML untouched (native centering shell intact).
+  if (Math.abs(scale - 1) < 0.001) {
+    updateZoomToolbar();
+    return;
+  }
+
+  var pages = findReportPages(doc);
+  if (!pages.length) {
+    updateZoomToolbar();
+    return;
+  }
+
+  ensureZoomStyle(doc);
+
+  // Capture unscaled sizes and insert restore markers before moving nodes.
+  var pageInfos = [];
+  for (var i = 0; i < pages.length; i++) {
+    var page = pages[i];
+    var w = Math.ceil(Math.max(page.offsetWidth, page.scrollWidth, 1));
+    var h = Math.ceil(Math.max(page.offsetHeight, page.scrollHeight, 1));
+    if (w < 8 || h < 8) continue;
+    var marker = doc.createElement('span');
+    marker.className = 'rv-zoom-marker';
+    page.parentNode.insertBefore(marker, page);
+    pageInfos.push({ page: page, marker: marker, w: w, h: h });
+  }
+  if (!pageInfos.length) {
+    updateZoomToolbar();
+    return;
+  }
+
+  var host = doc.createElement('div');
+  host.id = 'rv-zoom-host';
+
+  for (var p = 0; p < pageInfos.length; p++) {
+    var info = pageInfos[p];
+    var outer = doc.createElement('div');
+    outer.className = 'rv-zoom-page-outer';
+    var inner = doc.createElement('div');
+    inner.className = 'rv-zoom-page-inner';
+
+    inner.style.width = info.w + 'px';
+    inner.style.height = info.h + 'px';
+    inner.style.transform = 'scale(' + scale + ')';
+    outer.style.width = Math.ceil(info.w * scale) + 'px';
+    outer.style.height = Math.ceil(info.h * scale) + 'px';
+
+    inner.appendChild(info.page);
+    outer.appendChild(inner);
+    host.appendChild(outer);
+  }
+
+  // Hide Jasper centering shell (and any other original body children).
+  var bodyChildren = Array.prototype.slice.call(doc.body.children);
+  for (var c = 0; c < bodyChildren.length; c++) {
+    var child = bodyChildren[c];
+    if (child.id === 'rv-zoom-host' || child.id === 'rv-zoom-style') continue;
+    child.setAttribute('data-rv-zoom-hidden', '1');
+    child.style.display = 'none';
+  }
+
+  doc.body.appendChild(host);
+  updateZoomToolbar();
+}
+
+function scheduleApplyReportZoom() {
+  if (zoomApplyTimer) clearTimeout(zoomApplyTimer);
+  zoomApplyTimer = setTimeout(function () {
+    zoomApplyTimer = null;
+    applyReportZoom();
+  }, 30);
+}
+
+function updateZoomToolbar() {
+  var label = document.getElementById('rv-zoom-label');
+  var btnOut = document.getElementById('rv-btn-zoom-out');
+  var btnIn = document.getElementById('rv-btn-zoom-in');
+  var btnFit = document.getElementById('rv-btn-zoom-fit');
+  if (label) label.textContent = Math.round(currentZoomPercent) + '%';
+  if (btnOut) btnOut.disabled = currentZoomPercent <= ZOOM_LEVELS[0];
+  if (btnIn) btnIn.disabled = currentZoomPercent >= ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+  if (btnFit) btnFit.classList.toggle('active', !!fitWidthActive);
+}
+
+function setZoomPercent(percent, options) {
+  var opts = options || {};
+  var minZ = ZOOM_LEVELS[0];
+  var maxZ = ZOOM_LEVELS[ZOOM_LEVELS.length - 1];
+  var next = Math.max(minZ, Math.min(maxZ, percent));
+  currentZoomPercent = next;
+  if (!opts.keepFit) fitWidthActive = false;
+  applyReportZoom();
+}
+
+function zoomIn() {
+  var next = null;
+  for (var i = 0; i < ZOOM_LEVELS.length; i++) {
+    if (ZOOM_LEVELS[i] > currentZoomPercent + 0.01) {
+      next = ZOOM_LEVELS[i];
+      break;
+    }
+  }
+  if (next == null) return;
+  setZoomPercent(next);
+}
+
+function zoomOut() {
+  var prev = null;
+  for (var i = ZOOM_LEVELS.length - 1; i >= 0; i--) {
+    if (ZOOM_LEVELS[i] < currentZoomPercent - 0.01) {
+      prev = ZOOM_LEVELS[i];
+      break;
+    }
+  }
+  if (prev == null) return;
+  setZoomPercent(prev);
+}
+
+function fitReportWidth() {
+  var frame = document.getElementById('reportFrame');
+  var doc = getReportFrameDoc();
+  if (!frame || !doc) return;
+
+  var pageW = measureReportPageWidth(doc);
+  var pad = 24;
+  var avail = Math.max(frame.clientWidth - pad, 1);
+  var scale = avail / Math.max(pageW, 1);
+  var percent = Math.round(scale * 1000) / 10;
+  fitWidthActive = true;
+  setZoomPercent(percent, { keepFit: true });
+}
+
+function onReportFrameReadyForZoom() {
+  applyReportZoom();
+  var doc = getReportFrameDoc();
+  if (!doc) return;
+  // Images (maps/charts) may finish after the load event; re-measure once they settle.
+  var imgs = doc.images || [];
+  var pending = 0;
+  function onImgDone() {
+    pending--;
+    if (pending <= 0) {
+      if (fitWidthActive) fitReportWidth();
+      else scheduleApplyReportZoom();
+    }
+  }
+  for (var i = 0; i < imgs.length; i++) {
+    if (!imgs[i].complete) {
+      pending++;
+      imgs[i].addEventListener('load', onImgDone);
+      imgs[i].addEventListener('error', onImgDone);
+    }
+  }
+  if (fitWidthActive) {
+    fitReportWidth();
+  }
+}
+
+document.getElementById('rv-btn-zoom-out').addEventListener('click', zoomOut);
+document.getElementById('rv-btn-zoom-in').addEventListener('click', zoomIn);
+document.getElementById('rv-btn-zoom-fit').addEventListener('click', function () {
+  fitReportWidth();
+});
+updateZoomToolbar();
+
+window.addEventListener('resize', function () {
+  if (fitWidthActive) fitReportWidth();
+});
+
+let currentParams = [];
+let mapMeta = null;
+let mapDefinition = null;
+/** Cascading lookup UI state (JRXML acugis.parameter.*.lookup.*). */
+let lookupOptions = {};
+let lookupLoading = {};
+let lookupErrors = {};
+let lookupGen = 0;
+/**
+ * JRXML/config defaults seed the initial selection (and filter context) only.
+ * They never filter available options.
+ */
+let defaultActive = {};
+/**
+ * Set when the user clears a control or cascade wipe clears a dependent.
+ * Empty collections are then sent as key= so Jasper does not fall back to
+ * JRXML defaultValueExpression. Untouched empties are omitted instead.
+ */
+let explicitEmpty = {};
+/** Single shared filter context consumed by both Jasper and the OpenLayers map. */
+let filterContext = {};
+let olMap = null;
+let vectorSource = null;
+let highlightSource = null;
+let popupOverlay = null;
+let mapInitialized = false;
+/** @type {ReturnType<typeof JrsSpatialSelection.createController>|null} */
+let spatialController = null;
+/** Active SpatialSelection produced by drawing tools (null when cleared). */
+let currentSpatialSelection = null;
+
+const MAP_DRIVEN_PARAMS = new Set(['p_geometry', 'p_srid', 'selected_ids']);
+
+function setError(msg) {
+  document.getElementById('errorBox').textContent = msg || '';
+}
+
+function showReportLoading() {
+  var el = document.getElementById('reportLoading');
+  if (!el) return;
+  waitingForReportFrame = true;
+  el.hidden = false;
+  el.setAttribute('aria-busy', 'true');
+}
+
+function hideReportLoading() {
+  var el = document.getElementById('reportLoading');
+  if (!el) return;
+  waitingForReportFrame = false;
+  el.hidden = true;
+  el.setAttribute('aria-busy', 'false');
+}
+
+function setMapStatus(msg, isError) {
+  const el = document.getElementById('mapStatus');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.classList.toggle('error', !!isError);
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function setMapLegend(mapDef, styleMeta) {
+  const host = document.getElementById('mapLegendHost');
+  if (!host || !window.JrsMapStyle) return;
+  host.innerHTML = JrsMapStyle.buildLegendHtml(mapDef || {}, styleMeta || {}) || '';
+}
+
+function pickDataFeature(evt) {
+  if (!olMap || !vectorSource) {
+    return null;
+  }
+  let found = null;
+  olMap.forEachFeatureAtPixel(
+    evt.pixel,
+    (feature, layer) => {
+      if (!feature) {
+        return undefined;
+      }
+      const role = layer && typeof layer.get === 'function' ? layer.get('role') : null;
+      if (role === 'highlight' || role === 'basemap') {
+        return undefined;
+      }
+      // Prefer features from the report data source (multi-table and single-table).
+      if (typeof vectorSource.hasFeature === 'function' && vectorSource.hasFeature(feature)) {
+        found = feature;
+        return feature;
+      }
+      if (role === 'data' || role === 'labels') {
+        found = feature;
+        return feature;
+      }
+      return undefined;
+    },
+    {
+      hitTolerance: 8,
+      layerFilter: (layer) => {
+        if (!layer || typeof layer.get !== 'function') {
+          return false;
+        }
+        const role = layer.get('role');
+        if (role === 'highlight' || role === 'basemap') {
+          return false;
+        }
+        const source = typeof layer.getSource === 'function' ? layer.getSource() : null;
+        return source === vectorSource || role === 'data' || role === 'labels';
+      }
+    }
+  );
+  return found;
+}
+
+function showFeaturePopup(feature, coordinate) {
+  const popupEl = document.getElementById('popup');
+  const popupContent = document.getElementById('popup-content');
+  if (!popupEl || !popupContent || !popupOverlay || !window.JrsMapStyle) {
+    return;
+  }
+  const activeDef = mapDefinition || {};
+  const html = JrsMapStyle.buildPopupHtml(feature, activeDef);
+  if (!html) {
+    return;
+  }
+  popupContent.innerHTML = html;
+  popupEl.style.display = 'block';
+  popupOverlay.setPosition(coordinate);
+}
+
+function hideFeaturePopup() {
+  const popupEl = document.getElementById('popup');
+  if (popupOverlay) {
+    popupOverlay.setPosition(undefined);
+  }
+  if (popupEl) {
+    popupEl.style.display = 'none';
+  }
+}
+
+function normalizeSelectOptions(options) {
+  const out = [];
+  (options || []).forEach((opt) => {
+    if (opt && typeof opt === 'object') {
+      const label = opt.label ?? opt.value ?? '';
+      const value = opt.value ?? opt.label ?? '';
+      out.push({ label: String(label), value: String(value) });
+    } else {
+      out.push({ label: String(opt ?? ''), value: String(opt ?? '') });
+    }
+  });
+  return out;
+}
+
+/** Normalize config/JRXML default to a string list (multi) or empty. */
+function normalizeDefaultValues(raw) {
+  if (raw == null || raw === '') {
+    return [];
+  }
+  if (Array.isArray(raw)) {
+    return raw.map((v) => String(v).trim()).filter((v) => v !== '');
+  }
+  if (typeof raw === 'boolean' || typeof raw === 'number') {
+    return [String(raw)];
+  }
+  const s = String(raw).trim();
+  return s ? [s] : [];
+}
+
+function markDefaultInactive(name) {
+  if (name) {
+    delete defaultActive[name];
+  }
+}
+
+function markExplicitEmpty(name) {
+  if (!name) return;
+  explicitEmpty[name] = true;
+  markDefaultInactive(name);
+}
+
+function clearExplicitEmpty(name) {
+  if (name) {
+    delete explicitEmpty[name];
+  }
+}
+
+/** Select matching options from p.default without removing other options. */
+function applySelectDefault(select, p) {
+  if (!select || !p) {
+    return false;
+  }
+  const defaults = normalizeDefaultValues(p.default);
+  if (!defaults.length) {
+    return false;
+  }
+  if (select.multiple) {
+    const want = new Set(defaults);
+    let matched = false;
+    Array.from(select.options).forEach((o) => {
+      if (want.has(o.value)) {
+        o.selected = true;
+        matched = true;
+      }
+    });
+    return matched || select.options.length > 0;
+  }
+  const match = defaults.find((d) => Array.from(select.options).some((o) => o.value === d));
+  if (match != null) {
+    select.value = match;
+    return true;
+  }
+  if (select.options.length === 0) {
+    return false;
+  }
+  return true;
+}
+
+function paramHasLookup(p) {
+  return !!(p && p.lookup && p.lookup.enabled && String(p.lookup.sql || '').trim());
+}
+
+function dependencyNames(p) {
+  if (!p) return [];
+  const raw = p.lookup && p.lookup.depends;
+  let listed = [];
+  if (Array.isArray(raw)) {
+    listed = raw;
+  } else if (typeof raw === 'string' && raw.trim()) {
+    listed = raw.split(/[,;]+/);
+  }
+  const sql = (p.lookup && p.lookup.sql) || '';
+  const fromSql = [];
+  const reP = /\$P\{([A-Za-z_][A-Za-z0-9_]*)\}/g;
+  let m;
+  while ((m = reP.exec(sql)) !== null) {
+    if (m[1] !== p.name) fromSql.push(m[1]);
+  }
+  const reX = /\$X\{(?:IN|NOTIN)\s*,\s*[^,]+,\s*([A-Za-z_][A-Za-z0-9_]*)\s*\}/gi;
+  while ((m = reX.exec(sql)) !== null) {
+    if (m[1] !== p.name) fromSql.push(m[1]);
+  }
+  const seen = new Set();
+  const out = [];
+  listed.concat(fromSql).forEach((d) => {
+    const name = String(d || '').trim();
+    if (!name || name === p.name || seen.has(name)) return;
+    seen.add(name);
+    out.push(name);
+  });
+  return out;
+}
+
+function valueFilledInForm(name) {
+  const form = document.getElementById('paramForm');
+  if (!form) return false;
+  const el = form.elements.namedItem(name);
+  if (!el) return false;
+  if (el.tagName === 'SELECT' && el.multiple) {
+    return Array.from(el.selectedOptions).some((o) => String(o.value).trim() !== '');
+  }
+  return String(el.value == null ? '' : el.value).trim() !== '';
+}
+
+function parentsSatisfied(p) {
+  return dependencyNames(p).every((d) => valueFilledInForm(d));
+}
+
+function sortByDepends(params) {
+  const list = (params || []).slice();
+  if (list.length <= 1) return list;
+  const known = new Set(list.map((p) => p && p.name).filter(Boolean));
+  const depsOf = (p) => dependencyNames(p).filter((d) => known.has(d));
+  const remaining = new Map(list.map((p) => [p.name, p]));
+  const placed = new Set();
+  const out = [];
+  while (remaining.size > 0) {
+    const readyNames = new Set(
+      [...remaining.values()]
+        .filter((p) => depsOf(p).every((d) => placed.has(d)))
+        .map((p) => p.name)
+    );
+    if (readyNames.size === 0) {
+      list.forEach((p) => {
+        if (remaining.has(p.name)) out.push(p);
+      });
+      break;
+    }
+    list.forEach((p) => {
+      if (!readyNames.has(p.name)) return;
+      out.push(p);
+      placed.add(p.name);
+      remaining.delete(p.name);
+    });
+  }
+  return out;
+}
+
+function dependentsOf(ordered, parentName) {
+  const names = new Set();
+  const walk = (name) => {
+    ordered.forEach((p) => {
+      if (dependencyNames(p).includes(name) && !names.has(p.name)) {
+        names.add(p.name);
+        walk(p.name);
+      }
+    });
+  };
+  walk(parentName);
+  return ordered.filter((p) => names.has(p.name));
+}
+
+function readFormValues() {
+  const values = {};
+  const form = document.getElementById('paramForm');
+  if (!form) return values;
+  const seen = new Set();
+  Array.from(form.elements).forEach((el) => {
+    const name = el && el.name ? String(el.name) : '';
+    if (!name || MAP_DRIVEN_PARAMS.has(name) || seen.has(name)) return;
+    seen.add(name);
+    if (el.tagName === 'SELECT' && el.multiple) {
+      values[name] = Array.from(el.selectedOptions)
+        .map((o) => String(o.value).trim())
+        .filter((v) => v !== '');
+      return;
+    }
+    values[name] = String(el.value == null ? '' : el.value).trim();
+  });
+  return values;
+}
+
+function appendLookupParams(url, values) {
+  Object.keys(values || {}).forEach((key) => {
+    const value = values[key];
+    if (value == null || value === '') return;
+    if (Array.isArray(value)) {
+      value.forEach((v) => {
+        if (v == null || String(v).trim() === '') return;
+        url += `&${encodeURIComponent(key)}=${encodeURIComponent(String(v))}`;
+      });
+      return;
+    }
+    url += `&${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`;
+  });
+  return url;
+}
+
+function setSelectOptions(select, options, keepValue) {
+  const previous = keepValue ? String(select.value || '') : '';
+  const previousMulti = keepValue && select.multiple
+    ? Array.from(select.selectedOptions).map((o) => o.value)
+    : [];
+  select.innerHTML = '';
+  normalizeSelectOptions(options).forEach((o) => {
+    const option = document.createElement('option');
+    option.value = o.value;
+    option.textContent = o.label;
+    select.appendChild(option);
+  });
+  if (select.multiple) {
+    const want = new Set(previousMulti);
+    Array.from(select.options).forEach((o) => {
+      o.selected = want.has(o.value);
+    });
+  } else if (previous) {
+    const match = Array.from(select.options).some((o) => o.value === previous);
+    select.value = match ? previous : '';
+  }
+}
+
+function waitingHint(p) {
+  const missing = dependencyNames(p).filter((d) => !valueFilledInForm(d));
+  if (missing.length === 0) return null;
+  if (missing.length === 1) return 'Select ' + missing[0] + ' first';
+  return 'Select ' + missing.join(', ') + ' first';
+}
+
+function updateCascadeControlState(ordered) {
+  (ordered || currentParams || []).forEach((p) => {
+    if (!p || !p.name) return;
+    const form = document.getElementById('paramForm');
+    if (!form) return;
+    const el = form.elements.namedItem(p.name);
+    if (!el) return;
+    const wrap = el.closest ? el.closest('.field') : el.parentElement;
+    const enabled = parentsSatisfied(p) && !lookupLoading[p.name];
+    el.disabled = !enabled;
+    if (wrap) {
+      wrap.classList.toggle('cascade-disabled', !enabled);
+      let hint = wrap.querySelector('.cascade-hint');
+      const text = waitingHint(p) || lookupErrors[p.name] || (lookupLoading[p.name] ? 'Loading…' : '');
+      if (text) {
+        if (!hint) {
+          hint = document.createElement('div');
+          hint.className = 'cascade-hint';
+          hint.style.cssText = 'font-size:11px;color:#78909c;margin-top:4px;';
+          wrap.appendChild(hint);
+        }
+        hint.textContent = text;
+        hint.style.color = lookupErrors[p.name] ? '#c62828' : '#78909c';
+      } else if (hint) {
+        hint.remove();
+      }
+    }
+  });
+}
+
+async function loadLookup(p, values, gen) {
+  if (!paramHasLookup(p)) return;
+  if (!parentsSatisfied(p)) {
+    lookupOptions[p.name] = [];
+    lookupLoading[p.name] = false;
+    delete lookupErrors[p.name];
+    const form = document.getElementById('paramForm');
+    const el = form && form.elements.namedItem(p.name);
+    if (el && el.tagName === 'SELECT') {
+      setSelectOptions(el, [], false);
+    }
+    return;
+  }
+
+  lookupLoading[p.name] = true;
+  delete lookupErrors[p.name];
+  updateCascadeControlState(currentParams);
+
+  try {
+    let url = 'parameter_lookup?report=' + encodeURIComponent(reportName)
+      + '&parameter=' + encodeURIComponent(p.name);
+    url = appendLookupParams(url, values);
+    const res = await fetch(url, { credentials: 'same-origin' });
+    const body = await res.json().catch(() => ({}));
+    if (gen !== lookupGen) return;
+    if (!res.ok || body.error) {
+      lookupOptions[p.name] = [];
+      lookupErrors[p.name] = body.error || 'Lookup failed';
+    } else {
+      lookupOptions[p.name] = normalizeSelectOptions(body.options);
+      delete lookupErrors[p.name];
+    }
+    const form = document.getElementById('paramForm');
+    const el = form && form.elements.namedItem(p.name);
+    if (el && el.tagName === 'SELECT') {
+      // Keep prior selection only when it still exists in the new options; empty
+      // prior selection stays empty unless a JRXML default is still active.
+      setSelectOptions(el, lookupOptions[p.name] || [], true);
+      if (el.multiple) {
+        const any = Array.from(el.selectedOptions).some((o) => String(o.value).trim() !== '');
+        if (!any) {
+          Array.from(el.options).forEach((o) => { o.selected = false; });
+        }
+      }
+      if (defaultActive[p.name]) {
+        applySelectDefault(el, p);
+      }
+    }
+  } catch (err) {
+    if (gen !== lookupGen) return;
+    lookupOptions[p.name] = [];
+    lookupErrors[p.name] = err && err.message ? err.message : 'Lookup failed';
+  } finally {
+    if (gen === lookupGen) {
+      lookupLoading[p.name] = false;
+      updateCascadeControlState(currentParams);
+    }
+  }
+}
+
+async function loadReadyLookups(values, gen) {
+  for (const p of currentParams || []) {
+    if (gen !== lookupGen) return;
+    if (!paramHasLookup(p)) continue;
+    if (!parentsSatisfied(p)) {
+      lookupOptions[p.name] = [];
+      const form = document.getElementById('paramForm');
+      const el = form && form.elements.namedItem(p.name);
+      if (el && el.tagName === 'SELECT') {
+        setSelectOptions(el, [], false);
+      }
+      continue;
+    }
+    // Re-read form each pass so JRXML defaults applied to parents are visible to children.
+    await loadLookup(p, readFormValues(), gen);
+  }
+}
+
+function onCascadeParamChange(changedName) {
+  const gen = ++lookupGen;
+  const ordered = currentParams || [];
+  const affected = dependentsOf(ordered, changedName);
+  const form = document.getElementById('paramForm');
+
+  affected.forEach((child) => {
+    const el = form && form.elements.namedItem(child.name);
+    markExplicitEmpty(child.name);
+    if (el) {
+      if (el.tagName === 'SELECT' && el.multiple) {
+        Array.from(el.options).forEach((o) => { o.selected = false; });
+      } else {
+        el.value = '';
+      }
+      if (el.tagName === 'SELECT') {
+        setSelectOptions(el, [], false);
+      }
+    }
+    lookupOptions[child.name] = [];
+    lookupLoading[child.name] = false;
+    delete lookupErrors[child.name];
+  });
+
+  const values = readFormValues();
+  updateCascadeControlState(ordered);
+
+  (async () => {
+    for (const child of affected) {
+      if (gen !== lookupGen) return;
+      if (!paramHasLookup(child)) continue;
+      if (!parentsSatisfied(child)) continue;
+      await loadLookup(child, values, gen);
+    }
+  })();
+}
+
+function isEmbedBoundParameter(name) {
+  var list = window.ACUGIS_EMBED_BOUND_PARAMETERS || [];
+  for (var i = 0; i < list.length; i++) {
+    if (String(list[i]) === name) return true;
+  }
+  return false;
+}
+
+function buildForm(params) {
+  const form = document.getElementById('paramForm');
+  form.innerHTML = '';
+  lookupOptions = {};
+  lookupLoading = {};
+  lookupErrors = {};
+  lookupGen += 1;
+  defaultActive = {};
+  explicitEmpty = {};
+
+  const ordered = sortByDepends(params || []);
+  currentParams = ordered;
+  let visibleCount = 0;
+
+  ordered.forEach((p, i) => {
+    if (!p || p.hidden === true || p.type === 'hidden') {
+      return;
+    }
+    const name = String(p.name || ('param_' + i));
+    // Bound parameters are host-signed. Hiding the control is not the security
+    // boundary; /reports/execute overwrites these values from the embed token.
+    if (isEmbedBoundParameter(name)) {
+      return;
+    }
+    if (MAP_DRIVEN_PARAMS.has(name)) {
+      return;
+    }
+    visibleCount++;
+    const type = String(p.type || 'string').toLowerCase();
+    const required = !!p.required;
+    const lookup = paramHasLookup(p);
+    const enabled = parentsSatisfied(p);
+    const defaults = normalizeDefaultValues(p.default);
+    if (defaults.length) {
+      defaultActive[name] = true;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'field' + (enabled ? '' : ' cascade-disabled');
+    const label = document.createElement('label');
+    label.textContent = p.label || name;
+    wrap.appendChild(label);
+
+    if (type === 'select' || lookup) {
+      const select = document.createElement('select');
+      select.name = name;
+      if (p.multiple) {
+        select.multiple = true;
+        select.size = 6;
+      }
+      if (required) {
+        select.required = true;
+      }
+      select.disabled = !enabled || !!lookupLoading[name];
+      const options = lookup
+        ? normalizeSelectOptions(lookupOptions[name] || [])
+        : normalizeSelectOptions(p.options);
+      options.forEach((o) => {
+        const option = document.createElement('option');
+        option.value = o.value;
+        option.textContent = o.label;
+        select.appendChild(option);
+      });
+      if (!lookup && defaults.length) {
+        applySelectDefault(select, p);
+      }
+      select.addEventListener('change', () => {
+        const anySelected = select.multiple
+          ? Array.from(select.selectedOptions).some((o) => String(o.value).trim() !== '')
+          : String(select.value || '').trim() !== '';
+        if (anySelected) {
+          clearExplicitEmpty(name);
+          markDefaultInactive(name);
+        } else {
+          markExplicitEmpty(name);
+        }
+        onCascadeParamChange(name);
+      });
+      wrap.appendChild(select);
+    } else if (type === 'boolean') {
+      const select = document.createElement('select');
+      select.name = name;
+      if (required) {
+        select.required = true;
+      }
+      select.disabled = !enabled;
+      [
+        { value: '', label: '' },
+        { value: 'true', label: 'True' },
+        { value: 'false', label: 'False' }
+      ].forEach((o) => {
+        const option = document.createElement('option');
+        option.value = o.value;
+        option.textContent = o.label || '\u2014';
+        select.appendChild(option);
+      });
+      if (defaults.length) {
+        select.value = defaults[0];
+      }
+      select.addEventListener('change', () => {
+        if (String(select.value || '').trim() !== '') {
+          clearExplicitEmpty(name);
+          markDefaultInactive(name);
+        } else {
+          markExplicitEmpty(name);
+        }
+        onCascadeParamChange(name);
+      });
+      wrap.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      input.name = name;
+      if (type === 'integer') {
+        input.type = 'number';
+        input.step = '1';
+      } else if (type === 'double' || type === 'number' || type === 'float') {
+        input.type = 'number';
+        input.step = 'any';
+      } else if (type === 'date') {
+        input.type = 'date';
+      } else {
+        input.type = 'text';
+      }
+      if (required) {
+        input.required = true;
+      }
+      input.disabled = !enabled;
+      if (defaults.length && !dependencyNames(p).length) {
+        input.value = defaults[0];
+      }
+      input.placeholder = p.label || name;
+      input.addEventListener('change', () => {
+        if (String(input.value || '').trim() !== '') {
+          clearExplicitEmpty(name);
+          markDefaultInactive(name);
+        } else {
+          markExplicitEmpty(name);
+        }
+        onCascadeParamChange(name);
+      });
+      wrap.appendChild(input);
+    }
+
+    form.appendChild(wrap);
+  });
+
+  updateCascadeControlState(ordered);
+
+  const sidebar = document.getElementById('paramSidebar');
+  const actions = document.getElementById('paramActions');
+  if (visibleCount === 0) {
+    actions.style.display = 'none';
+    sidebar.classList.add('hidden');
+  } else {
+    actions.style.display = 'flex';
+    sidebar.classList.remove('hidden');
+  }
+
+  const gen = ++lookupGen;
+  const values = readFormValues();
+  void loadReadyLookups(values, gen);
+}
+
+/**
+ * Rebuild the shared filter context from the parameter form and any active
+ * spatial keys already on the context (p_geometry / p_srid / selected_ids).
+ */
+function syncFilterContextFromForm(options) {
+  const keepSpatial = !options || options.keepSpatial !== false;
+  const spatialGeometry = keepSpatial ? filterContext.p_geometry : null;
+  const spatialSrid = keepSpatial ? filterContext.p_srid : null;
+  const spatialIds = keepSpatial ? filterContext.selected_ids : null;
+
+  const next = {};
+  const form = document.getElementById('paramForm');
+  if (form) {
+    const names = [];
+    const seen = new Set();
+    Array.from(form.elements).forEach((el) => {
+      const name = el && el.name ? String(el.name) : '';
+      if (!name || MAP_DRIVEN_PARAMS.has(name) || seen.has(name)) {
+        return;
+      }
+      seen.add(name);
+      names.push(name);
+    });
+
+    names.forEach((name) => {
+      const el = form.elements.namedItem(name);
+      if (!el) {
+        return;
+      }
+      const meta = (currentParams || []).find((p) => p && String(p.name) === name);
+      const forceCollection = !!(meta && meta.multiple);
+      if (el.tagName === 'SELECT' && (el.multiple || forceCollection)) {
+        let values = Array.from(el.selectedOptions)
+          .map((o) => String(o.value).trim())
+          .filter((v) => v !== '');
+        if (values.length > 0) {
+          next[name] = values;
+          return;
+        }
+        // User / cascade cleared → empty Collection overrides JRXML defaults.
+        if (explicitEmpty[name]) {
+          next[name] = [];
+          return;
+        }
+        // Prefer config/JRXML default when known (keeps map + report in sync).
+        const defs = normalizeDefaultValues(meta && meta.default);
+        if (defs.length) {
+          next[name] = defs;
+          return;
+        }
+        // Untouched empty: omit the key so Jasper fill uses defaultValueExpression.
+        return;
+      }
+      const value = String(el.value == null ? '' : el.value).trim();
+      const defs = normalizeDefaultValues(meta && meta.default);
+      const submitted = window.JrsReportParams.scalarQueryValue(meta || { type: 'string' }, value, {
+        explicitEmpty: !!explicitEmpty[name],
+        fallbackDefault: defs.length ? defs[0] : null,
+        preserveBlank: el.tagName !== 'SELECT'
+      });
+      if (submitted === null) {
+        return;
+      }
+      next[name] = submitted;
+    });
+  }
+
+  if (spatialGeometry) {
+    next.p_geometry = spatialGeometry;
+    if (spatialSrid != null && spatialSrid !== '') {
+      next.p_srid = spatialSrid;
+    }
+  }
+  if (spatialIds != null && Array.isArray(spatialIds) && spatialIds.length > 0) {
+    next.selected_ids = spatialIds.slice();
+  }
+
+  filterContext = next;
+  return filterContext;
+}
+
+function clearSpatialFromFilterContext() {
+  delete filterContext.p_geometry;
+  delete filterContext.p_srid;
+  delete filterContext.selected_ids;
+}
+
+function appendFilterContextParams(url, ctx) {
+  const source = ctx || filterContext || {};
+  Object.keys(source).forEach((key) => {
+    const value = source[key];
+    if (value == null) {
+      return;
+    }
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        // Explicit empty Collection: sentinel overrides JRXML defaults (cascade clear).
+        // Blank key= is treated by Jasper binder as "omit → use default".
+        url += `&${encodeURIComponent(key)}=${encodeURIComponent('__JRS_CLEAR__')}`;
+        return;
+      }
+      value.forEach((v) => {
+        if (v == null || String(v).trim() === '') {
+          return;
+        }
+        url += `&${encodeURIComponent(key)}=${encodeURIComponent(String(v))}`;
+      });
+      return;
+    }
+    url = window.JrsReportParams.appendScalarToUrl(url, key, value);
+  });
+  return url;
+}
+
+function buildUrl(format) {
+  let url = `${reportEndpoint}?_repName=${encodeURIComponent(reportName)}&_dataSource=${encodeURIComponent(datasource)}&_repFormat=${encodeURIComponent(format || 'html')}`;
+  return appendFilterContextParams(url, filterContext);
+}
+
+function runReport() {
+  setError('');
+  if (!reportName) {
+    setError('Missing report parameter.');
+    hideReportLoading();
+    return;
+  }
+  showReportLoading();
+  var frame = document.getElementById('reportFrame');
+  var url = buildUrl('html');
+  // Bust identical URLs so the iframe load event always fires on refresh.
+  url += (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now();
+  frame.src = url;
+}
+
+function exportReport(format) {
+  window.open(buildUrl(format), '_blank');
+}
+
+function syncAllowsFilterReportFromMap() {
+  return !mapDefinition || !mapDefinition.sync || mapDefinition.sync.filterReportFromMap !== false;
+}
+
+function syncAllowsFilterMapFromReport() {
+  return !mapDefinition || !mapDefinition.sync || mapDefinition.sync.filterMapFromReport !== false;
+}
+
+function syncAllowsZoomToReportResults() {
+  return !mapDefinition || !mapDefinition.sync || mapDefinition.sync.zoomToReportResults !== false;
+}
+
+/**
+ * Apply the shared filter context to both the Jasper report and the map.
+ */
+function applyFilterContext(options) {
+  const opts = options || {};
+  if (opts.clearSpatial) {
+    clearSpatialFromFilterContext();
+    currentSpatialSelection = null;
+    if (spatialController) {
+      spatialController.clearSelection({ silent: true });
+    }
+  }
+  syncFilterContextFromForm({ keepSpatial: !opts.clearSpatial });
+  runReport();
+  if (isMapReport && syncAllowsFilterMapFromReport()) {
+    reloadMapFeatures({ fit: opts.fit !== false && syncAllowsZoomToReportResults() });
+  }
+}
+
+function updateSpatialToolbar() {
+  const enabled = !!(mapMeta && mapMeta.spatial_capable && syncAllowsFilterReportFromMap());
+  if (spatialController) {
+    spatialController.setEnabled(enabled);
+  } else {
+    const toolbar = document.getElementById('spatialToolbar');
+    if (toolbar) {
+      toolbar.hidden = !enabled;
+    }
+  }
+}
+
+function initSplitResize() {
+  const divider = document.getElementById('splitDivider');
+  const mapPane = document.getElementById('mapPane');
+  const splitBody = document.getElementById('splitBody');
+  if (!divider || !mapPane || !splitBody) return;
+
+  let dragging = false;
+
+  divider.addEventListener('mousedown', (e) => {
+    dragging = true;
+    divider.classList.add('active');
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const rect = splitBody.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.min(70, Math.max(20, (x / rect.width) * 100));
+    mapPane.style.width = pct + '%';
+    if (olMap) {
+      olMap.updateSize();
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove('active');
+    if (olMap) {
+      olMap.updateSize();
+    }
+    if (fitWidthActive) {
+      fitReportWidth();
+    }
+  });
+}
+
+function applyMapFeatures(body, options) {
+  const opts = options || {};
+  const def = mapDefinition || {};
+  const previousBasemapKey = window.JrsMapStyle.normalizeMapReportBasemap(def.basemap);
+  if (body.mapDefinition) {
+    mapDefinition = body.mapDefinition;
+  }
+  const features = new ol.format.GeoJSON().readFeatures(body, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857'
+  });
+  vectorSource.clear();
+  if (highlightSource) {
+    highlightSource.clear();
+  }
+  hideFeaturePopup();
+  vectorSource.addFeatures(features);
+
+  const built = JrsMapStyle.createDataLayers(mapDefinition || def, vectorSource, features);
+  const existing = olMap.getLayers().getArray().slice();
+  existing.forEach((layer) => {
+    const role = layer.get('role');
+    if (role === 'data' || role === 'labels') {
+      olMap.removeLayer(layer);
+    }
+  });
+  const highlight = olMap.getLayers().getArray().find((l) => l.get('role') === 'highlight');
+  built.layers.forEach((layer) => {
+    if (highlight) {
+      olMap.getLayers().insertAt(olMap.getLayers().getArray().indexOf(highlight), layer);
+    } else {
+      olMap.addLayer(layer);
+    }
+  });
+
+  setMapLegend(mapDefinition || def, built.styleMeta);
+
+  const nextBasemapKey = window.JrsMapStyle.normalizeMapReportBasemap((mapDefinition || def).basemap);
+  if (previousBasemapKey !== nextBasemapKey) {
+    window.JrsMapStyle.replaceBasemapLayer(olMap, mapDefinition || def);
+  }
+
+  const zoomMode = (mapDefinition && mapDefinition.initialZoom) || 'fit';
+  const shouldFit = opts.fit !== false && features.length > 0 && zoomMode === 'fit';
+  if (shouldFit) {
+    olMap.getView().fit(vectorSource.getExtent(), {
+      padding: [40, 40, 40, 40],
+      maxZoom: 16,
+      duration: 250
+    });
+  }
+
+  if (features.length === 0) {
+    setMapStatus('No features match the current filters.', true);
+  } else {
+    setMapStatus(features.length + ' feature' + (features.length === 1 ? '' : 's'));
+  }
+
+  if (body.meta) {
+    mapMeta = Object.assign({}, mapMeta || {}, body.meta, {
+      spatial_capable: !!(mapMeta && mapMeta.spatial_capable) || !!body.meta.spatial_capable
+    });
+    updateSpatialToolbar();
+  }
+}
+
+function reloadMapFeatures(options) {
+  if (!isMapReport || !vectorSource || !olMap || !window.JrsMapStyle) {
+    return;
+  }
+  if (!syncAllowsFilterMapFromReport() && options && options.force !== true) {
+    return;
+  }
+
+  setMapStatus('Loading map features\u2026');
+  let url = 'map_features?report=' + encodeURIComponent(reportName);
+  url = appendFilterContextParams(url, filterContext);
+
+  fetch(url, { credentials: 'same-origin' })
+    .then((res) => res.json().then((body) => ({ ok: res.ok, body })))
+    .then(({ ok, body }) => {
+      if (!ok || body.error) {
+        setMapStatus(body.error || 'Failed to load map features.', true);
+        if (body.detail) {
+          console.warn('map_features:', body.detail);
+        }
+        setMapLegend(null, null);
+        return;
+      }
+      applyMapFeatures(body, options);
+    })
+    .catch(() => {
+      setMapStatus('Failed to load map features.', true);
+    });
+}
+
+function initMap() {
+  if (!window.JrsMapStyle) {
+    setMapStatus('Map style engine failed to load.', true);
+    return;
+  }
+
+  const def = mapDefinition || {};
+  vectorSource = new ol.source.Vector();
+  highlightSource = new ol.source.Vector();
+
+  const basemap = JrsMapStyle.createBasemapLayer(def);
+  // Temporary empty data layer; replaced after features load with styles from mapDefinition.
+  const placeholder = new ol.layer.Vector({
+    source: vectorSource,
+    properties: { role: 'data' },
+    zIndex: 10
+  });
+  const highlightLayer = new ol.layer.Vector({
+    source: highlightSource,
+    style: JrsMapStyle.highlightStyle(ol),
+    properties: { role: 'highlight' },
+    zIndex: 20
+  });
+
+  olMap = new ol.Map({
+    target: 'map',
+    layers: [basemap, placeholder, highlightLayer],
+    view: new ol.View({
+      center: ol.proj.fromLonLat([-74.0, 40.7]),
+      zoom: 10
+    })
+  });
+  window.addEventListener('pagehide', function () {
+    if (olMap) {
+      olMap.setTarget(null);
+    }
+  });
+
+  const popupEl = document.getElementById('popup');
+  const popupCloser = document.getElementById('popup-closer');
+  if (popupEl) {
+    popupOverlay = new ol.Overlay({
+      element: popupEl,
+      autoPan: {
+        animation: { duration: 200 },
+        margin: 20
+      },
+      positioning: 'bottom-center',
+      offset: [0, -12],
+      stopEvent: true
+    });
+    olMap.addOverlay(popupOverlay);
+    if (popupCloser) {
+      popupCloser.addEventListener('click', (e) => {
+        e.preventDefault();
+        hideFeaturePopup();
+      });
+    }
+    olMap.on('singleclick', (evt) => {
+      // Drawing tools own pointer gestures; suppress feature popups while a tool is active.
+      if (spatialController && spatialController.isToolActive()) {
+        hideFeaturePopup();
+        return;
+      }
+      const activeDef = mapDefinition || def;
+      if (!activeDef.popups || !activeDef.popups.enabled) {
+        hideFeaturePopup();
+        return;
+      }
+      const feature = pickDataFeature(evt);
+      if (!feature) {
+        hideFeaturePopup();
+        return;
+      }
+      showFeaturePopup(feature, evt.coordinate);
+    });
+
+    const tipEl = document.getElementById('mapTooltip');
+    if (tipEl) {
+      olMap.on('pointermove', (evt) => {
+        const drawing = !!(spatialController && spatialController.isToolActive());
+        const activeDef = mapDefinition || def;
+        if (drawing || !activeDef.tooltips || !activeDef.tooltips.enabled) {
+          tipEl.style.display = 'none';
+          if (!drawing) {
+            olMap.getTargetElement().style.cursor = '';
+          }
+          return;
+        }
+        if (evt.dragging) {
+          tipEl.style.display = 'none';
+          return;
+        }
+        const feature = pickDataFeature(evt);
+        if (!feature) {
+          tipEl.style.display = 'none';
+          olMap.getTargetElement().style.cursor = '';
+          return;
+        }
+        const text = JrsMapStyle.buildTooltipText(feature, activeDef);
+        if (!text) {
+          tipEl.style.display = 'none';
+          return;
+        }
+        tipEl.textContent = text;
+        tipEl.style.display = 'block';
+        const mapEl = olMap.getTargetElement();
+        const rect = mapEl.getBoundingClientRect();
+        tipEl.style.left = Math.min(evt.originalEvent.clientX - rect.left + 12, rect.width - 20) + 'px';
+        tipEl.style.top = Math.min(evt.originalEvent.clientY - rect.top + 12, rect.height - 20) + 'px';
+        mapEl.style.cursor = 'pointer';
+      });
+    }
+  }
+
+  if (window.JrsSpatialSelection) {
+    spatialController = JrsSpatialSelection.createController({
+      map: olMap,
+      ol: ol,
+      vectorSource: () => vectorSource,
+      toolbarEl: document.getElementById('spatialToolbar'),
+      onSelection: (selection) => {
+        RefreshReport(selection);
+      },
+      onClear: () => {
+        RefreshReport(null);
+      }
+    });
+    updateSpatialToolbar();
+  }
+
+  mapInitialized = true;
+  reloadMapFeatures({ fit: true, force: true });
+}
+
+/**
+ * RefreshReport consumes a generic SpatialSelection from any drawing tool.
+ * Pass null to clear spatial filters and regenerate the original report.
+ * PDF/Excel exports read the same filterContext, so they stay in sync.
+ */
+function RefreshReport(selection) {
+  currentSpatialSelection = selection || null;
+
+  if (!selection) {
+    clearSpatialFromFilterContext();
+    syncFilterContextFromForm({ keepSpatial: false });
+    setError('');
+    setMapStatus('Selection cleared');
+    runReport();
+    return;
+  }
+
+  if (!olMap || !mapMeta || !mapMeta.spatial_capable || !syncAllowsFilterReportFromMap()) {
+    setError('Spatial refresh is not available for this report.');
+    return;
+  }
+
+  const bounds = selection.bounds || selection.Bounds || {};
+  const xmin = bounds.xmin != null ? bounds.xmin : bounds.XMin;
+  const ymin = bounds.ymin != null ? bounds.ymin : bounds.YMin;
+  const xmax = bounds.xmax != null ? bounds.xmax : bounds.XMax;
+  const ymax = bounds.ymax != null ? bounds.ymax : bounds.YMax;
+  if ([xmin, ymin, xmax, ymax].some((v) => v == null || !Number.isFinite(Number(v)))) {
+    setError('Invalid selection bounds.');
+    return;
+  }
+
+  const featureIds = selection.featureIds || selection.FeatureIDs || [];
+  const srid = mapMeta.srid || 4326;
+  const tool = selection.type || selection.Type || 'selection';
+  // Prefer the drawn GeoJSON polygon (circle approximation / rectangle) so
+  // ST_Intersects matches the overlay — not only the axis-aligned bbox.
+  const geomObj = selection.geometry || selection.Geometry || null;
+  let geometryParam = '';
+  if (geomObj && typeof geomObj === 'object') {
+    try {
+      geometryParam = JSON.stringify(geomObj);
+    } catch (e) {
+      geometryParam = '';
+    }
+  } else if (typeof geomObj === 'string' && geomObj.trim() !== '') {
+    geometryParam = geomObj.trim();
+  }
+
+  setMapStatus('Refreshing report from ' + tool + ' selection\u2026');
+  let url = 'map_extent?report=' + encodeURIComponent(reportName)
+    + '&xmin=' + encodeURIComponent(xmin)
+    + '&ymin=' + encodeURIComponent(ymin)
+    + '&xmax=' + encodeURIComponent(xmax)
+    + '&ymax=' + encodeURIComponent(ymax)
+    + '&srid=' + encodeURIComponent(srid);
+  if (geometryParam) {
+    url += '&geometry=' + encodeURIComponent(geometryParam);
+  }
+
+  fetch(url, { credentials: 'same-origin' })
+    .then((res) => res.json().then((body) => ({ ok: res.ok, body })))
+    .then(({ ok, body }) => {
+      if (!ok || body.error || !body.p_geometry) {
+        setError(body.error || 'Failed to transform selection extent.');
+        setMapStatus('Extent transform failed.', true);
+        return;
+      }
+      // Preserve existing form parameters; replace only map-driven spatial keys.
+      syncFilterContextFromForm({ keepSpatial: false });
+      filterContext.p_geometry = body.p_geometry;
+      filterContext.p_srid = body.p_srid;
+      // Only pass selected_ids when the JRXML/report config declares that parameter.
+      const acceptsSelectedIds = (currentParams || []).some(
+        (p) => p && String(p.name) === 'selected_ids'
+      );
+      if (acceptsSelectedIds && featureIds.length > 0) {
+        filterContext.selected_ids = featureIds.slice();
+      } else {
+        delete filterContext.selected_ids;
+      }
+      setError('');
+      const idNote = featureIds.length > 0 ? (' (' + featureIds.length + ' feature ids)') : '';
+      setMapStatus('Filtered to ' + tool + ' selection' + idNote);
+      // Only refresh Jasper. Do not re-query map_features with spatial params —
+      // the selection overlay is client-side and the layer already shows the area.
+      runReport();
+    })
+    .catch(() => {
+      setError('Failed to transform selection extent.');
+      setMapStatus('Extent transform failed.', true);
+    });
+}
+
+document.getElementById('applyBtn').addEventListener('click', () => {
+  // Apply uses form parameters; clear prior map-extent spatial keys so form filters win.
+  applyFilterContext({ clearSpatial: true, fit: true });
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('paramForm').reset();
+  filterContext = {};
+  // Rebuild so cascading dependents clear options and re-disable.
+  buildForm(currentParams);
+  applyFilterContext({ clearSpatial: true, fit: true });
+});
+
+if (isMapReport) {
+  initSplitResize();
+}
+
+document.getElementById('reportFrame').addEventListener('load', function () {
+  if (waitingForReportFrame) {
+    hideReportLoading();
+  }
+  onReportFrameReadyForZoom();
+});
+
+fetch('get_report_config?report=' + encodeURIComponent(reportName), { credentials: 'same-origin' })
+  .then((res) => res.json())
+  .then((config) => {
+    currentParams = Array.isArray(config.parameters) ? config.parameters : [];
+    mapMeta = config.map || null;
+    mapDefinition = config.mapDefinition || null;
+    buildForm(currentParams);
+    updateSpatialToolbar();
+    filterContext = {};
+    applyFilterContext({ clearSpatial: true, fit: true });
+    if (isMapReport && !mapInitialized) {
+      initMap();
+    }
+  })
+  .catch(() => {
+    setError('Failed to load report configuration.');
+    hideReportLoading();
+    if (window.ACUGIS_EMBED_MODE) {
+      acugisEmbedPost('error', { code: 'SERVER_ERROR', message: 'Failed to load report configuration.' });
+    }
+  });
+
+(function acugisEmbedBridge() {
+  if (!window.ACUGIS_EMBED_MODE) return;
+  var ui = window.ACUGIS_EMBED_UI || {};
+  var allowed = Array.isArray(window.ACUGIS_EMBED_ALLOWED_ORIGINS)
+    ? window.ACUGIS_EMBED_ALLOWED_ORIGINS.slice()
+    : [];
+  var parentOrigin = '';
+  try {
+    if (document.referrer) parentOrigin = new URL(document.referrer).origin;
+  } catch (_e) {}
+
+  function originAllowed(origin) {
+    if (!origin) return false;
+    if (allowed.indexOf(origin) >= 0) return true;
+    // Dev: allow exact parent referrer origin when allow-list empty and same host patterns
+    return false;
+  }
+
+  if (ui.parameters === false) document.body.classList.add('acugis-embed-hide-parameters');
+  if (ui.toolbar === false) document.body.classList.add('acugis-embed-hide-toolbar');
+  if (ui.export === false) document.body.classList.add('acugis-embed-hide-export');
+  if (ui.zoom === false) document.body.classList.add('acugis-embed-hide-zoom');
+  if (ui.close === false) document.body.classList.add('acugis-embed-hide-close');
+
+  window.acugisEmbedPost = function (type, payload) {
+    if (!window.parent || window.parent === window) return;
+    var target = parentOrigin && originAllowed(parentOrigin) ? parentOrigin : null;
+    if (!target) {
+      // Fall back only when referrer origin is in allow-list; never use "*".
+      for (var i = 0; i < allowed.length; i++) {
+        if (parentOrigin === allowed[i]) { target = parentOrigin; break; }
+      }
+    }
+    if (!target && allowed.length === 1) target = allowed[0];
+    if (!target) return;
+    window.parent.postMessage({
+      source: 'acugis-report',
+      version: 1,
+      type: type,
+      payload: payload || {}
+    }, target);
+  };
+
+  window.addEventListener('message', function (event) {
+    if (!originAllowed(event.origin)) return;
+    if (event.source !== window.parent) return;
+    var data = event.data;
+    if (!data || data.source !== 'acugis-report' || data.version !== 1 || typeof data.type !== 'string') return;
+    parentOrigin = event.origin;
+    switch (data.type) {
+      case 'configure':
+        if (data.payload && data.payload.hostOrigin && originAllowed(data.payload.hostOrigin)) {
+          parentOrigin = data.payload.hostOrigin;
+        }
+        if (data.payload && data.payload.parameters && typeof applyExternalParameters === 'function') {
+          applyExternalParameters(data.payload.parameters);
+        }
+        break;
+      case 'setParameters':
+        if (data.payload && data.payload.parameters) applyExternalParameters(data.payload.parameters);
+        break;
+      case 'refresh':
+        if (typeof runReport === 'function') runReport();
+        acugisEmbedPost('refresh', {});
+        break;
+      case 'export':
+        if (data.payload && data.payload.format && typeof exportReport === 'function') {
+          exportReport(String(data.payload.format));
+          acugisEmbedPost('export', { format: data.payload.format });
+        }
+        break;
+      case 'zoomIn':
+        if (typeof zoomIn === 'function') zoomIn();
+        break;
+      case 'zoomOut':
+        if (typeof zoomOut === 'function') zoomOut();
+        break;
+      case 'setZoom':
+        if (data.payload && typeof setZoomPercent === 'function') setZoomPercent(Number(data.payload.percent));
+        break;
+      case 'auth':
+        // Token already required via et= + cookie; ignore PAT attempts.
+        break;
+      default:
+        break;
+    }
+  });
+
+  window.applyExternalParameters = function (params) {
+    if (!params || typeof params !== 'object') return;
+    Object.keys(params).forEach(function (k) {
+      if (typeof isEmbedBoundParameter === 'function' && isEmbedBoundParameter(k)) {
+        return;
+      }
+      var val = params[k];
+      var el = document.querySelector('[name="' + k + '"]');
+      if (el) {
+        el.value = Array.isArray(val) ? val.join(',') : String(val);
+      }
+      filterContext[k] = val;
+    });
+    if (typeof runReport === 'function') runReport();
+    acugisEmbedPost('parameterChange', { parameters: params });
+  };
+
+  // Notify host after config/report path starts.
+  setTimeout(function () { acugisEmbedPost('load', {}); }, 0);
+
+  if (ui.autoResize) {
+    var ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(function () {
+      var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      acugisEmbedPost('resize', { width: window.innerWidth, height: h });
+    }) : null;
+    if (ro) ro.observe(document.body);
+  }
+
+  // Strip et from the visible URL after cookie bootstrap (token must not linger).
+  try {
+    var u = new URL(location.href);
+    if (u.searchParams.has('et')) {
+      u.searchParams.delete('et');
+      history.replaceState({}, '', u.pathname + u.search + u.hash);
+    }
+  } catch (_e) {}
+})();
+</script>
+</body>
+</html>

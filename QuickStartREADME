@@ -1,0 +1,70 @@
+Quick Start: First Standalone Report
+====================================
+
+Prerequisites
+-------------
+
+- PHP can connect to PostgreSQL using the `pgsql` extension.
+- `database/schema.sql` has been loaded into the app database.
+- At least one row exists in `public.jasper_datasource`.
+- Docker report server is running and reachable at `/report`.
+
+Step 1 - Configure a Datasource
+-------------------------------
+
+.. code-block:: sql
+
+   INSERT INTO public.jasper_datasource
+     (name, host, port, dbname, username, password, schema_name)
+   VALUES
+     ('MainPG', 'host.docker.internal', 5432, 'your_database', 'your_user', 'your_password', 'public');
+
+Then regenerate Tomcat context:
+
+.. code-block:: bash
+
+   php reports/generate_jasper_context.php
+   cd docker/report-server
+   docker compose restart
+
+Step 2 - Upload a Report
+------------------------
+
+1. Open `reports/index.php`.
+2. Click `Publish New Report`.
+3. Upload your `.jrxml` file.
+4. Select a PostgreSQL datasource.
+5. Optionally define parameters, upload a compiled `.jasper`, and upload a thumbnail.
+6. Click `Publish Report`.
+
+Step 3 - Run the Report
+-----------------------
+
+Open the report from the catalog. The viewer calls:
+
+::
+
+   /report?_repName=your_report&_dataSource=MainPG&_repFormat=html
+
+Troubleshooting
+---------------
+
+No datasources appear
+^^^^^^^^^^^^^^^^^^^^^
+
+- Confirm `config.php` or `JRS_DB_*` points to the app database.
+- Confirm `public.jasper_datasource` contains enabled rows.
+
+Report opens but Jasper shows an error
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Confirm datasource name matches the report JSON.
+- Confirm `docker/report-server/context.xml` was regenerated.
+- Confirm the Docker report server can reach the PostgreSQL host.
+
+Parameters not working
+^^^^^^^^^^^^^^^^^^^^^^
+
+- Ensure parameter names match the JRXML.
+- For SQL-backed select parameters, test the SQL against the report datasource.
+- For multi-select parameters, ensure the JRXML parameter type matches the values being passed.

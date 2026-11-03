@@ -1,0 +1,118 @@
+# Cascading parameter lookup
+paths:
+  /api/v1/reports/{key}/parameters/{name}/lookup:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ReportKey'
+      - $ref: './schemas.yaml#/components/parameters/ParameterName'
+    get:
+      operationId: lookupParameter
+      tags: [Parameters]
+      summary: Lookup cascading parameter options
+      description: Parent parameter values are passed as additional query parameters.
+      parameters:
+        - name: parent_param
+          in: query
+          schema:
+            type: string
+          description: Example parent value (actual names vary per report)
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: Option list
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ParameterLookupResponse'
+              example:
+                options:
+                  - label: New York
+                    value: NY
+                  - label: California
+                    value: CA
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    post:
+      operationId: lookupParameterPost
+      tags: [Parameters]
+      summary: Lookup parameter options (POST)
+      description: |
+        Body may be a JSON map of parent values, or `{ "params": {...} }` /
+        `{ "parameters": {...} }`, or form fields.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+            examples:
+              flatMap:
+                value:
+                  country: US
+                  region: NE
+              wrapped:
+                value:
+                  params:
+                    country: US
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        '200':
+          description: Option list
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ParameterLookupResponse'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /reports/parameter_lookup.php:
+    get:
+      operationId: lookupParameterPHP
+      tags: [Parameters]
+      summary: Parameter lookup (PHP alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/parameters/{name}/lookup`.
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: parameter
+          in: query
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: Alias of `parameter`
+      responses:
+        '200':
+          description: Option list
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ParameterLookupResponse'
+    post:
+      operationId: lookupParameterPHPPost
+      tags: [Parameters]
+      summary: Parameter lookup POST (PHP alias)
+      deprecated: true
+      responses:
+        '200':
+          description: Option list
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ParameterLookupResponse'

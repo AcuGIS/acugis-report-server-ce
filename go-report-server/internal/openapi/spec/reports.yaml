@@ -1,0 +1,279 @@
+# Reports CRUD, configuration, and thumbnail
+paths:
+  /api/v1/reports:
+    get:
+      operationId: listReports
+      tags: [Reports]
+      summary: List visible reports
+      description: Returns reports the caller can view (ACL-filtered). No pagination yet.
+      responses:
+        '200':
+          description: Report summaries
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportListResponse'
+              example:
+                count: 1
+                items:
+                  - key: nycdata
+                    name: NYC Data
+                    description: Sample map report
+                    datasource: reporting_db
+                    type: map
+                    format: html
+                    has_thumbnail: true
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+    post:
+      operationId: createReport
+      tags: [Reports]
+      summary: Publish / create report
+      description: |
+        Multipart publish. Required: `jrxml_file`, `data_source`.
+        Optional: `jasper_file`, `thumbnail_file`, `report_name`, `report_description`,
+        `report_type` (`jasper`|`map`), `access_groups` / `access_groups[]`, `params[N][…]`.
+        Max multipart size ~64 MiB.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [jrxml_file, data_source]
+              properties:
+                jrxml_file:
+                  type: string
+                  format: binary
+                jasper_file:
+                  type: string
+                  format: binary
+                thumbnail_file:
+                  type: string
+                  format: binary
+                report_name:
+                  type: string
+                report_description:
+                  type: string
+                data_source:
+                  type: string
+                report_type:
+                  type: string
+                  enum: [jasper, map]
+                  default: jasper
+                access_groups:
+                  type: array
+                  items:
+                    type: string
+            encoding:
+              jrxml_file:
+                contentType: application/xml, text/xml
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportCreateResponse'
+              example:
+                ok: true
+                key: nycdata
+                message: Report published
+                notes: []
+                run_url: /reports/nycdata
+                json_url: /api/v1/reports/nycdata
+        '400':
+          $ref: './schemas.yaml#/components/responses/ValidationError'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/reports/{key}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ReportKey'
+    get:
+      operationId: getReport
+      tags: [Reports]
+      summary: Get report definition
+      description: Returns the report JSON definition as stored on disk.
+      responses:
+        '200':
+          description: Full report definition
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Report'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    put:
+      operationId: updateReport
+      tags: [Reports]
+      summary: Update report
+      description: Multipart/form update. JRXML optional. Map and embedded-map fields supported.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                jrxml_file:
+                  type: string
+                  format: binary
+                jasper_file:
+                  type: string
+                  format: binary
+                thumbnail_file:
+                  type: string
+                  format: binary
+                report_name:
+                  type: string
+                report_description:
+                  type: string
+                data_source:
+                  type: string
+                report_type:
+                  type: string
+                  enum: [jasper, map]
+                access_groups:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportMutationResponse'
+              example:
+                ok: true
+                key: nycdata
+        '400':
+          $ref: './schemas.yaml#/components/responses/ValidationError'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    delete:
+      operationId: deleteReport
+      tags: [Reports]
+      summary: Delete report
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportMutationResponse'
+              example:
+                ok: true
+                key: nycdata
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/reports/{key}/config:
+    get:
+      operationId: getReportConfig
+      tags: [Reports]
+      summary: Viewer configuration
+      description: Enriched parameters and optional map layer metadata for the report viewer.
+      parameters:
+        - $ref: './schemas.yaml#/components/parameters/ReportKey'
+      responses:
+        '200':
+          description: Viewer config JSON
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportConfig'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/reports/{key}/thumbnail:
+    get:
+      operationId: getReportThumbnail
+      tags: [Reports]
+      summary: Report thumbnail PNG
+      parameters:
+        - $ref: './schemas.yaml#/components/parameters/ReportKey'
+      responses:
+        '200':
+          description: PNG thumbnail
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /reports/get_report_config.php:
+    get:
+      operationId: getReportConfigPHP
+      tags: [Reports]
+      summary: Viewer configuration (PHP alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/config`.
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Same JSON as versioned config
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReportConfig'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /reports/report_thumbnail.php:
+    get:
+      operationId: getReportThumbnailPHP
+      tags: [Reports]
+      summary: Report thumbnail (PHP alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/thumbnail`.
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: PNG thumbnail
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'

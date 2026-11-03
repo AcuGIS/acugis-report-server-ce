@@ -1,0 +1,12 @@
+.env
+.env.local
+*.exe
+*.test
+bin/
+dist/
+coverage.out
+.DS_Store
+
+# Generated OpenAPI bundle
+openapi.bundle.yaml
+

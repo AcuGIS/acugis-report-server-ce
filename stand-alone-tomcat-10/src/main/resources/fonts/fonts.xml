@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AcuGIS Report Server — bundled JasperReports font extension.
+  All families embed into PDF (pdfEmbedded=true, Identity-H).
+  Alias families (visible=false) remap common Windows/legacy names
+  onto metric-compatible open-source faces so existing JRXML needs no changes.
+-->
+<fontFamilies>
+
+    <!-- ========== DejaVu ========== -->
+    <fontFamily name="DejaVu Sans">
+        <normal>fonts/dejavu/DejaVuSans.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSans-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSans-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSans-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'DejaVu Sans', Arial, Helvetica, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'DejaVu Sans', Arial, Helvetica, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="DejaVu Serif">
+        <normal>fonts/dejavu/DejaVuSerif.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSerif-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSerif-Italic.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'DejaVu Serif', Times New Roman, Times, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'DejaVu Serif', Times New Roman, Times, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="DejaVu Sans Mono">
+        <normal>fonts/dejavu/DejaVuSansMono.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSansMono-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSansMono-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSansMono-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'DejaVu Sans Mono', Courier New, Courier, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'DejaVu Sans Mono', Courier New, Courier, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <!-- ========== Liberation ========== -->
+    <fontFamily name="Liberation Sans">
+        <normal>fonts/liberation/LiberationSans-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSans-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSans-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSans-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Liberation Sans', Arial, Helvetica, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Liberation Sans', Arial, Helvetica, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Liberation Serif">
+        <normal>fonts/liberation/LiberationSerif-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSerif-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSerif-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Liberation Serif', Times New Roman, Times, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Liberation Serif', Times New Roman, Times, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Liberation Mono">
+        <normal>fonts/liberation/LiberationMono-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationMono-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationMono-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationMono-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Liberation Mono', Courier New, Courier, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Liberation Mono', Courier New, Courier, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <!-- ========== Nimbus (URW Base35) ========== -->
+    <fontFamily name="Nimbus Sans">
+        <normal>fonts/nimbus/NimbusSans-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusSans-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusSans-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusSans-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Nimbus Sans', Helvetica, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Nimbus Sans', Helvetica, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Nimbus Roman">
+        <normal>fonts/nimbus/NimbusRoman-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusRoman-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusRoman-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusRoman-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Nimbus Roman', Times, Times New Roman, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Nimbus Roman', Times, Times New Roman, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Nimbus Mono PS">
+        <normal>fonts/nimbus/NimbusMonoPS-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusMonoPS-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusMonoPS-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusMonoPS-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Nimbus Mono PS', Courier, Courier New, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Nimbus Mono PS', Courier, Courier New, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <!-- ========== Croscore (Google metric-compatible) ========== -->
+    <fontFamily name="Carlito">
+        <normal>fonts/carlito/Carlito-Regular.ttf</normal>
+        <bold>fonts/carlito/Carlito-Bold.ttf</bold>
+        <italic>fonts/carlito/Carlito-Italic.ttf</italic>
+        <boldItalic>fonts/carlito/Carlito-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Carlito', Calibri, Carlito, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Carlito', Calibri, Carlito, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Caladea">
+        <normal>fonts/caladea/Caladea-Regular.ttf</normal>
+        <bold>fonts/caladea/Caladea-Bold.ttf</bold>
+        <italic>fonts/caladea/Caladea-Italic.ttf</italic>
+        <boldItalic>fonts/caladea/Caladea-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Caladea', Cambria, Caladea, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Caladea', Cambria, Caladea, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Cousine">
+        <normal>fonts/cousine/Cousine-Regular.ttf</normal>
+        <bold>fonts/cousine/Cousine-Bold.ttf</bold>
+        <italic>fonts/cousine/Cousine-Italic.ttf</italic>
+        <boldItalic>fonts/cousine/Cousine-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Cousine', Consolas, Courier New, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Cousine', Consolas, Courier New, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <!-- ========== Noto ========== -->
+    <fontFamily name="Noto Sans">
+        <normal>fonts/noto/NotoSans-Regular.ttf</normal>
+        <bold>fonts/noto/NotoSans-Bold.ttf</bold>
+        <italic>fonts/noto/NotoSans-Italic.ttf</italic>
+        <boldItalic>fonts/noto/NotoSans-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Noto Sans', Noto Sans, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Noto Sans', Noto Sans, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Noto Serif">
+        <normal>fonts/noto/NotoSerif-Regular.ttf</normal>
+        <bold>fonts/noto/NotoSerif-Bold.ttf</bold>
+        <italic>fonts/noto/NotoSerif-Italic.ttf</italic>
+        <boldItalic>fonts/noto/NotoSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Noto Serif', Noto Serif, Times New Roman, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Noto Serif', Noto Serif, Times New Roman, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <!-- ========== Legacy / OS name aliases (transparent remapping) ========== -->
+    <fontFamily name="Arial" visible="false">
+        <normal>fonts/liberation/LiberationSans-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSans-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSans-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSans-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Arial', Arial, Helvetica, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Arial', Arial, Helvetica, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Helvetica" visible="false">
+        <normal>fonts/nimbus/NimbusSans-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusSans-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusSans-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusSans-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Helvetica', Helvetica, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Helvetica', Helvetica, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Helvetica Neue" visible="false">
+        <normal>fonts/nimbus/NimbusSans-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusSans-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusSans-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusSans-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Helvetica Neue', Helvetica, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Helvetica Neue', Helvetica, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Verdana" visible="false">
+        <normal>fonts/dejavu/DejaVuSans.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSans-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSans-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSans-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Verdana', Verdana, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Verdana', Verdana, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Tahoma" visible="false">
+        <normal>fonts/liberation/LiberationSans-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSans-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSans-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSans-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Tahoma', Tahoma, Arial, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Tahoma', Tahoma, Arial, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Calibri" visible="false">
+        <normal>fonts/carlito/Carlito-Regular.ttf</normal>
+        <bold>fonts/carlito/Carlito-Bold.ttf</bold>
+        <italic>fonts/carlito/Carlito-Italic.ttf</italic>
+        <boldItalic>fonts/carlito/Carlito-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Calibri', Calibri, Carlito, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Calibri', Calibri, Carlito, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Aptos" visible="false">
+        <normal>fonts/carlito/Carlito-Regular.ttf</normal>
+        <bold>fonts/carlito/Carlito-Bold.ttf</bold>
+        <italic>fonts/carlito/Carlito-Italic.ttf</italic>
+        <boldItalic>fonts/carlito/Carlito-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Aptos', Calibri, Carlito, sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Aptos', Calibri, Carlito, sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="SansSerif" visible="false">
+        <normal>fonts/dejavu/DejaVuSans.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSans-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSans-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSans-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'SansSerif', sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'SansSerif', sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Dialog" visible="false">
+        <normal>fonts/dejavu/DejaVuSans.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSans-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSans-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSans-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Dialog', sans-serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Dialog', sans-serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Times" visible="false">
+        <normal>fonts/nimbus/NimbusRoman-Regular.otf</normal>
+        <bold>fonts/nimbus/NimbusRoman-Bold.otf</bold>
+        <italic>fonts/nimbus/NimbusRoman-Italic.otf</italic>
+        <boldItalic>fonts/nimbus/NimbusRoman-BoldItalic.otf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Times', Times, Times New Roman, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Times', Times, Times New Roman, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Times New Roman" visible="false">
+        <normal>fonts/liberation/LiberationSerif-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSerif-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSerif-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Times New Roman', Times New Roman, Times, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Times New Roman', Times New Roman, Times, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Georgia" visible="false">
+        <normal>fonts/liberation/LiberationSerif-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationSerif-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationSerif-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Georgia', Georgia, Times New Roman, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Georgia', Georgia, Times New Roman, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Cambria" visible="false">
+        <normal>fonts/caladea/Caladea-Regular.ttf</normal>
+        <bold>fonts/caladea/Caladea-Bold.ttf</bold>
+        <italic>fonts/caladea/Caladea-Italic.ttf</italic>
+        <boldItalic>fonts/caladea/Caladea-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Cambria', Cambria, Caladea, serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Cambria', Cambria, Caladea, serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Serif" visible="false">
+        <normal>fonts/dejavu/DejaVuSerif.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSerif-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSerif-Italic.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSerif-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Serif', serif</export>
+            <export key="net.sf.jasperreports.xhtml">'Serif', serif</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Courier" visible="false">
+        <normal>fonts/liberation/LiberationMono-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationMono-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationMono-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationMono-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Courier', Courier, Courier New, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Courier', Courier, Courier New, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Courier New" visible="false">
+        <normal>fonts/liberation/LiberationMono-Regular.ttf</normal>
+        <bold>fonts/liberation/LiberationMono-Bold.ttf</bold>
+        <italic>fonts/liberation/LiberationMono-Italic.ttf</italic>
+        <boldItalic>fonts/liberation/LiberationMono-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Courier New', Courier New, Courier, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Courier New', Courier New, Courier, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Consolas" visible="false">
+        <normal>fonts/cousine/Cousine-Regular.ttf</normal>
+        <bold>fonts/cousine/Cousine-Bold.ttf</bold>
+        <italic>fonts/cousine/Cousine-Italic.ttf</italic>
+        <boldItalic>fonts/cousine/Cousine-BoldItalic.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Consolas', Consolas, Courier New, monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Consolas', Consolas, Courier New, monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="Monospaced" visible="false">
+        <normal>fonts/dejavu/DejaVuSansMono.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSansMono-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSansMono-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSansMono-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'Monospaced', monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'Monospaced', monospace</export>
+        </exportFonts>
+    </fontFamily>
+    <fontFamily name="DialogInput" visible="false">
+        <normal>fonts/dejavu/DejaVuSansMono.ttf</normal>
+        <bold>fonts/dejavu/DejaVuSansMono-Bold.ttf</bold>
+        <italic>fonts/dejavu/DejaVuSansMono-Oblique.ttf</italic>
+        <boldItalic>fonts/dejavu/DejaVuSansMono-BoldOblique.ttf</boldItalic>
+        <pdfEncoding>Identity-H</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+        <exportFonts>
+            <export key="net.sf.jasperreports.html">'DialogInput', monospace</export>
+            <export key="net.sf.jasperreports.xhtml">'DialogInput', monospace</export>
+        </exportFonts>
+    </fontFamily>
+</fontFamilies>

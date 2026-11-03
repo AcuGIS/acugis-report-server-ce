@@ -1,0 +1,52 @@
+name: Release .NET SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Force dry-run (skip NuGet push even if secret present)"
+        type: boolean
+        default: false
+  push:
+    tags:
+      - "dotnet-v*"
+      - "sdk-dotnet-v*"
+
+jobs:
+  pack-publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/dotnet
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Pack
+        run: dotnet pack src/AcuGIS.Report/AcuGIS.Report.csproj -c Release -o ./artifacts
+
+      - name: Upload nupkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: sdk/dotnet/artifacts/*.nupkg
+
+      - name: Publish to NuGet
+        if: ${{ !inputs.dry_run && env.NUGET_API_KEY != '' }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          for pkg in ./artifacts/*.nupkg; do
+            dotnet nuget push "$pkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+
+      - name: Dry-run notice
+        if: ${{ inputs.dry_run || env.NUGET_API_KEY == '' }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          echo "Skipping NuGet publish (dry-run or NUGET_API_KEY secret not set)."
+          ls -la ./artifacts

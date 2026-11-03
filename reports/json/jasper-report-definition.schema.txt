@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jasper-report-services/schemas/jasper-report-definition.json",
+  "title": "Jasper report definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "jrxmlPath",
+    "datasourceName",
+    "outputFormat",
+    "parameters"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable report name shown in the standalone catalog."
+    },
+    "jrxmlPath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path to the .jrxml file, relative to the report bundle root (no leading slash)."
+    },
+    "datasourceName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Logical Jasper datasource identifier."
+    },
+    "outputFormat": {
+      "type": "string",
+      "enum": ["pdf", "html"],
+      "description": "Primary export format for this definition."
+    },
+    "parameters": {
+      "type": "array",
+      "description": "Jasper report parameters exposed to the UI / map context.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "label", "required", "hidden"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Jasper parameter name (matches JRXML)."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["string", "integer", "date"],
+            "description": "Coercion / validation type for UI and API binding."
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display label in forms or tooltips."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether a value must be supplied when not fully satisfied by source + default."
+          },
+          "default": {
+            "description": "Static default when no runtime value is provided.",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "null" }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional binding to map/app context (e.g. feature.id, bbox)."
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "If true, do not show in the parameter form; value comes from default and/or source."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "type": { "const": "integer" } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "default": { "type": ["integer", "null"] }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "date" } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "default": {
+                  "type": ["string", "null"],
+                  "format": "date",
+                  "description": "ISO 8601 calendar date (YYYY-MM-DD)."
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": { "type": { "const": "string" } },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "default": { "type": ["string", "null"] }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

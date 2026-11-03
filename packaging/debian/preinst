@@ -1,0 +1,62 @@
+#!/bin/bash
+# Debian preinst for AcuGIS Report Server.
+# Placeholders @EDITION@ and @PACKAGE@ are substituted at package build time.
+set -euo pipefail
+
+EDITION="@EDITION@"
+PACKAGE="@PACKAGE@"
+BASE="${JRS_INSTALL_DIR:-/opt/acugis-report-server}"
+ENV_FILE="${JRS_SYSTEMD_ENV_FILE:-/etc/acugis-report-server/env}"
+EDITION_STATE="${JRS_EDITION_STATE:-/var/lib/acugis-report-server/edition}"
+
+read_kv() {
+  local file="$1" key="$2"
+  [[ -f "$file" ]] || { echo ""; return 0; }
+  grep -E "^${key}=" "$file" 2>/dev/null | tail -n1 | cut -d= -f2- || true
+}
+
+installed_edition() {
+  if [[ -f "$BASE/RELEASE" ]]; then
+    read_kv "$BASE/RELEASE" edition
+    return 0
+  fi
+  if [[ -f "$EDITION_STATE" ]]; then
+    tr -d '[:space:]' < "$EDITION_STATE"
+    return 0
+  fi
+  if [[ -f "$ENV_FILE" ]]; then
+    local e
+    e="$(read_kv "$ENV_FILE" ACUGIS_EDITION)"
+    e="$(echo "$e" | tr '[:upper:]' '[:lower:]')"
+    case "$e" in
+      professional|pro|commercial) echo professional ; return 0 ;;
+      community|ce|oss) echo oss ; return 0 ;;
+    esac
+  fi
+  if command -v dpkg-query >/dev/null 2>&1; then
+    if dpkg-query -W -f='${Status}' acugis-report-server-professional 2>/dev/null | grep -q 'install ok installed'; then
+      echo professional
+      return 0
+    fi
+  fi
+  echo ""
+}
+
+# Professional → OSS is not a supported downgrade.
+if [[ "$EDITION" == "oss" ]]; then
+  inst="$(installed_edition)"
+  if [[ "$inst" == "professional" ]]; then
+    echo "ERROR: Refusing to install $PACKAGE over an existing Professional installation." >&2
+    echo "Professional → Open Source is not supported (Professional database objects may exist)." >&2
+    echo "Install Professional, or install Open Source on a new directory/database." >&2
+    exit 1
+  fi
+fi
+
+# Stop services before unpack so WAR/binaries are not replaced while running.
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl stop acugis-report-server.service 2>/dev/null || true
+  systemctl stop acugis-tomcat.service 2>/dev/null || true
+fi
+
+exit 0

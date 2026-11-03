@@ -1,0 +1,205 @@
+# Authentication REST API
+paths:
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      tags: [Authentication]
+      summary: Create browser session
+      description: |
+        Creates a `jrs_session` cookie. Accepts JSON or form-urlencoded credentials.
+        Public endpoint (no prior auth required).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/LoginRequest'
+            example:
+              username: admin
+              password: secret
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Session cookie set
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: jrs_session cookie
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: invalid credentials
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      tags: [Authentication]
+      summary: Clear browser session
+      security: []
+      responses:
+        '200':
+          description: Cookie cleared
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+        '405':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [Authentication]
+      summary: Current authenticated user
+      responses:
+        '200':
+          description: User identity
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/User'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+
+  /api/v1/auth/tokens:
+    get:
+      operationId: listTokens
+      tags: [Authentication]
+      summary: List personal access tokens
+      description: Returns metadata only (no plaintext secrets).
+      responses:
+        '200':
+          description: Token list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tokens:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/TokenMetadata'
+              example:
+                tokens:
+                  - id: 1
+                    name: CI Server
+                    token_prefix: jrs_abcdef12
+                    active: true
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+    post:
+      operationId: createToken
+      tags: [Authentication]
+      summary: Create personal access token
+      description: Returns the plaintext token once. Store it securely; it cannot be retrieved again.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/CreateTokenRequest'
+            example:
+              name: CI Server
+              description: GitHub Actions
+              expires_in: 90d
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Token'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+
+  /api/v1/auth/tokens/{id}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/TokenId'
+    put:
+      operationId: updateToken
+      tags: [Authentication]
+      summary: Update token metadata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/UpdateTokenRequest'
+            example:
+              name: CI Server (renamed)
+              description: updated
+      responses:
+        '200':
+          description: Updated metadata
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/TokenMetadata'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    delete:
+      operationId: deleteToken
+      tags: [Authentication]
+      summary: Revoke or purge token
+      description: Soft-revokes by default. Pass `purge=1` for hard delete.
+      parameters:
+        - name: purge
+          in: query
+          schema:
+            type: boolean
+          description: When true, permanently delete the token row
+      responses:
+        '204':
+          description: Revoked or deleted
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/auth/tokens/{id}/rotate:
+    post:
+      operationId: rotateToken
+      tags: [Authentication]
+      summary: Rotate personal access token
+      description: Revokes the existing token and issues a new plaintext secret once.
+      parameters:
+        - $ref: './schemas.yaml#/components/parameters/TokenId'
+      responses:
+        '201':
+          description: New plaintext token
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Token'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcuGIS Portal</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      var bp = "{{.BasePath}}";
+      if (!bp && window.location && window.location.pathname && window.location.pathname !== "/") {
+        var firstSegment = window.location.pathname.split("/").filter(Boolean)[0];
+        if (firstSegment && firstSegment.indexOf(".") === -1) {
+          bp = "/" + firstSegment;
+        }
+      }
+      window.BASE_PATH = bp || "";
+    })();
+  </script>
+  <link href="{{.BasePath}}/style.css" rel="stylesheet">
+</head>
+<body data-federation-no-shell class="portal-home">
+  <!-- Top navigation bar -->
+  <nav class="topnav" role="navigation">
+    <div class="nav-wrapper">
+      <a href="{{.BasePath}}/" class="brand-logo">
+        <i class="material-icons brand-mark">public</i>
+        <span class="brand-name">AcuGIS Portal</span>
+      </a>
+
+      <ul class="right hide-on-med-and-down topnav-actions">
+        <li class="hide" id="admin-nav-item"><a href="{{.BasePath}}/administration" class="topnav-link" id="admin-nav-link"><i class="material-icons left">admin_panel_settings</i>Administration</a></li>
+        <li class="hide" id="account-nav-item"><a href="{{.BasePath}}/account" class="topnav-link" id="account-nav-link"><i class="material-icons left">manage_accounts</i>Account</a></li>
+        <li><a href="#" class="topnav-link" id="login-link"><i class="material-icons left">login</i>Login</a></li>
+        <li>
+          <a class="topnav-link user-menu-placeholder" href="#" id="user-menu" aria-label="User menu">
+            <i class="material-icons">account_circle</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="portal-main portal-content">
+    <!-- Hero + global search -->
+    <div class="portal-hero-band">
+      <header class="portal-hero">
+        <div class="hero-text" align="center">
+          <h1 class="hero-title">Welcome to AcuGIS Portal</h1>
+          <p class="hero-subtitle"></p>
+        </div>
+      </header>
+
+      <div class="portal-search-section" role="search">
+        <div class="portal-search-wrap">
+          <label class="sr-only" for="portal-search">Search portal resources</label>
+          <i class="material-icons portal-search-icon" aria-hidden="true">search</i>
+          <input
+            id="portal-search"
+            class="portal-search-input"
+            type="search"
+            autocomplete="off"
+            placeholder="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search maps, dashboards, reports, datasets, and applications..."
+          >
+        </div>
+        <div class="portal-category-filter" id="portal-category-filter" aria-label="Filter by resource type">
+          <button class="chip portal-chip active" type="button" data-type="">All</button>
+          <button class="chip portal-chip" type="button" data-type="map">Maps</button>
+          <button class="chip portal-chip" type="button" data-type="dashboard">Dashboards</button>
+          <button class="chip portal-chip" type="button" data-type="report">Reports</button>
+          <button class="chip portal-chip" type="button" data-type="dataset">Datasets</button>
+          <button class="chip portal-chip" type="button" data-type="external">Apps</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured resources (prototype dummy content) 
+    <section class="portal-section portal-featured" aria-labelledby="featured-heading">
+      <div class="section-head">
+        <h2 id="featured-heading" class="section-title">Featured</h2>
+      </div>
+
+      <div class="portal-grid">
+        <article class="resource-card">
+          <div class="resource-preview resource-preview--map" aria-hidden="true">
+            <span class="resource-preview-label">Map Preview</span>
+          </div>
+          <div class="resource-card-content">
+            <h3 class="resource-card-title">New York City Viewer</h3>
+            <p class="resource-card-desc">Interactive map experience</p>
+            <div class="resource-card-footer">
+              <span class="resource-type-badge resource-type-badge--map">Map</span>
+              <a href="#" class="resource-open-btn" aria-label="Open New York City Viewer">Open</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <div class="resource-preview resource-preview--dashboard" aria-hidden="true">
+            <span class="resource-preview-label">Dashboard Preview</span>
+          </div>
+          <div class="resource-card-content">
+            <h3 class="resource-card-title">Operations Dashboard</h3>
+            <p class="resource-card-desc">Executive dashboard</p>
+            <div class="resource-card-footer">
+              <span class="resource-type-badge resource-type-badge--dashboard">Dashboard</span>
+              <a href="#" class="resource-open-btn" aria-label="Open Operations Dashboard">Open</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <div class="resource-preview resource-preview--report" aria-hidden="true">
+            <span class="resource-preview-label">Report Preview</span>
+          </div>
+          <div class="resource-card-content">
+            <h3 class="resource-card-title">Scenario Analysis Report</h3>
+            <p class="resource-card-desc">Generated report</p>
+            <div class="resource-card-footer">
+              <span class="resource-type-badge resource-type-badge--report">Report</span>
+              <a href="#" class="resource-open-btn" aria-label="Open Scenario Analysis Report">Open</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>  -->
+
+    <!-- Unified explore grid (existing catalog, restyled) -->
+    <section class="portal-section portal-explore" aria-labelledby="explore-heading">
+      <div class="section-head">
+        <h2 id="explore-heading" class="section-title">Explore</h2>
+      </div>
+
+      <div class="portal-grid" id="portal-card-grid" aria-live="polite">
+        <article class="resource-card resource-card--state">
+          <div class="resource-card-content resource-card-content--center">
+            <div class="portal-state-icon"><i class="material-icons">hourglass_empty</i></div>
+            <h3 class="resource-card-title">Loading portal cards</h3>
+            <p class="resource-card-desc">Fetching available resources...</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Support 
+    <section class="portal-section portal-support" aria-labelledby="activity-heading">
+      <div class="section-head">
+        <h2 id="activity-heading" class="section-title">Support</h2>
+        <p class="section-subtitle">Get support.</p>
+      </div>
+
+      <div class="card activity-card">
+        <ul class="collection activity-list" id="activity-list">
+          <li class="collection-item activity-empty">
+            <i class="material-icons">history</i>
+            <div>
+              <div class="activity-empty-title">Recent activity coming later</div>
+              <div class="activity-empty-sub">Favorites, launches, previews, and service notifications can plug into this portal without changing card metadata.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section> -->
+  </main>
+
+  <footer class="portal-footer">
+    <span>AcuGIS Portal &middot; Unified Spatial Workspace</span>
+    <span class="footer-spacer"></span>
+    <span class="footer-version" id="footer-version">v0.1</span>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = (window.BASE_PATH || "") + "/app.js?v=portal-20260614c";
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>

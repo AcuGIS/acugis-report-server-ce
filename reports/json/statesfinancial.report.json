@@ -1,0 +1,79 @@
+{
+    "name": "Financial Map",
+    "description": "Financial Map",
+    "report": "statesfinancial",
+    "type": "map",
+    "datasource": "population_db",
+    "format": "html",
+    "parameters": [
+        {
+            "name": "p_geometry",
+            "type": "string",
+            "label": "p_geometry",
+            "required": false,
+            "hidden": false
+        },
+        {
+            "name": "p_srid",
+            "type": "string",
+            "label": "p_srid",
+            "required": false,
+            "hidden": false
+        },
+        {
+            "name": "p_industry",
+            "type": "select",
+            "label": "Industry",
+            "required": false,
+            "hidden": false,
+            "source": "sql:select DISTINCT major_industry from state_economics",
+            "multiple": true
+        }
+    ],
+    "access_groups": "Administrators,Client1,Editors,Public",
+    "mapDefinition": {
+        "enabled": true,
+        "basemap": "carto_light",
+        "geometryColumn": "geom",
+        "initialZoom": "fit",
+        "renderer": "graduated",
+        "field": "median_income",
+        "classification": "quantile",
+        "classes": 5,
+        "colorRamp": "Blues",
+        "singleSymbol": {
+            "fillColor": "#26a69a",
+            "outlineColor": "#00796b",
+            "outlineWidth": 1.5,
+            "opacity": 0.35,
+            "shape": "circle"
+        },
+        "categories": [],
+        "labels": {
+            "enabled": false,
+            "field": null,
+            "fontSize": 12,
+            "fillColor": "#212121",
+            "halo": true
+        },
+        "popups": {
+            "enabled": true,
+            "fields": [
+                "state_name",
+                "median_income",
+                "median_home_value",
+                "major_industry"
+            ]
+        },
+        "tooltips": {
+            "enabled": false,
+            "fields": []
+        },
+        "sync": {
+            "filterMapFromReport": true,
+            "filterReportFromMap": true,
+            "zoomToReportResults": true,
+            "highlightReturnedFeatures": true
+        }
+    }
+}

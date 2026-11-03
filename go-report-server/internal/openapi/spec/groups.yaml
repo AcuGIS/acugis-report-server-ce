@@ -1,0 +1,11 @@
+# Groups REST API — pending
+#
+# No /api/v1/groups endpoints are registered yet.
+# Current HTML/form surfaces (see docs/api-inventory.md § Groups):
+#   GET  /admin/groups.php         — Groups admin UI (PlatformAdmin; query id)
+#   POST /admin/groups.php         — Create/update/delete group
+#                                    Form: name, description, members;
+#                                    or action=delete + id
+#
+# Constraints: protected groups Administrators / Public cannot be deleted.
+paths: {}

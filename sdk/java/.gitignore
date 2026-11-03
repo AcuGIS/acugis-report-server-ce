@@ -1,0 +1,13 @@
+target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+*.log
+.DS_Store
+dependency-reduced-pom.xml
+.mvn/wrapper/maven-wrapper.jar.download
+examples/**/target/
+.tools/

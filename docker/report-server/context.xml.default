@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Default Tomcat context.xml for Docker Compose.
+  DemoPG points at the Compose postgres service (application database).
+  The password is not shipped here. The entrypoint writes JRS_DB_PASS
+  from the installation .env file when it seeds DemoPG.
+  Go datasource admin may rewrite this file at runtime.
+-->
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <Resource
+            name="jdbc/DemoPG"
+            auth="Container"
+            type="javax.sql.DataSource"
+            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+            driverClassName="org.postgresql.Driver"
+            url="jdbc:postgresql://postgres:5432/jasper_reports"
+            username="jasper"
+            password=""
+            initialSize="0"
+            maxTotal="20"
+            maxIdle="10"
+            maxWaitMillis="10000"
+            validationQuery="SELECT 1"
+            testOnBorrow="true"/>
+</Context>

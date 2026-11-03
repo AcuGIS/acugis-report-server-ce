@@ -1,0 +1,4 @@
+# Debian maintainer scripts are executed through their shebang. A CR makes
+# dpkg invoke /bin/bash\r. These blobs are LF; without this attribute,
+# git archive on Windows rewrites them to CRLF when core.autocrlf is true.
+packaging/debian/* text eol=lf

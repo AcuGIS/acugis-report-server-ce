@@ -1,0 +1,4075 @@
+components:
+  parameters:
+    DatasourceId:
+      description: Datasource numeric id
+      in: path
+      name: id
+      required: true
+      schema:
+        format: int64
+        type: integer
+    FolderId:
+      description: Folder numeric id
+      example: 12
+      in: path
+      name: id
+      required: true
+      schema:
+        format: int64
+        type: integer
+    ParameterName:
+      description: Report parameter name
+      example: city
+      in: path
+      name: name
+      required: true
+      schema:
+        type: string
+    ReportKey:
+      description: Report key (`[a-z0-9_-]+`)
+      example: nycdata
+      in: path
+      name: key
+      required: true
+      schema:
+        pattern: ^[a-z0-9_-]+$
+        type: string
+    ResourceUUID:
+      description: Content resource UUID
+      in: path
+      name: uuid
+      required: true
+      schema:
+        format: uuid
+        type: string
+    TokenId:
+      description: Personal access token id
+      in: path
+      name: id
+      required: true
+      schema:
+        format: int64
+        type: integer
+    ViewKey:
+      description: Saved explorer view key
+      in: path
+      name: key
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          example:
+            error: bad request
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Invalid request
+    Forbidden:
+      content:
+        application/json:
+          example:
+            error: Permission denied
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Permission denied
+    NotFound:
+      content:
+        application/json:
+          example:
+            error: not found
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Resource not found
+    PlainTextError:
+      content:
+        text/plain:
+          example: Jasper gateway unavailable
+          schema:
+            type: string
+      description: Plain-text error (Jasper execute/image gateways)
+    ServiceUnavailable:
+      content:
+        application/json:
+          example:
+            error: application database unavailable
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Dependency unavailable
+    Unauthorized:
+      content:
+        application/json:
+          example:
+            error: authentication required
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Authentication required
+    ValidationError:
+      content:
+        application/json:
+          example:
+            error: validation failed
+            errors:
+              - data_source is required
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+      description: Validation failed
+  schemas:
+    Breadcrumb:
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+      type: object
+    BrowseResult:
+      properties:
+        breadcrumbs:
+          items:
+            $ref: '#/components/schemas/Breadcrumb'
+          type: array
+        folder:
+          $ref: '#/components/schemas/Folder'
+        folders:
+          items:
+            $ref: '#/components/schemas/Folder'
+          type: array
+        items:
+          items:
+            $ref: '#/components/schemas/ContentItem'
+          type: array
+      type: object
+    ContentItem:
+      properties:
+        acl_inherit:
+          type: boolean
+        content_key:
+          type: string
+        content_type:
+          enum:
+            - jasper_report
+            - dashboard
+            - explorer_view
+            - template
+            - content_resource
+            - content_folder
+          type: string
+        created_at:
+          format: date-time
+          type: string
+        created_by:
+          format: int64
+          type: integer
+        display_name:
+          type: string
+        extension:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        folder_path:
+          type: string
+        height:
+          type: integer
+        id:
+          format: int64
+          type: integer
+        mime_type:
+          type: string
+        original_filename:
+          type: string
+        resource_type:
+          type: string
+        size_bytes:
+          format: int64
+          type: integer
+        sort_order:
+          type: integer
+        updated_at:
+          format: date-time
+          type: string
+        width:
+          type: integer
+      type: object
+    CreateFolderRequest:
+      properties:
+        acl_inherit:
+          type: boolean
+        description:
+          type: string
+        icon:
+          type: string
+        name:
+          example: Finance
+          type: string
+        parent_id:
+          description: 0 = Home/root
+          example: 0
+          format: int64
+          type: integer
+        sort_order:
+          type: integer
+      required:
+        - name
+      type: object
+    CreateTokenRequest:
+      properties:
+        description:
+          type: string
+        expires_at:
+          description: RFC3339 or YYYY-MM-DD when expires_in=custom
+          example: "2027-01-01"
+          type: string
+        expires_in:
+          default: never
+          enum:
+            - never
+            - 30d
+            - 90d
+            - 1y
+            - custom
+          type: string
+        name:
+          example: CI Server
+          type: string
+      required:
+        - name
+      type: object
+    DatasourceMutationResponse:
+      properties:
+        message:
+          type: string
+        ok:
+          type: boolean
+      type: object
+    DatasourceName:
+      properties:
+        name:
+          example: reporting_db
+          type: string
+      type: object
+    Diagnostics:
+      additionalProperties: true
+      description: Ops diagnostics (redacted config, table presence, flags)
+      properties:
+        app_version:
+          type: string
+        base_path:
+          type: string
+        environment:
+          type: string
+        go_version:
+          type: string
+        service:
+          type: string
+        timestamp:
+          format: date-time
+          type: string
+      type: object
+    Error:
+      additionalProperties: true
+      properties:
+        code:
+          description: Optional machine code (e.g. unsupported_datasource)
+          type: string
+        error:
+          type: string
+        hint:
+          type: string
+        service:
+          description: Present on some 404 responses
+          type: string
+      required:
+        - error
+      type: object
+    ExplorerAggregate:
+      properties:
+        alias:
+          type: string
+        column:
+          type: string
+        func:
+          enum:
+            - COUNT
+            - SUM
+            - AVG
+            - MIN
+            - MAX
+          type: string
+      type: object
+    ExplorerColumn:
+      properties:
+        is_geometry:
+          type: boolean
+        is_primary:
+          type: boolean
+        name:
+          type: string
+        nullable:
+          type: boolean
+        ordinal:
+          type: integer
+        type:
+          type: string
+        udt_name:
+          type: string
+      type: object
+    ExplorerFilter:
+      properties:
+        column:
+          type: string
+        operator:
+          enum:
+            - =
+            - <>
+            - '>'
+            - <
+            - '>='
+            - <=
+            - LIKE
+            - IN
+            - BETWEEN
+            - IS NULL
+            - IS NOT NULL
+          type: string
+        value: {}
+        value_to: {}
+        values:
+          items: {}
+          type: array
+      type: object
+    ExplorerQuery:
+      description: Visual query request (`QueryRequest`)
+      properties:
+        aggregates:
+          items:
+            $ref: '#/components/schemas/ExplorerAggregate'
+          type: array
+        columns:
+          example:
+            - id
+            - name
+            - geom
+          items:
+            type: string
+          type: array
+        datasource:
+          example: reporting_db
+          type: string
+        filters:
+          items:
+            $ref: '#/components/schemas/ExplorerFilter'
+          type: array
+        group_by:
+          items:
+            type: string
+          type: array
+        limit:
+          type: integer
+        offset:
+          type: integer
+        page:
+          type: integer
+        page_size:
+          type: integer
+        report_cache_key:
+          type: string
+        report_key:
+          type: string
+        schema:
+          example: public
+          type: string
+        sort:
+          items:
+            $ref: '#/components/schemas/ExplorerSort'
+          type: array
+        source_mode:
+          enum:
+            - table
+            - report
+          type: string
+        table:
+          example: parcels
+          type: string
+      type: object
+    ExplorerResult:
+      description: Paged query result (`QueryResult`)
+      properties:
+        columns:
+          items:
+            type: string
+          type: array
+        engine:
+          type: string
+        executed_at:
+          format: date-time
+          type: string
+        page:
+          type: integer
+        page_size:
+          type: integer
+        rows:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        total_rows:
+          format: int64
+          type: integer
+        truncated:
+          type: boolean
+      type: object
+    ExplorerSort:
+      properties:
+        column:
+          type: string
+        direction:
+          enum:
+            - ASC
+            - DESC
+          type: string
+      type: object
+    FavoriteRequest:
+      properties:
+        content_key:
+          type: string
+        content_type:
+          type: string
+        favorite:
+          default: true
+          type: boolean
+      required:
+        - content_type
+        - content_key
+      type: object
+    FeatureCollection:
+      description: GeoJSON FeatureCollection (map reports / explorer)
+      properties:
+        crs:
+          additionalProperties: true
+          type: object
+        detail:
+          type: string
+        error:
+          type: string
+        features:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        mapDefinition:
+          additionalProperties: true
+          type: object
+        meta:
+          additionalProperties: true
+          type: object
+        type:
+          enum:
+            - FeatureCollection
+          type: string
+      required:
+        - type
+        - features
+      type: object
+    Folder:
+      properties:
+        acl_inherit:
+          type: boolean
+        child_folder_count:
+          type: integer
+        child_item_count:
+          type: integer
+        created_at:
+          format: date-time
+          type: string
+        created_by:
+          format: int64
+          type: integer
+        description:
+          type: string
+        icon:
+          type: string
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        parent_id:
+          format: int64
+          nullable: true
+          type: integer
+        path:
+          type: string
+        sort_order:
+          type: integer
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    FolderPermissions:
+      properties:
+        group_names:
+          example:
+            - Administrators
+            - Analysts
+          items:
+            type: string
+          type: array
+      type: object
+    FolderTreeNode:
+      properties:
+        children:
+          items:
+            $ref: '#/components/schemas/FolderTreeNode'
+          type: array
+        icon:
+          type: string
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        parent_id:
+          format: int64
+          nullable: true
+          type: integer
+      type: object
+    Group:
+      description: Group entity (REST pending; schema reserved for future /api/v1/groups)
+      properties:
+        description:
+          type: string
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+      type: object
+    HealthResponse:
+      properties:
+        service:
+          example: acugis-report-server-go
+          type: string
+        status:
+          example: ok
+          type: string
+      type: object
+    JasperContextResponse:
+      properties:
+        notes:
+          items:
+            type: string
+          type: array
+        ok:
+          type: boolean
+        path:
+          type: string
+      type: object
+    LoginRequest:
+      properties:
+        password:
+          format: password
+          type: string
+        username:
+          example: admin
+          type: string
+      required:
+        - username
+        - password
+      type: object
+    MapColumnsResult:
+      properties:
+        columns:
+          items:
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+            type: object
+          type: array
+        error:
+          type: string
+        geometry_column:
+          type: string
+        geometry_columns:
+          items:
+            type: string
+          type: array
+        report_fields:
+          items:
+            type: string
+          type: array
+        schema:
+          type: string
+        srid:
+          type: integer
+        table:
+          type: string
+      type: object
+    MapExtent:
+      properties:
+        p_geometry:
+          description: Geometry/WKT or encoded spatial filter for report params
+          type: string
+        p_srid:
+          example: 4326
+          type: integer
+      type: object
+    MapLayerMeta:
+      properties:
+        error:
+          type: string
+        geometry_column:
+          type: string
+        geometry_columns:
+          items:
+            type: string
+          type: array
+        geometry_type:
+          type: string
+        report_fields:
+          items:
+            type: string
+          type: array
+        schema:
+          type: string
+        spatial_capable:
+          type: boolean
+        srid:
+          type: integer
+        table:
+          type: string
+        type:
+          type: string
+      type: object
+    MoveContentRequest:
+      properties:
+        acl_inherit:
+          type: boolean
+        content_key:
+          description: For explorer_view, use owner/viewKey (e.g. alice/sales-overview)
+          type: string
+        content_type:
+          enum:
+            - jasper_report
+            - dashboard
+            - explorer_view
+            - template
+            - content_resource
+            - content_folder
+          type: string
+        display_name:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        sort_order:
+          type: integer
+      required:
+        - folder_id
+        - content_type
+        - content_key
+      type: object
+    MoveFolderRequest:
+      properties:
+        parent_id:
+          format: int64
+          type: integer
+        sort_order:
+          type: integer
+      required:
+        - parent_id
+      type: object
+    ParameterLookupResponse:
+      properties:
+        options:
+          items:
+            $ref: '#/components/schemas/ParameterOption'
+          type: array
+      type: object
+    ParameterOption:
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+      type: object
+    ReadyResponse:
+      properties:
+        checks:
+          additionalProperties: true
+          type: object
+        service:
+          type: string
+        status:
+          enum:
+            - ready
+            - not_ready
+          type: string
+      type: object
+    Report:
+      additionalProperties: true
+      description: Full report definition JSON (shape varies by report type)
+      properties:
+        access_groups:
+          items:
+            type: string
+          type: array
+        datasource:
+          type: string
+        description:
+          type: string
+        embeddedMap:
+          additionalProperties: true
+          type: object
+        format:
+          type: string
+        mapDefinition:
+          additionalProperties: true
+          type: object
+        name:
+          type: string
+        parameters:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        report:
+          type: string
+        type:
+          type: string
+      type: object
+    ReportConfig:
+      additionalProperties: true
+      description: Viewer configuration with enriched parameters and optional map metadata
+      properties:
+        map:
+          $ref: '#/components/schemas/MapLayerMeta'
+        mapDefinition:
+          additionalProperties: true
+          type: object
+        parameters:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+        report:
+          type: string
+        reportTypeLabel:
+          type: string
+        type:
+          type: string
+      type: object
+    ReportCreateResponse:
+      properties:
+        json_url:
+          type: string
+        key:
+          type: string
+        message:
+          type: string
+        notes:
+          items:
+            type: string
+          type: array
+        ok:
+          type: boolean
+        run_url:
+          type: string
+      type: object
+    ReportListResponse:
+      properties:
+        count:
+          type: integer
+        items:
+          items:
+            $ref: '#/components/schemas/ReportSummary'
+          type: array
+      type: object
+    ReportMutationResponse:
+      properties:
+        key:
+          type: string
+        ok:
+          type: boolean
+      type: object
+    ReportSummary:
+      properties:
+        datasource:
+          type: string
+        description:
+          type: string
+        format:
+          type: string
+        has_thumbnail:
+          type: boolean
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          description: jasper | map
+          type: string
+      type: object
+    Resource:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        created_by:
+          format: int64
+          type: integer
+        display_name:
+          type: string
+        extension:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        folder_path:
+          type: string
+        has_alpha:
+          type: boolean
+        height:
+          type: integer
+        id:
+          format: int64
+          type: integer
+        mime_type:
+          type: string
+        original_filename:
+          type: string
+        resource_path:
+          type: string
+        resource_type:
+          enum:
+            - public_key
+            - private_key
+            - client_certificate
+            - ca_certificate
+            - generic_file
+            - image
+          type: string
+        sha256:
+          type: string
+        size_bytes:
+          format: int64
+          type: integer
+        storage_filename:
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+        uuid:
+          format: uuid
+          type: string
+        width:
+          type: integer
+      type: object
+    ResourceCreateJSON:
+      properties:
+        content:
+          description: Pasted text content (JSON create path)
+          type: string
+        display_name:
+          type: string
+        extension:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        mime_type:
+          type: string
+        original_filename:
+          type: string
+        resource_type:
+          type: string
+      required:
+        - display_name
+        - resource_type
+        - content
+      type: object
+    ResourceUpdateRequest:
+      properties:
+        display_name:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        resource_type:
+          type: string
+      type: object
+    SavedView:
+      properties:
+        aggregates:
+          items:
+            $ref: '#/components/schemas/ExplorerAggregate'
+          type: array
+        can_edit:
+          description: Present on GET responses
+          type: boolean
+        chart:
+          additionalProperties: true
+          type: object
+        columns:
+          items:
+            type: string
+          type: array
+        created_at:
+          format: date-time
+          type: string
+        dashboard_widget:
+          deprecated: true
+          description: Legacy alias of is_dashboard
+          type: boolean
+        datasource:
+          type: string
+        description:
+          type: string
+        filters:
+          items:
+            $ref: '#/components/schemas/ExplorerFilter'
+          type: array
+        folder_id:
+          description: Optional folder placement on create/update
+          format: int64
+          type: integer
+        group_by:
+          items:
+            type: string
+          type: array
+        is_dashboard:
+          description: When true, this saved view is designated as a Dashboard (same object; no separate dashboard record)
+          type: boolean
+        key:
+          type: string
+        limit:
+          type: integer
+        map:
+          additionalProperties: true
+          type: object
+        name:
+          type: string
+        owner_username:
+          type: string
+        panel_layout:
+          additionalProperties: true
+          type: object
+        ref:
+          description: Stable owner/key reference
+          type: string
+        report_key:
+          type: string
+        report_name:
+          type: string
+        schema:
+          type: string
+        sort:
+          items:
+            $ref: '#/components/schemas/ExplorerSort'
+          type: array
+        source_mode:
+          type: string
+        table:
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+        widgets:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+      type: object
+    SearchHit:
+      properties:
+        content_key:
+          type: string
+        content_type:
+          type: string
+        description:
+          type: string
+        folder_id:
+          format: int64
+          type: integer
+        folder_path:
+          type: string
+        icon:
+          type: string
+        id:
+          format: int64
+          type: integer
+        kind:
+          enum:
+            - folder
+            - item
+          type: string
+        name:
+          type: string
+        resource_type:
+          description: For explorer_view items, "view" or "dashboard"
+          type: string
+      type: object
+    SetFolderPermissionsRequest:
+      properties:
+        group_names:
+          items:
+            type: string
+          type: array
+        permission:
+          description: Default view
+          example: view
+          type: string
+      required:
+        - group_names
+      type: object
+    SetViewPermissionsRequest:
+      properties:
+        group_names:
+          description: Replaces Access Group grants (no permission level field)
+          items:
+            type: string
+          type: array
+      required:
+        - group_names
+      type: object
+    SuccessResponse:
+      additionalProperties: true
+      properties:
+        message:
+          type: string
+        ok:
+          example: true
+          type: boolean
+      type: object
+    TableMeta:
+      properties:
+        columns:
+          items:
+            $ref: '#/components/schemas/ExplorerColumn'
+          type: array
+        datasource:
+          type: string
+        engine:
+          type: string
+        geometry_column:
+          type: string
+        primary_key:
+          items:
+            type: string
+          type: array
+        schema:
+          type: string
+        spatial_capable:
+          type: boolean
+        srid:
+          type: integer
+        table:
+          type: string
+      type: object
+    Token:
+      description: Plaintext personal access token (returned once on create/rotate)
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        id:
+          format: int64
+          type: integer
+        message:
+          example: This token will only be shown once.
+          type: string
+        name:
+          type: string
+        token:
+          description: Full plaintext PAT (`jrs_…`); shown only once
+          example: jrs_abcdefghijklmnopqrstuvwxyz0123456789
+          type: string
+      type: object
+    TokenMetadata:
+      description: Personal access token metadata (no secret)
+      properties:
+        active:
+          type: boolean
+        created_at:
+          format: date-time
+          type: string
+        created_by_ip:
+          type: string
+        description:
+          type: string
+        expires_at:
+          format: date-time
+          nullable: true
+          type: string
+        id:
+          format: int64
+          type: integer
+        last_used_at:
+          format: date-time
+          nullable: true
+          type: string
+        last_used_ip:
+          type: string
+        name:
+          type: string
+        revoked_at:
+          format: date-time
+          nullable: true
+          type: string
+        scopes:
+          items:
+            type: string
+          type: array
+        token_prefix:
+          example: jrs_abcdef12
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+        user_id:
+          format: int64
+          type: integer
+      type: object
+    UpdateFolderRequest:
+      properties:
+        acl_inherit:
+          type: boolean
+        description:
+          type: string
+        icon:
+          type: string
+        name:
+          type: string
+        sort_order:
+          type: integer
+      type: object
+    UpdateTokenRequest:
+      properties:
+        description:
+          type: string
+        expires_at:
+          type: string
+        expires_in:
+          enum:
+            - never
+            - 30d
+            - 90d
+            - 1y
+            - custom
+          type: string
+        name:
+          type: string
+      type: object
+    User:
+      description: Authenticated user identity (`GET /api/v1/auth/me`)
+      example:
+        email: admin@example.com
+        groups:
+          - Administrators
+        id: 1
+        is_admin: true
+        permissions: []
+        username: admin
+      properties:
+        auth_disabled:
+          description: Present when JRS_AUTH_DISABLED is set
+          type: boolean
+        email:
+          type: string
+        groups:
+          items:
+            type: string
+          type: array
+        id:
+          format: int64
+          type: integer
+        is_admin:
+          type: boolean
+        permissions:
+          description: Reserved; tokens inherit full user ACL (currently empty)
+          items:
+            type: string
+          type: array
+        username:
+          type: string
+      type: object
+    ValidationError:
+      additionalProperties: true
+      properties:
+        error:
+          type: string
+        errors:
+          items:
+            type: string
+          type: array
+      required:
+        - error
+      type: object
+    ViewPermissions:
+      description: Access Groups ACL for a saved explorer view or dashboard
+      properties:
+        available_groups:
+          items:
+            type: string
+          type: array
+        can_edit:
+          type: boolean
+        group_names:
+          example:
+            - Sales
+            - Ops
+          items:
+            type: string
+          type: array
+        ref:
+          example: alice/sales-overview
+          type: string
+        resource_type:
+          example: explorer_view
+          type: string
+      type: object
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: jrs_PAT
+      description: |
+        Personal access token with prefix `jrs_`.
+        Create tokens via `POST /api/v1/auth/tokens` or the Profile UI.
+      scheme: bearer
+      type: http
+    SessionCookie:
+      description: Browser session cookie created by `POST /api/v1/auth/login`.
+      in: cookie
+      name: jrs_session
+      type: apiKey
+info:
+  contact:
+    name: AcuGIS
+  description: |
+    Official OpenAPI 3.0 contract for the AcuGIS Report Server REST API.
+
+    This specification documents **existing** programmatic endpoints only.
+    HTML UI pages and form-only admin surfaces are intentionally omitted.
+
+    **Authentication:** Session cookie `jrs_session` or Bearer personal access
+    token (`Authorization: Bearer jrs_…`). Both produce the same authenticated
+    user. Prefer `/api/v1/*` routes for new clients.
+
+    **Version:** `info.version` matches `JRS_APP_VERSION` / product release when
+    served from the Report Server (`GET /api/openapi.yaml`).
+
+    **Modular sources:** Path modules and `schemas.yaml` are merged at serve time.
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+  title: AcuGIS Report Server API
+  version: 0.1.0-foundation
+openapi: 3.0.3
+paths:
+  /api/resource-sync/:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/resource-sync`.
+      operationId: getResourceSyncAlias
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Sync hint
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Resource sync hint (legacy alias)
+      tags:
+        - Resources
+    post:
+      deprecated: true
+      description: Prefer `POST /api/v1/resource-sync`.
+      operationId: runResourceSyncAlias
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Sync completed
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: Run resource sync (legacy alias)
+      tags:
+        - Resources
+  /api/resource-sync/index.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/resource-sync`.
+      operationId: getResourceSyncIndexPHP
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Sync hint
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Resource sync hint (PHP alias)
+      tags:
+        - Resources
+    post:
+      deprecated: true
+      description: Prefer `POST /api/v1/resource-sync`.
+      operationId: runResourceSyncIndexPHP
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+          description: Sync completed
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: Run resource sync (PHP alias)
+      tags:
+        - Resources
+  /api/v1/auth/login:
+    post:
+      description: |
+        Creates a `jrs_session` cookie. Accepts JSON or form-urlencoded credentials.
+        Public endpoint (no prior auth required).
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            example:
+              password: secret
+              username: admin
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Session cookie set
+          headers:
+            Set-Cookie:
+              description: jrs_session cookie
+              schema:
+                type: string
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          content:
+            application/json:
+              example:
+                error: invalid credentials
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid credentials
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      security: []
+      summary: Create browser session
+      tags:
+        - Authentication
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Cookie cleared
+        "405":
+          $ref: '#/components/responses/BadRequest'
+      security: []
+      summary: Clear browser session
+      tags:
+        - Authentication
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: User identity
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Current authenticated user
+      tags:
+        - Authentication
+  /api/v1/auth/tokens:
+    get:
+      description: Returns metadata only (no plaintext secrets).
+      operationId: listTokens
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                tokens:
+                  - active: true
+                    id: 1
+                    name: CI Server
+                    token_prefix: jrs_abcdef12
+              schema:
+                properties:
+                  tokens:
+                    items:
+                      $ref: '#/components/schemas/TokenMetadata'
+                    type: array
+                type: object
+          description: Token list
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: List personal access tokens
+      tags:
+        - Authentication
+    post:
+      description: Returns the plaintext token once. Store it securely; it cannot be retrieved again.
+      operationId: createToken
+      requestBody:
+        content:
+          application/json:
+            example:
+              description: GitHub Actions
+              expires_in: 90d
+              name: CI Server
+            schema:
+              $ref: '#/components/schemas/CreateTokenRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: Created
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: Create personal access token
+      tags:
+        - Authentication
+  /api/v1/auth/tokens/{id}:
+    delete:
+      description: Soft-revokes by default. Pass `purge=1` for hard delete.
+      operationId: deleteToken
+      parameters:
+        - description: When true, permanently delete the token row
+          in: query
+          name: purge
+          schema:
+            type: boolean
+      responses:
+        "204":
+          description: Revoked or deleted
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Revoke or purge token
+      tags:
+        - Authentication
+    parameters:
+      - $ref: '#/components/parameters/TokenId'
+    put:
+      operationId: updateToken
+      requestBody:
+        content:
+          application/json:
+            example:
+              description: updated
+              name: CI Server (renamed)
+            schema:
+              $ref: '#/components/schemas/UpdateTokenRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenMetadata'
+          description: Updated metadata
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update token metadata
+      tags:
+        - Authentication
+  /api/v1/auth/tokens/{id}/rotate:
+    post:
+      description: Revokes the existing token and issues a new plaintext secret once.
+      operationId: rotateToken
+      parameters:
+        - $ref: '#/components/parameters/TokenId'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: New plaintext token
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Rotate personal access token
+      tags:
+        - Authentication
+  /api/v1/content/move:
+    post:
+      operationId: moveContent
+      requestBody:
+        content:
+          application/json:
+            example:
+              content_key: nycdata
+              content_type: jasper_report
+              display_name: NYC Data
+              folder_id: 12
+            schema:
+              $ref: '#/components/schemas/MoveContentRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentItem'
+          description: Content item
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Place or move content into a folder
+      tags:
+        - Folders
+  /api/v1/datasources:
+    get:
+      description: |
+        Returns an array of `{name}` objects only (no connection details).
+
+        **Limitations (current API):**
+        - List returns names only — no host, credentials, or metadata
+        - No GET-by-id endpoint
+        - No dedicated PUT; create POST upserts by `name`
+        - Empty array when the datasource store is unavailable (not 503)
+      operationId: listDatasources
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                - name: reporting_db
+                - name: MainPG
+              schema:
+                items:
+                  $ref: '#/components/schemas/DatasourceName'
+                type: array
+          description: Datasource names
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: List datasource names
+      tags:
+        - Datasources
+    post:
+      description: |
+        Service-admin only. Body is **application/x-www-form-urlencoded** (not JSON).
+
+        Upsert by `name` with connection fields, or delete via `action=delete` + `id`.
+
+        **Limitations:** no dedicated PUT; POST upserts by name. No GET-by-id.
+      operationId: createDatasource
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            examples:
+              bigquery:
+                summary: Google BigQuery (collection fill)
+                value:
+                  credentials_resource_uuid: 11111111-2222-3333-4444-555555555555
+                  db_type: bigquery
+                  dbname: flawless-spirit-386523
+                  default_dataset: demo
+                  location: US
+                  name: My BigQuery
+              cassandra_astra:
+                summary: DataStax Astra (Data API)
+                value:
+                  connection_method: astra
+                  db_type: cassandra
+                  dbname: default_keyspace
+                  host: https://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-us-east-2.apps.astra.datastax.com
+                  name: AstraCustomers
+                  password: AstraCS:example-token
+              delete:
+                summary: Delete via POST action
+                value:
+                  action: delete
+                  id: "3"
+              duckdb_database:
+                summary: DuckDB database file on server
+                value:
+                  db_type: duckdb
+                  dbname: /srv/data/analytics.duckdb
+                  duckdb_mode: database
+                  name: Analytics
+              duckdb_files:
+                summary: DuckDB remote Parquet (collection fill)
+                value:
+                  db_type: duckdb
+                  duckdb_auth_type: none
+                  duckdb_format: parquet
+                  duckdb_mode: files
+                  duckdb_remote_source: https://acugis.cloud/yellow_tripdata_2024-01.parquet
+                  name: NYC Taxi
+              upsert:
+                summary: Create or update by name
+                value:
+                  auth_type: password
+                  db_type: postgresql
+                  dbname: reporting
+                  host: db.example.com
+                  name: reporting_db
+                  password: secret
+                  port: "5432"
+                  schema_name: public
+                  username: reporter
+            schema:
+              properties:
+                action:
+                  description: When `delete`, remove by `id` instead of upsert
+                  enum:
+                    - delete
+                  type: string
+                auth_type:
+                  description: e.g. password or key-based auth
+                  type: string
+                connection_method:
+                  description: Cassandra only — `standard` or `astra` (Designer-compatible).
+                  enum:
+                    - standard
+                    - astra
+                  type: string
+                credentials_resource_uuid:
+                  description: BigQuery only — Service Account JSON content resource UUID. On update, omit or leave blank to keep the existing credential reference. Never send raw JSON.
+                  format: uuid
+                  type: string
+                db_type:
+                  example: postgresql
+                  type: string
+                dbname:
+                  example: reporting
+                  type: string
+                default_dataset:
+                  description: BigQuery only — optional default dataset (schema).
+                  example: demo
+                  type: string
+                duckdb_alias:
+                  description: DuckDB Data Files optional logical alias (defaults from URL basename).
+                  type: string
+                duckdb_auth_type:
+                  description: DuckDB Data Files HTTP authentication (Designer-compatible).
+                  enum:
+                    - none
+                    - basic
+                    - bearer
+                    - headers
+                  type: string
+                duckdb_format:
+                  description: DuckDB Data Files format (Auto Detect / Parquet / CSV / JSON).
+                  enum:
+                    - auto
+                    - parquet
+                    - csv
+                    - json
+                  type: string
+                duckdb_header_keys:
+                  description: DuckDB Custom Headers mode — comma-separated or JSON array of header names (values in password).
+                  type: string
+                duckdb_mode:
+                  description: DuckDB only — database file path mode or remote Data Files mode.
+                  enum:
+                    - database
+                    - files
+                  type: string
+                duckdb_remote_source:
+                  description: DuckDB Data Files only — HTTP(S) URL queried directly by DuckDB.
+                  type: string
+                host:
+                  example: db.example.com
+                  type: string
+                id:
+                  description: Numeric id when `action=delete`
+                  type: string
+                local_datacenter:
+                  description: Cassandra standard only — local datacenter name.
+                  example: datacenter1
+                  type: string
+                location:
+                  description: BigQuery only — optional job location (US, EU, us-central1).
+                  example: US
+                  type: string
+                name:
+                  description: Datasource name (upsert key)
+                  example: reporting_db
+                  type: string
+                password:
+                  description: On update, omit or leave blank to keep the existing password/token.
+                  format: password
+                  type: string
+                port:
+                  example: "5432"
+                  type: string
+                private_key_resource_uuid:
+                  format: uuid
+                  type: string
+                public_key_resource_uuid:
+                  format: uuid
+                  type: string
+                schema_name:
+                  example: public
+                  type: string
+                username:
+                  type: string
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                message: Datasource saved
+                ok: true
+              schema:
+                $ref: '#/components/schemas/DatasourceMutationResponse'
+          description: Mutation succeeded
+        "400":
+          content:
+            application/json:
+              example:
+                error: validation failed
+                errors:
+                  - name is required
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: Validation failed
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          content:
+            application/json:
+              example:
+                error: datasource store unavailable
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Datasource store unavailable
+      summary: Create or upsert datasource
+      tags:
+        - Datasources
+  /api/v1/datasources/{id}:
+    delete:
+      description: |
+        Service-admin only. Path `{id}` is preferred; the handler also accepts
+        a query `id` as a fallback.
+      operationId: deleteDatasource
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+              schema:
+                $ref: '#/components/schemas/DatasourceMutationResponse'
+          description: Deleted
+        "400":
+          content:
+            application/json:
+              example:
+                error: id required
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Missing id
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Delete datasource by id
+      tags:
+        - Datasources
+    parameters:
+      - $ref: '#/components/parameters/DatasourceId'
+  /api/v1/datasources/context:
+    post:
+      description: |
+        Service-edit ACL. Writes JasperReports Server style `context.xml` from
+        configured datasources and returns the path plus notes. Cassandra/Astra
+        and Google BigQuery datasources are omitted (collection fill, not JDBC JNDI).
+      operationId: generateJasperContext
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                notes:
+                  - Wrote 2 datasources
+                ok: true
+                path: /var/lib/jasper/context.xml
+              schema:
+                $ref: '#/components/schemas/JasperContextResponse'
+          description: Context generated
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "500":
+          content:
+            text/plain:
+              example: No datasources configured
+              schema:
+                type: string
+          description: Generation failed (often plain text for legacy clients)
+      summary: Generate Jasper context.xml
+      tags:
+        - Datasources
+  /api/v1/datasources/test:
+    post:
+      description: |
+        Service-admin only. Verifies Standard Cassandra (gocql), DataStax Astra
+        (Data API), Google BigQuery, or DuckDB using the same form fields as create/upsert.
+        Blank password/token (Cassandra/DuckDB) or blank credentials_resource_uuid (BigQuery)
+        reloads the saved secret/reference when `name` matches an existing datasource.
+        Secrets and Service Account JSON contents are never returned.
+      operationId: testDatasource
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                connection_method:
+                  enum:
+                    - standard
+                    - astra
+                  type: string
+                credentials_resource_uuid:
+                  description: BigQuery Service Account JSON resource UUID
+                  format: uuid
+                  type: string
+                db_type:
+                  example: cassandra
+                  type: string
+                dbname:
+                  description: Keyspace (Cassandra) or Project ID (BigQuery)
+                  type: string
+                default_dataset:
+                  description: BigQuery optional default dataset
+                  type: string
+                host:
+                  description: Contact points or Astra HTTPS API endpoint
+                  type: string
+                local_datacenter:
+                  type: string
+                location:
+                  description: BigQuery optional location
+                  type: string
+                name:
+                  type: string
+                password:
+                  description: Cassandra password or Astra token
+                  format: password
+                  type: string
+                port:
+                  example: "9042"
+                  type: string
+                username:
+                  type: string
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                message: Connected · https://….apps.astra.datastax.com
+                ok: true
+              schema:
+                properties:
+                  message:
+                    type: string
+                  ok:
+                    type: boolean
+                type: object
+          description: Test result (ok may still be false)
+        "400":
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  ok:
+                    type: boolean
+                type: object
+          description: Validation failed or unsupported type
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Test Cassandra / Astra / BigQuery / DuckDB datasource connectivity
+      tags:
+        - Datasources
+  /api/v1/diagnostics:
+    get:
+      description: |
+        Public. Redacted runtime/config diagnostics (secrets never included).
+        Useful for support and deployment verification.
+      operationId: getDiagnostics
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                app_version: 0.1.0-foundation
+                auth_disabled: false
+                base_path: /go
+                environment: production
+                filesystem_paths_present: true
+                go_version: go1.22.5
+                jasper_endpoint_configured: true
+                jasper_reachable: "true"
+                postgres_reachable: true
+                service: acugis-report-server-go
+                timestamp: "2026-08-06T05:00:00Z"
+              schema:
+                $ref: '#/components/schemas/Diagnostics'
+          description: Diagnostics snapshot
+      security: []
+      summary: Ops diagnostics
+      tags:
+        - Health
+  /api/v1/embedded-map/debug:
+    get:
+      description: |
+        Service-edit + report-edit ACL. Inspects JRXML/Jasper embedded-map
+        wiring for a report. With `format=json` (or Accept JSON) returns JSON;
+        otherwise HTML with a `<pre>` dump. Optional `compile` triggers a
+        compile attempt.
+      operationId: debugEmbeddedMap
+      parameters:
+        - description: Report key
+          example: nycdata
+          in: query
+          name: report
+          required: true
+          schema:
+            type: string
+        - description: Force JSON response
+          example: json
+          in: query
+          name: format
+          schema:
+            enum:
+              - json
+            type: string
+        - description: Any value triggers compile attempt
+          in: query
+          name: compile
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                embeddedMap:
+                  enabled: true
+                jasper:
+                  exists: true
+                  stale: false
+                jrxml:
+                  exists: true
+                  hasImageElement: true
+                  hasParameter: true
+                layer:
+                  datasource: reporting_db
+                  geometry_column: geom
+                  table: parcels
+                report: nycdata
+              schema:
+                additionalProperties: true
+                properties:
+                  compileAttempt:
+                    additionalProperties: true
+                    type: object
+                  embeddedMap:
+                    additionalProperties: true
+                    type: object
+                  jasper:
+                    additionalProperties: true
+                    type: object
+                  jrxml:
+                    additionalProperties: true
+                    type: object
+                  layer:
+                    additionalProperties: true
+                    type: object
+                  render:
+                    additionalProperties: true
+                    type: object
+                  renderError:
+                    type: string
+                  report:
+                    type: string
+                  runtime:
+                    additionalProperties: true
+                    type: object
+                type: object
+            text/html:
+              schema:
+                type: string
+          description: Debug payload
+        "400":
+          content:
+            text/plain:
+              example: Pass ?report=<key>
+              schema:
+                type: string
+          description: Missing report key
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Debug embedded map configuration
+      tags:
+        - Embedded Maps
+  /api/v1/favorites:
+    get:
+      operationId: listFavorites
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                    type: array
+                type: object
+          description: Favorite items
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: List favorites
+      tags:
+        - Folders
+    post:
+      operationId: setFavorite
+      requestBody:
+        content:
+          application/json:
+            example:
+              content_key: nycdata
+              content_type: jasper_report
+              favorite: true
+            schema:
+              $ref: '#/components/schemas/FavoriteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                favorite: true
+                ok: true
+              schema:
+                properties:
+                  favorite:
+                    type: boolean
+                  ok:
+                    type: boolean
+                type: object
+          description: Favorite state
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+      summary: Set or unset favorite
+      tags:
+        - Folders
+  /api/v1/folders:
+    post:
+      operationId: createFolder
+      requestBody:
+        content:
+          application/json:
+            example:
+              description: Finance reports
+              icon: folder
+              name: Finance
+              parent_id: 0
+            schema:
+              $ref: '#/components/schemas/CreateFolderRequest'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: Created
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+      summary: Create folder
+      tags:
+        - Folders
+  /api/v1/folders/{id}:
+    delete:
+      operationId: deleteFolder
+      parameters:
+        - in: query
+          name: recursive
+          schema:
+            type: boolean
+        - description: Required for destructive deletes
+          in: query
+          name: confirm
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Deleted
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not empty or conflict
+      summary: Delete folder
+      tags:
+        - Folders
+    get:
+      operationId: getFolder
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: Folder
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get folder
+      tags:
+        - Folders
+    parameters:
+      - $ref: '#/components/parameters/FolderId'
+    put:
+      operationId: updateFolder
+      requestBody:
+        content:
+          application/json:
+            example:
+              description: Updated
+              name: Finance 2026
+            schema:
+              $ref: '#/components/schemas/UpdateFolderRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: Updated folder
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update folder
+      tags:
+        - Folders
+  /api/v1/folders/{id}/duplicate:
+    post:
+      operationId: duplicateFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: Duplicated folder
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Duplicate folder
+      tags:
+        - Folders
+  /api/v1/folders/{id}/move:
+    post:
+      operationId: moveFolder
+      parameters:
+        - $ref: '#/components/parameters/FolderId'
+      requestBody:
+        content:
+          application/json:
+            example:
+              parent_id: 5
+              sort_order: 10
+            schema:
+              $ref: '#/components/schemas/MoveFolderRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+          description: Moved folder
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Cycle or conflict
+      summary: Move folder
+      tags:
+        - Folders
+  /api/v1/folders/{id}/permissions:
+    get:
+      operationId: getFolderPermissions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderPermissions'
+          description: Group names with access
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: List folder group grants
+      tags:
+        - Folders
+    parameters:
+      - $ref: '#/components/parameters/FolderId'
+    put:
+      operationId: setFolderPermissions
+      requestBody:
+        content:
+          application/json:
+            example:
+              group_names:
+                - Administrators
+                - Analysts
+              permission: view
+            schema:
+              $ref: '#/components/schemas/SetFolderPermissionsRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Updated
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Replace folder group grants
+      tags:
+        - Folders
+  /api/v1/folders/browse:
+    get:
+      operationId: browseFolder
+      parameters:
+        - description: Folder id; 0 = Home/root
+          in: query
+          name: folder_id
+          schema:
+            default: 0
+            format: int64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrowseResult'
+          description: Browse result
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Browse folder contents
+      tags:
+        - Folders
+  /api/v1/folders/search:
+    get:
+      description: Results capped at 50.
+      operationId: searchFolders
+      parameters:
+        - example: finance
+          in: query
+          name: q
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  count:
+                    type: integer
+                  items:
+                    items:
+                      $ref: '#/components/schemas/SearchHit'
+                    type: array
+                type: object
+          description: Search hits
+        "400":
+          $ref: '#/components/responses/BadRequest'
+      summary: Search folders and items
+      tags:
+        - Folders
+  /api/v1/folders/tree:
+    get:
+      operationId: getFolderTree
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/FolderTreeNode'
+                type: array
+          description: Folder tree root nodes
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: ACL-filtered folder tree
+      tags:
+        - Folders
+  /api/v1/reports:
+    get:
+      description: Returns reports the caller can view (ACL-filtered). No pagination yet.
+      operationId: listReports
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                count: 1
+                items:
+                  - datasource: reporting_db
+                    description: Sample map report
+                    format: html
+                    has_thumbnail: true
+                    key: nycdata
+                    name: NYC Data
+                    type: map
+              schema:
+                $ref: '#/components/schemas/ReportListResponse'
+          description: Report summaries
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: List visible reports
+      tags:
+        - Reports
+    post:
+      description: |
+        Multipart publish. Required: `jrxml_file`, `data_source`.
+        Optional: `jasper_file`, `thumbnail_file`, `report_name`, `report_description`,
+        `report_type` (`jasper`|`map`), `access_groups` / `access_groups[]`, `params[N][…]`.
+        Max multipart size ~64 MiB.
+      operationId: createReport
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              jrxml_file:
+                contentType: application/xml, text/xml
+            schema:
+              properties:
+                access_groups:
+                  items:
+                    type: string
+                  type: array
+                data_source:
+                  type: string
+                jasper_file:
+                  format: binary
+                  type: string
+                jrxml_file:
+                  format: binary
+                  type: string
+                report_description:
+                  type: string
+                report_name:
+                  type: string
+                report_type:
+                  default: jasper
+                  enum:
+                    - jasper
+                    - map
+                  type: string
+                thumbnail_file:
+                  format: binary
+                  type: string
+              required:
+                - jrxml_file
+                - data_source
+              type: object
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                json_url: /api/v1/reports/nycdata
+                key: nycdata
+                message: Report published
+                notes: []
+                ok: true
+                run_url: /reports/nycdata
+              schema:
+                $ref: '#/components/schemas/ReportCreateResponse'
+          description: Created
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Publish / create report
+      tags:
+        - Reports
+  /api/v1/reports/{key}:
+    delete:
+      operationId: deleteReport
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                key: nycdata
+                ok: true
+              schema:
+                $ref: '#/components/schemas/ReportMutationResponse'
+          description: Deleted
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete report
+      tags:
+        - Reports
+    get:
+      description: Returns the report JSON definition as stored on disk.
+      operationId: getReport
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+          description: Full report definition
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get report definition
+      tags:
+        - Reports
+    parameters:
+      - $ref: '#/components/parameters/ReportKey'
+    put:
+      description: Multipart/form update. JRXML optional. Map and embedded-map fields supported.
+      operationId: updateReport
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                access_groups:
+                  items:
+                    type: string
+                  type: array
+                data_source:
+                  type: string
+                jasper_file:
+                  format: binary
+                  type: string
+                jrxml_file:
+                  format: binary
+                  type: string
+                report_description:
+                  type: string
+                report_name:
+                  type: string
+                report_type:
+                  enum:
+                    - jasper
+                    - map
+                  type: string
+                thumbnail_file:
+                  format: binary
+                  type: string
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                key: nycdata
+                ok: true
+              schema:
+                $ref: '#/components/schemas/ReportMutationResponse'
+          description: Updated
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update report
+      tags:
+        - Reports
+  /api/v1/reports/{key}/config:
+    get:
+      description: Enriched parameters and optional map layer metadata for the report viewer.
+      operationId: getReportConfig
+      parameters:
+        - $ref: '#/components/parameters/ReportKey'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportConfig'
+          description: Viewer config JSON
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Viewer configuration
+      tags:
+        - Reports
+  /api/v1/reports/{key}/parameters/{name}/lookup:
+    get:
+      description: Parent parameter values are passed as additional query parameters.
+      operationId: lookupParameter
+      parameters:
+        - description: Example parent value (actual names vary per report)
+          explode: true
+          in: query
+          name: parent_param
+          schema:
+            type: string
+          style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                options:
+                  - label: New York
+                    value: NY
+                  - label: California
+                    value: CA
+              schema:
+                $ref: '#/components/schemas/ParameterLookupResponse'
+          description: Option list
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Lookup cascading parameter options
+      tags:
+        - Parameters
+    parameters:
+      - $ref: '#/components/parameters/ReportKey'
+      - $ref: '#/components/parameters/ParameterName'
+    post:
+      description: |
+        Body may be a JSON map of parent values, or `{ "params": {...} }` /
+        `{ "parameters": {...} }`, or form fields.
+      operationId: lookupParameterPost
+      requestBody:
+        content:
+          application/json:
+            examples:
+              flatMap:
+                value:
+                  country: US
+                  region: NE
+              wrapped:
+                value:
+                  params:
+                    country: US
+            schema:
+              additionalProperties: true
+              type: object
+          application/x-www-form-urlencoded:
+            schema:
+              additionalProperties:
+                type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterLookupResponse'
+          description: Option list
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Lookup parameter options (POST)
+      tags:
+        - Parameters
+  /api/v1/reports/{key}/thumbnail:
+    get:
+      operationId: getReportThumbnail
+      parameters:
+        - $ref: '#/components/parameters/ReportKey'
+      responses:
+        "200":
+          content:
+            image/png:
+              schema:
+                format: binary
+                type: string
+          description: PNG thumbnail
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Report thumbnail PNG
+      tags:
+        - Reports
+  /api/v1/resource-sync:
+    get:
+      description: Platform-admin only. Returns how to trigger a sync.
+      operationId: getResourceSyncHint
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                hint: POST to run resource sync
+                ok: true
+                service: acugis-report-server-go
+              schema:
+                properties:
+                  hint:
+                    type: string
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                type: object
+          description: Sync hint
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Resource sync hint
+      tags:
+        - Resources
+    post:
+      description: |
+        Platform-admin only. Registers filesystem/content resources into the
+        application database. Returns sync statistics.
+      operationId: runResourceSync
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                already_exists: 12
+                errors: 0
+                ok: true
+                registered: 3
+                service: acugis-report-server-go
+                skipped: 1
+              schema:
+                properties:
+                  already_exists:
+                    type: integer
+                  errors:
+                    type: integer
+                  ok:
+                    type: boolean
+                  reason:
+                    type: string
+                  registered:
+                    type: integer
+                  service:
+                    type: string
+                  skipped:
+                    type: integer
+                type: object
+          description: Sync completed
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+      summary: Run resource sync
+      tags:
+        - Resources
+  /api/v1/resources:
+    get:
+      description: |
+        Lists resources visible via folder ACL. Optional filters by folder,
+        resource type, and display-name search.
+      operationId: listResources
+      parameters:
+        - description: Limit to a folder; omitted returns across visible folders
+          example: 12
+          in: query
+          name: folder_id
+          schema:
+            format: int64
+            type: integer
+        - example: image
+          in: query
+          name: resource_type
+          schema:
+            enum:
+              - public_key
+              - private_key
+              - client_certificate
+              - ca_certificate
+              - generic_file
+              - image
+            type: string
+        - description: Search display name / filename
+          example: logo
+          in: query
+          name: q
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                items:
+                  - display_name: Company Logo
+                    folder_id: 12
+                    mime_type: image/png
+                    resource_type: image
+                    size_bytes: 24576
+                    uuid: 550e8400-e29b-41d4-a716-446655440000
+              schema:
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/Resource'
+                    type: array
+                type: object
+          description: Resource list
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          content:
+            application/json:
+              example:
+                error: resources unavailable
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Resources store unavailable
+      summary: List content resources
+      tags:
+        - Resources
+    post:
+      description: |
+        Create via JSON (pasted text `content`) or multipart (`file` upload).
+        Requires folder edit ACL. `folder_id` ≤ 0 uses Home.
+        Multipart max ~16 MiB (non-image); images use the image endpoints (32 MiB).
+      operationId: createResource
+      requestBody:
+        content:
+          application/json:
+            example:
+              content: |
+                ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ… user@host
+              display_name: SSH Public Key
+              extension: pub
+              folder_id: 12
+              mime_type: text/plain
+              original_filename: id_rsa.pub
+              resource_type: public_key
+            schema:
+              $ref: '#/components/schemas/ResourceCreateJSON'
+          multipart/form-data:
+            schema:
+              properties:
+                content:
+                  description: Text content when not uploading a file
+                  type: string
+                display_name:
+                  type: string
+                extension:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+                folder_id:
+                  format: int64
+                  type: integer
+                mime_type:
+                  type: string
+                original_filename:
+                  type: string
+                resource_type:
+                  enum:
+                    - public_key
+                    - private_key
+                    - client_certificate
+                    - ca_certificate
+                    - generic_file
+                    - image
+                  type: string
+              required:
+                - display_name
+                - resource_type
+              type: object
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                display_name: SSH Public Key
+                folder_id: 12
+                resource_type: public_key
+                size_bytes: 412
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Created
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          content:
+            application/json:
+              example:
+                error: resources unavailable
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Resources store unavailable
+      summary: Create content resource
+      tags:
+        - Resources
+  /api/v1/resources/{uuid}:
+    delete:
+      operationId: deleteResource
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Deleted
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete resource
+      tags:
+        - Resources
+    get:
+      operationId: getResource
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                display_name: SSH Public Key
+                folder_id: 12
+                resource_type: public_key
+                sha256: e3b0c44298fc1c149afbf4c8996fb924…
+                size_bytes: 412
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Resource
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Get resource metadata
+      tags:
+        - Resources
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+    put:
+      description: |
+        Updates display name, type, and/or folder. Moving requires edit ACL
+        on both source and destination folders.
+      operationId: updateResource
+      requestBody:
+        content:
+          application/json:
+            example:
+              display_name: Production SSH Key
+              folder_id: 15
+            schema:
+              $ref: '#/components/schemas/ResourceUpdateRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Updated resource
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Update resource metadata
+      tags:
+        - Resources
+  /api/v1/resources/{uuid}/content:
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+    put:
+      description: |
+        Multipart `file` required. Non-image max ~16 MiB; image resources
+        accept up to 32 MiB. Optional `extension` / `mime_type` override.
+      operationId: replaceResourceContent
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                extension:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+                mime_type:
+                  type: string
+              required:
+                - file
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Updated resource
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Replace resource file content
+      tags:
+        - Resources
+  /api/v1/resources/{uuid}/download:
+    get:
+      description: |
+        Returns the stored file. Default Content-Disposition is attachment.
+        Use `inline=1` or `disposition=inline` for inline display.
+      operationId: downloadResource
+      parameters:
+        - description: When `1`, use Content-Disposition inline
+          in: query
+          name: inline
+          schema:
+            enum:
+              - "1"
+            type: string
+        - in: query
+          name: disposition
+          schema:
+            enum:
+              - inline
+              - attachment
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+            application/x-pem-file:
+              schema:
+                type: string
+            image/png:
+              schema:
+                format: binary
+                type: string
+            text/plain:
+              schema:
+                type: string
+          description: Resource binary
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Download resource bytes
+      tags:
+        - Resources
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+  /api/v1/resources/{uuid}/thumbnail:
+    get:
+      description: |
+        Returns a PNG thumbnail when available (`Cache-Control: private, max-age=300`).
+        For images without a generated thumb, may return original bytes inline.
+        Non-image resources without a thumbnail return 404.
+      operationId: getResourceThumbnail
+      responses:
+        "200":
+          content:
+            image/jpeg:
+              schema:
+                format: binary
+                type: string
+            image/png:
+              schema:
+                format: binary
+                type: string
+          description: Thumbnail image
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          content:
+            application/json:
+              example:
+                error: thumbnail not found
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Thumbnail not found
+      summary: Get resource thumbnail
+      tags:
+        - Resources
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+  /api/v1/resources/images:
+    get:
+      description: |
+        Lists `resource_type=image` resources. Response includes
+        `supported_formats`: png, jpeg, gif, svg, webp.
+      operationId: listImageResources
+      parameters:
+        - in: query
+          name: folder_id
+          schema:
+            format: int64
+            type: integer
+        - in: query
+          name: q
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                items:
+                  - display_name: Map Marker
+                    height: 64
+                    mime_type: image/png
+                    resource_type: image
+                    uuid: 660e8400-e29b-41d4-a716-446655440001
+                    width: 64
+                supported_formats:
+                  - png
+                  - jpeg
+                  - gif
+                  - svg
+                  - webp
+              schema:
+                properties:
+                  items:
+                    items:
+                      $ref: '#/components/schemas/Resource'
+                    type: array
+                  supported_formats:
+                    example:
+                      - png
+                      - jpeg
+                      - gif
+                      - svg
+                      - webp
+                    items:
+                      type: string
+                    type: array
+                type: object
+          description: Image resources and supported formats
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "503":
+          content:
+            application/json:
+              example:
+                error: resources unavailable
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Resources store unavailable
+      summary: List image resources
+      tags:
+        - Resources
+    post:
+      description: |
+        Multipart upload only. Max file size 32 MiB.
+        Supported formats: png, jpeg, gif, svg, webp.
+        `display_name` defaults from the uploaded filename when omitted.
+      operationId: uploadImage
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding:
+              file:
+                contentType: image/png, image/jpeg, image/gif, image/svg+xml, image/webp
+            schema:
+              properties:
+                display_name:
+                  type: string
+                extension:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+                folder_id:
+                  format: int64
+                  type: integer
+                mime_type:
+                  type: string
+              required:
+                - file
+              type: object
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                display_name: marker.png
+                height: 64
+                mime_type: image/png
+                resource_type: image
+                size_bytes: 8192
+                uuid: 660e8400-e29b-41d4-a716-446655440001
+                width: 64
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Created image resource
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Upload image resource
+      tags:
+        - Resources
+  /api/v1/resources/images/{uuid}:
+    delete:
+      operationId: deleteImageResource
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                ok: true
+                uuid: 660e8400-e29b-41d4-a716-446655440001
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+          description: Deleted
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Delete image resource
+      tags:
+        - Resources
+    get:
+      operationId: getImageResource
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Image resource
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          content:
+            application/json:
+              example:
+                error: image resource not found
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not an image or missing
+      summary: Get image resource metadata
+      tags:
+        - Resources
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+    put:
+      description: Multipart `file` required. Max 32 MiB. Resource must already be an image.
+      operationId: replaceImage
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                extension:
+                  type: string
+                file:
+                  format: binary
+                  type: string
+                mime_type:
+                  type: string
+              required:
+                - file
+              type: object
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: Updated image resource
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Replace image file
+      tags:
+        - Resources
+  /api/v1/resources/images/{uuid}/download:
+    get:
+      operationId: downloadImage
+      parameters:
+        - description: When `1`, use Content-Disposition inline
+          in: query
+          name: inline
+          schema:
+            enum:
+              - "1"
+            type: string
+        - description: '`inline` forces inline disposition'
+          in: query
+          name: disposition
+          schema:
+            enum:
+              - inline
+              - attachment
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+            image/gif:
+              schema:
+                format: binary
+                type: string
+            image/jpeg:
+              schema:
+                format: binary
+                type: string
+            image/png:
+              schema:
+                format: binary
+                type: string
+            image/svg+xml:
+              schema:
+                type: string
+            image/webp:
+              schema:
+                format: binary
+                type: string
+          description: Image binary
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Download image bytes
+      tags:
+        - Resources
+    parameters:
+      - $ref: '#/components/parameters/ResourceUUID'
+  /dev/jasper-status:
+    get:
+      description: |
+        Public (dev/ops). Returns gateway configuration and last connectivity
+        summary. When the gateway is not configured, returns
+        `gateway: not_configured`.
+      operationId: getJasperStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                configured:
+                  summary: Gateway configured
+                  value:
+                    configured: true
+                    connectivity: ok
+                    last_successful_at: "2026-08-06T04:55:00Z"
+                    report_url: http://jasper:8080/jasperserver/flow.html
+                    service: acugis-report-server-go
+                notConfigured:
+                  summary: Gateway missing
+                  value:
+                    gateway: not_configured
+                    service: acugis-report-server-go
+              schema:
+                additionalProperties: true
+                properties:
+                  auth_disabled:
+                    type: boolean
+                  configured:
+                    type: boolean
+                  connectivity:
+                    type: string
+                  gateway:
+                    description: Present when not configured
+                    type: string
+                  image_url:
+                    type: string
+                  last_error_at:
+                    format: date-time
+                    type: string
+                  last_error_summary:
+                    type: string
+                  last_format:
+                    type: string
+                  last_report_name:
+                    type: string
+                  last_status_code:
+                    type: integer
+                  last_successful_at:
+                    format: date-time
+                    type: string
+                  report_url:
+                    type: string
+                  service:
+                    type: string
+                  timeout:
+                    type: string
+                type: object
+          description: Jasper status
+      security: []
+      summary: Jasper gateway status
+      tags:
+        - Health
+  /dev/report:
+    get:
+      deprecated: true
+      description: Prefer `GET /reports/execute`.
+      operationId: runReportDev
+      parameters:
+        - in: query
+          name: _repName
+          schema:
+            type: string
+        - in: query
+          name: report
+          schema:
+            type: string
+        - in: query
+          name: _repFormat
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Rendered report bytes
+      summary: Execute report (dev alias)
+      tags:
+        - Execution
+    post:
+      deprecated: true
+      operationId: runReportDevPost
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Rendered report bytes
+      summary: Execute report POST (dev alias)
+      tags:
+        - Execution
+  /dev/report-image:
+    get:
+      deprecated: true
+      description: Prefer `GET /report-image`.
+      operationId: getReportImageDev
+      parameters:
+        - in: query
+          name: _repName
+          schema:
+            type: string
+        - in: query
+          name: report
+          schema:
+            type: string
+        - in: query
+          name: image
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Image bytes
+      summary: Report image (dev alias)
+      tags:
+        - Execution
+  /health:
+    get:
+      description: Public. Returns process liveness; does not check dependencies.
+      operationId: getHealth
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                service: acugis-report-server-go
+                status: ok
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+          description: Healthy
+      security: []
+      summary: Liveness probe
+      tags:
+        - Health
+  /ready:
+    get:
+      description: |
+        Public. Checks postgres, filesystem paths, and Jasper reachability.
+        Returns 503 when not ready.
+      operationId: getReady
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                checks:
+                  filesystem:
+                    ok: true
+                  jasper:
+                    configured: true
+                    reachability: ok
+                  postgres:
+                    ok: true
+                service: acugis-report-server-go
+                status: ready
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+          description: Ready
+        "503":
+          content:
+            application/json:
+              example:
+                checks:
+                  postgres:
+                    message: connection refused
+                    ok: false
+                service: acugis-report-server-go
+                status: not_ready
+              schema:
+                $ref: '#/components/schemas/ReadyResponse'
+          description: Not ready
+      security: []
+      summary: Readiness probe
+      tags:
+        - Health
+  /report-image:
+    get:
+      operationId: getReportImage
+      parameters:
+        - in: query
+          name: _repName
+          schema:
+            type: string
+        - in: query
+          name: report
+          schema:
+            type: string
+        - description: Image filename from Jasper
+          in: query
+          name: image
+          schema:
+            type: string
+        - in: query
+          name: uuid
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+            image/gif:
+              schema:
+                format: binary
+                type: string
+            image/jpeg:
+              schema:
+                format: binary
+                type: string
+            image/png:
+              schema:
+                format: binary
+                type: string
+            image/svg+xml:
+              schema:
+                type: string
+          description: Image bytes
+        "403":
+          $ref: '#/components/responses/PlainTextError'
+        "503":
+          $ref: '#/components/responses/PlainTextError'
+      summary: Proxy Jasper chart/QR image
+      tags:
+        - Execution
+  /reports/debug_embedded_map.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/embedded-map/debug`.
+      operationId: debugEmbeddedMapPHP
+      parameters:
+        - in: query
+          name: report
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: format
+          schema:
+            enum:
+              - json
+            type: string
+        - in: query
+          name: compile
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+            text/html:
+              schema:
+                type: string
+          description: Debug payload
+        "400":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Missing report key
+        "403":
+          $ref: '#/components/responses/Forbidden'
+      summary: Debug embedded map (PHP alias)
+      tags:
+        - Embedded Maps
+  /reports/execute:
+    get:
+      description: |
+        Proxies Jasper report render. Query `_repName` or `report` required.
+        `_repFormat` defaults to `html`.
+
+        **Supported formats:** `html`, `pdf`, `xlsx`, `xls`, `csv`, `docx`, `rtf`,
+        `odt`, `ods`, `pptx`, `xml`.
+
+        Additional query parameters are forwarded as report parameters.
+        Errors are typically `text/plain` (not JSON).
+        Anonymous access allowed when Public group grants view ACL.
+      operationId: runReport
+      parameters:
+        - description: Report key (alias of `report`)
+          example: nycdata
+          in: query
+          name: _repName
+          schema:
+            type: string
+        - description: Report key (alias of `_repName`)
+          in: query
+          name: report
+          schema:
+            type: string
+        - in: query
+          name: _repFormat
+          schema:
+            default: html
+            enum:
+              - html
+              - pdf
+              - xlsx
+              - xls
+              - csv
+              - docx
+              - rtf
+              - odt
+              - ods
+              - pptx
+              - xml
+            type: string
+        - description: Public datasource name for this execution.
+          in: query
+          name: datasource
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+            application/pdf:
+              schema:
+                format: binary
+                type: string
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                format: binary
+                type: string
+            text/csv:
+              schema:
+                type: string
+            text/html:
+              schema:
+                type: string
+          description: Rendered report bytes
+        "400":
+          $ref: '#/components/responses/PlainTextError'
+        "403":
+          $ref: '#/components/responses/PlainTextError'
+        "404":
+          $ref: '#/components/responses/PlainTextError'
+        "503":
+          $ref: '#/components/responses/PlainTextError'
+      summary: Execute / render report
+      tags:
+        - Execution
+    post:
+      description: |
+        Same as GET. The public `datasource` query parameter is accepted the same way.
+        The request body and Content-Type are forwarded to Jasper.
+      operationId: runReportPost
+      parameters:
+        - in: query
+          name: _repName
+          schema:
+            type: string
+        - in: query
+          name: report
+          schema:
+            type: string
+        - in: query
+          name: _repFormat
+          schema:
+            default: html
+            enum:
+              - html
+              - pdf
+              - xlsx
+              - xls
+              - csv
+              - docx
+              - rtf
+              - odt
+              - ods
+              - pptx
+              - xml
+            type: string
+        - description: Public datasource name for this execution.
+          in: query
+          name: datasource
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+          application/octet-stream:
+            schema:
+              format: binary
+              type: string
+          application/x-www-form-urlencoded:
+            schema:
+              additionalProperties:
+                type: string
+              type: object
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+            application/pdf:
+              schema:
+                format: binary
+                type: string
+          description: Rendered report bytes
+        "400":
+          $ref: '#/components/responses/PlainTextError'
+        "403":
+          $ref: '#/components/responses/PlainTextError'
+        "503":
+          $ref: '#/components/responses/PlainTextError'
+      summary: Execute / render report (POST)
+      tags:
+        - Execution
+  /reports/execute_report.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /reports/execute`.
+      operationId: runReportPHP
+      parameters:
+        - in: query
+          name: _repName
+          schema:
+            type: string
+        - in: query
+          name: report
+          schema:
+            type: string
+        - in: query
+          name: _repFormat
+          schema:
+            default: html
+            type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Rendered report bytes
+        "503":
+          $ref: '#/components/responses/PlainTextError'
+      summary: Execute report (PHP alias)
+      tags:
+        - Execution
+    post:
+      deprecated: true
+      description: Prefer `POST /reports/execute`.
+      operationId: runReportPHPPost
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                type: string
+          description: Rendered report bytes
+      summary: Execute report POST (PHP alias)
+      tags:
+        - Execution
+  /reports/generate_jasper_context.php:
+    get:
+      deprecated: true
+      description: Prefer `POST /api/v1/datasources/context`. May return plain text.
+      operationId: generateJasperContextPHP
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JasperContextResponse'
+            text/plain:
+              example: Context XML generated at /var/lib/jasper/context.xml
+              schema:
+                type: string
+          description: Context generated
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "500":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Generation failed
+      summary: Generate Jasper context (PHP alias GET)
+      tags:
+        - Datasources
+    post:
+      deprecated: true
+      description: Prefer `POST /api/v1/datasources/context`.
+      operationId: generateJasperContextPHPPost
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JasperContextResponse'
+            text/plain:
+              schema:
+                type: string
+          description: Context generated
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "500":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Generation failed
+      summary: Generate Jasper context (PHP alias POST)
+      tags:
+        - Datasources
+  /reports/get_report_config.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/config`.
+      operationId: getReportConfigPHP
+      parameters:
+        - in: query
+          name: report
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportConfig'
+          description: Same JSON as versioned config
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Viewer configuration (PHP alias)
+      tags:
+        - Reports
+  /reports/parameter_lookup.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/parameters/{name}/lookup`.
+      operationId: lookupParameterPHP
+      parameters:
+        - in: query
+          name: report
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: parameter
+          schema:
+            type: string
+        - description: Alias of `parameter`
+          in: query
+          name: name
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterLookupResponse'
+          description: Option list
+      summary: Parameter lookup (PHP alias)
+      tags:
+        - Parameters
+    post:
+      deprecated: true
+      operationId: lookupParameterPHPPost
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParameterLookupResponse'
+          description: Option list
+      summary: Parameter lookup POST (PHP alias)
+      tags:
+        - Parameters
+  /reports/report_thumbnail.php:
+    get:
+      deprecated: true
+      description: Prefer `GET /api/v1/reports/{key}/thumbnail`.
+      operationId: getReportThumbnailPHP
+      parameters:
+        - in: query
+          name: report
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            image/png:
+              schema:
+                format: binary
+                type: string
+          description: PNG thumbnail
+        "404":
+          $ref: '#/components/responses/NotFound'
+      summary: Report thumbnail (PHP alias)
+      tags:
+        - Reports
+security:
+  - BearerAuth: []
+  - SessionCookie: []
+servers:
+  - description: Default mount (JRS_BASE_PATH=/)
+    url: /
+  - description: Typical reverse-proxy mount (JRS_BASE_PATH=/go)
+    url: /go
+tags:
+  - description: Login, logout, current user, and personal access tokens
+    name: Authentication
+  - description: Report catalog CRUD, configuration, and thumbnails
+    name: Reports
+  - description: Jasper report render and report images (binary)
+    name: Execution
+  - description: Cascading parameter option lookup
+    name: Parameters
+  - description: Content folders, browse, search, permissions, favorites
+    name: Folders
+  - description: Content resources, images, download, and resource sync
+    name: Resources
+  - description: Datasource list/create/delete and Jasper context.xml generation
+    name: Datasources
+  - description: Embedded map diagnostics
+    name: Embedded Maps
+  - description: Liveness, readiness, diagnostics, and Jasper gateway status
+    name: Health
+  - description: Placeholder for future users/groups/schedules REST APIs
+    name: Administration

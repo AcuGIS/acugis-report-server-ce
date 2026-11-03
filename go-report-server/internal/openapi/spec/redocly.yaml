@@ -1,0 +1,21 @@
+# Redocly configuration for the bundled AcuGIS Report Server OpenAPI document.
+# Lint the served/exported bundle, not the modular sources:
+#   go run ./scripts/export-openapi.go /tmp/openapi.yaml
+#   npx @redocly/cli lint /tmp/openapi.yaml
+
+extends:
+  - recommended
+
+rules:
+  # Real Chi route is registered as /api/resource-sync/ (trailing slash).
+  no-path-trailing-slash: off
+  # /api/v1/resources/images/{uuid} and /api/v1/resources/{uuid} coexist by design.
+  no-ambiguous-paths: off
+  # Reserved schemas (e.g. Group) for future REST modules.
+  no-unused-components: off
+  # License name is the SPDX identifier Apache-2.0.
+  info-license-strict: off
+  # Public/simple ops (health, logout, deprecated aliases) omit exhaustive 4xx catalogs.
+  operation-4xx-response: off
+  operation-operationId: error
+  no-unresolved-refs: error

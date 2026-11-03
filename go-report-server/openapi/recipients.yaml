@@ -1,0 +1,10 @@
+# Recipients REST API — pending
+#
+# No /api/v1/recipients endpoints are registered yet.
+# Current HTML/form surfaces (see docs/api-inventory.md § Recipients):
+#   GET  /recipients.php           — Recipients list UI (PlatformAdmin)
+#   GET  /edit_recipient.php       — Add/edit recipient UI (query id)
+#   POST /action/recipient.php     — Save/delete recipient
+#                                    Form: id?, name, email, notes; or delete + id
+#                                    JSON {success,message}
+paths: {}

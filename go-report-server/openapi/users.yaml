@@ -1,0 +1,11 @@
+# Users REST API — pending
+#
+# No /api/v1/users endpoints are registered yet.
+# Current HTML/form surfaces (see docs/api-inventory.md § Users):
+#   GET  /admin/users.php          — Users admin UI (PlatformAdmin; query id for edit)
+#   POST /admin/users.php          — Create/update/delete user
+#                                    Form: id, username, email, password, is_admin,
+#                                    enabled, groups; or action=delete + id
+#
+# Constraints: cannot delete self; duplicate username rejected.
+paths: {}

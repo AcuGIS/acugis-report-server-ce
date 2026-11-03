@@ -1,0 +1,62 @@
+name: Release Java SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Force dry-run (skip Maven Central deploy even if secrets present)"
+        type: boolean
+        default: true
+  push:
+    tags:
+      - "java-v*"
+      - "sdk-java-v*"
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/java
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          # Placeholders for Maven Central / OSSRH when secrets are configured:
+          # server-id: central
+          # server-username: MAVEN_USERNAME
+          # server-password: MAVEN_PASSWORD
+
+      - name: Package
+        run: ./mvnw -B package
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-sdk-jars
+          path: |
+            sdk/java/target/*.jar
+            !sdk/java/target/*-sources.jar
+
+      - name: Deploy to Maven Central (placeholder)
+        if: ${{ !inputs.dry_run && env.MAVEN_USERNAME != '' && env.MAVEN_PASSWORD != '' }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          echo "Maven Central deploy is not fully wired yet."
+          echo "Configure pom distributionManagement + GPG, then uncomment deploy."
+          # ./mvnw -B deploy -DskipTests
+
+      - name: Dry-run notice
+        if: ${{ inputs.dry_run || env.MAVEN_USERNAME == '' }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        run: |
+          echo "Skipping Maven deploy (dry-run default, or secrets not set)."
+          ls -la target || true

@@ -1,0 +1,94 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="nycemployment" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2b14f7fd-eee2-4d35-acd8-bef677361e08">
+	<parameter name="p_boro" forPrompting="false" class="java.util.Collection">
+		<defaultValueExpression><![CDATA[java.util.Arrays.asList("Manhattan","Bronx","Staten Island","Queens","Brooklyn")]]></defaultValueExpression>
+	</parameter>
+	<query language="SQL"><![CDATA[select  nyc_employment.nta,  nyc_employment.local_jobs_2010, 
+nyc_employment.borough, 
+nyc_employment.boroid, 
+nyc_employment.local_jobs_2015,  
+nyc_employment.local_job_growth_percent
+from  nyc_employment 
+WHERE $X{IN, nyc_employment.borough, p_boro}
+ORDER BY nyc_employment.borough, nyc_employment.nta]]></query>
+	<field name="borough" class="java.lang.String"/>
+	<field name="boroid" class="java.lang.Integer"/>
+	<field name="nta" class="java.lang.String"/>
+	<field name="local_jobs_2010" class="java.lang.Integer"/>
+	<field name="local_jobs_2015" class="java.lang.Integer"/>
+	<field name="local_job_growth_percent" class="java.lang.Integer"/>
+	<group name="Group1">
+		<expression><![CDATA[$F{borough}]]></expression>
+		<groupHeader>
+			<band height="33">
+				<element kind="textField" uuid="43d6ce29-b849-41e3-aaf8-68d6dfc57003" mode="Opaque" x="2" y="0" width="553" height="32" forecolor="#006699" backcolor="#FFFFFF" fontSize="24.0" bold="true">
+					<expression><![CDATA[$F{borough}]]></expression>
+				</element>
+				<element kind="line" uuid="578bac09-7511-4c3f-90a1-9de9fd8df889" x="-20" y="32" width="595" height="1" forecolor="#666666"/>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background/>
+	<title height="72">
+		<element kind="frame" uuid="af06a3c8-4f32-40c2-87c9-f7844a3fd401" mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#42A5F5">
+			<element kind="staticText" uuid="1c844f4c-8144-4f3d-ab34-7bd42519f852" x="20" y="10" width="555" height="43" forecolor="#FFFFFF" fontName="Roboto" fontSize="34.0" bold="true">
+				<text><![CDATA[Employment Trends]]></text>
+			</element>
+			<element kind="staticText" uuid="022be31a-d685-4076-8cb5-9fba056fa7b4" x="20" y="60" width="210" height="20" forecolor="#FFFFFF" fontName="Roboto" fontSize="14.0" bold="false" hTextAlign="Left">
+				<text><![CDATA[Employment by Borough]]></text>
+			</element>
+			<element kind="staticText" uuid="b71182e0-0062-403c-bf51-2310f4f5ec2e" x="240" y="61" width="335" height="20" forecolor="#FFFFFF" fontName="Roboto" fontSize="14.0" bold="false" hTextAlign="Right">
+				<text><![CDATA[AcuGIS Jasper Service. Cited, Inc.]]></text>
+			</element>
+		</element>
+	</title>
+	<pageHeader height="13"/>
+	<columnHeader height="21">
+		<element kind="line" uuid="f00dc8a4-54e4-4353-8874-de9b3399e8df" x="-20" y="20" width="595" height="1" forecolor="#666666"/>
+		<element kind="staticText" uuid="06317656-000b-448c-9a63-9b23255b9b97" mode="Opaque" x="2" y="0" width="178" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Neighborhood]]></text>
+		</element>
+		<element kind="staticText" uuid="848a1edd-4057-4d07-b830-631360b70c1f" mode="Opaque" x="180" y="0" width="120" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Local Jobs (2010)]]></text>
+		</element>
+		<element kind="staticText" uuid="405a6a02-c85b-49e2-9e59-fcf4a3ecce27" mode="Opaque" x="300" y="0" width="144" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[Local Jobs (2015)]]></text>
+		</element>
+		<element kind="staticText" uuid="d4e733a0-ebdb-4a7e-a47d-9fa50640e914" mode="Opaque" x="444" y="0" width="105" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Center">
+			<text><![CDATA[Percent Growth]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<element kind="line" uuid="bdaea37a-449c-4d64-92ad-a6bbb24cd80e" positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1"/>
+			<element kind="textField" uuid="0ec038ca-7f75-471c-a1f5-9c3caf914795" x="2" y="0" width="178" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{nta}]]></expression>
+			</element>
+			<element kind="textField" uuid="55039b90-323d-4bc3-b2c4-5c230f05340e" x="180" y="0" width="120" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{local_jobs_2010}]]></expression>
+			</element>
+			<element kind="textField" uuid="7309ea2c-07ce-4645-80ec-02fda9ee703b" x="300" y="0" width="144" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{local_jobs_2015}]]></expression>
+			</element>
+			<element kind="textField" uuid="dffb87d5-235f-4779-8c03-2c6247d4ebdd" x="444" y="0" width="105" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{local_job_growth_percent}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter/>
+	<pageFooter height="17">
+		<element kind="textField" uuid="adc92bbe-8ad4-4d1e-a989-1f914499a000" mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" hTextAlign="Right">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+		</element>
+		<element kind="textField" uuid="81cf36ec-ee93-46cf-8b51-f4275138fb69" mode="Opaque" x="515" y="4" width="40" height="13" backcolor="#E6E6E6" evaluationTime="Report">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="textField" uuid="aa1780d1-4492-4a9c-aa8f-360577c90609" x="0" y="4" width="100" height="13" pattern="EEEEE dd MMMMM yyyy">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+	</pageFooter>
+	<summary/>
+</jasperReport>

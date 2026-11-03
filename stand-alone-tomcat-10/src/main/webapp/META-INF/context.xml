@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Do not hard-code a context path here.
+  Deploy as ROOT.war or acugis-report-server.war — the WAR file name decides the context.
+-->
+<Context />

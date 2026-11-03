@@ -1,0 +1,298 @@
+# Report execution and images (binary). Prefer these over HTML viewer pages.
+paths:
+  /reports/execute:
+    get:
+      operationId: runReport
+      tags: [Execution]
+      summary: Execute / render report
+      description: |
+        Proxies Jasper report render. Query `_repName` or `report` required.
+        `_repFormat` defaults to `html`.
+
+        **Supported formats:** `html`, `pdf`, `xlsx`, `xls`, `csv`, `docx`, `rtf`,
+        `odt`, `ods`, `pptx`, `xml`.
+
+        Additional query parameters are forwarded as report parameters.
+        Errors are typically `text/plain` (not JSON).
+        Anonymous access allowed when Public group grants view ACL.
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+          description: Report key (alias of `report`)
+          example: nycdata
+        - name: report
+          in: query
+          schema:
+            type: string
+          description: Report key (alias of `_repName`)
+        - name: _repFormat
+          in: query
+          schema:
+            type: string
+            enum: [html, pdf, xlsx, xls, csv, docx, rtf, odt, ods, pptx, xml]
+            default: html
+        - name: datasource
+          in: query
+          description: Public datasource name for this execution.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            text/html:
+              schema:
+                type: string
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            text/csv:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '403':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '404':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '503':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+    post:
+      operationId: runReportPost
+      tags: [Execution]
+      summary: Execute / render report (POST)
+      description: |
+        Same as GET. The public `datasource` query parameter is accepted the same way.
+        The request body and Content-Type are forwarded to Jasper.
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+        - name: report
+          in: query
+          schema:
+            type: string
+        - name: _repFormat
+          in: query
+          schema:
+            type: string
+            enum: [html, pdf, xlsx, xls, csv, docx, rtf, odt, ods, pptx, xml]
+            default: html
+        - name: datasource
+          in: query
+          description: Public datasource name for this execution.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '403':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '503':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+
+  /reports/execute_report.php:
+    get:
+      operationId: runReportPHP
+      tags: [Execution]
+      summary: Execute report (PHP alias)
+      deprecated: true
+      description: Prefer `GET /reports/execute`.
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+        - name: report
+          in: query
+          schema:
+            type: string
+        - name: _repFormat
+          in: query
+          schema:
+            type: string
+            default: html
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '503':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+    post:
+      operationId: runReportPHPPost
+      tags: [Execution]
+      summary: Execute report POST (PHP alias)
+      deprecated: true
+      description: Prefer `POST /reports/execute`.
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /dev/report:
+    get:
+      operationId: runReportDev
+      tags: [Execution]
+      summary: Execute report (dev alias)
+      deprecated: true
+      description: Prefer `GET /reports/execute`.
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+        - name: report
+          in: query
+          schema:
+            type: string
+        - name: _repFormat
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    post:
+      operationId: runReportDevPost
+      tags: [Execution]
+      summary: Execute report POST (dev alias)
+      deprecated: true
+      responses:
+        '200':
+          description: Rendered report bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /report-image:
+    get:
+      operationId: getReportImage
+      tags: [Execution]
+      summary: Proxy Jasper chart/QR image
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+        - name: report
+          in: query
+          schema:
+            type: string
+        - name: image
+          in: query
+          schema:
+            type: string
+          description: Image filename from Jasper
+        - name: uuid
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image bytes
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+        '503':
+          $ref: './schemas.yaml#/components/responses/PlainTextError'
+
+  /dev/report-image:
+    get:
+      operationId: getReportImageDev
+      tags: [Execution]
+      summary: Report image (dev alias)
+      deprecated: true
+      description: Prefer `GET /report-image`.
+      parameters:
+        - name: _repName
+          in: query
+          schema:
+            type: string
+        - name: report
+          in: query
+          schema:
+            type: string
+        - name: image
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image bytes
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary

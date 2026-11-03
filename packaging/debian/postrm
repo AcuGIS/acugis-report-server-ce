@@ -1,0 +1,38 @@
+#!/bin/bash
+# remove: keep configuration and application data.
+# purge: still keep reports, uploads, licenses, database contents, and env.
+# Data is left in place; deleting it is an administrator decision.
+set -euo pipefail
+
+case "$1" in
+  remove)
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl daemon-reload 2>/dev/null || true
+    fi
+    rm -f /etc/sudoers.d/acugis-report-server
+    ;;
+  upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl daemon-reload 2>/dev/null || true
+    fi
+    ;;
+  purge)
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl daemon-reload 2>/dev/null || true
+    fi
+    rm -f /etc/sudoers.d/acugis-report-server
+    echo "AcuGIS Report Server data was not deleted." >&2
+    echo "Administrator-owned paths that may remain:" >&2
+    echo "  /etc/acugis-report-server/env" >&2
+    echo "  /etc/acugis-report-server/initial-credentials" >&2
+    echo "  /opt/acugis-report-server/reports /opt/acugis-report-server/resources" >&2
+    echo "  /opt/acugis-report-server/schedules /opt/acugis-report-server/thumbnails" >&2
+    echo "  /opt/tomcat/acugis /opt/tomcat/conf/context.xml" >&2
+    echo "  PostgreSQL database (JRS_DB_NAME, default jasper_reports)" >&2
+    ;;
+  *)
+    echo "postrm called with unknown argument: $1" >&2
+    ;;
+esac
+
+exit 0

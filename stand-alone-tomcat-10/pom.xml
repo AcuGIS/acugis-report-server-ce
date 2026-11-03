@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.acugis</groupId>
+    <artifactId>acugis-report-server</artifactId>
+    <version>1.0.0-standalone</version>
+    <packaging>war</packaging>
+
+    <name>AcuGIS Report Server (Standalone Tomcat 10)</name>
+    <description>Jakarta EE WAR for Apache Tomcat 10.x — no Docker required</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>11</maven.compiler.release>
+        <jasper.version>7.0.1</jasper.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-pdf</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-excel-poi</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-charts</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-json</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <!-- Explicit Jackson for CollectionFill (JRMapCollectionDataSource coercion). -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-velocity</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-data-adapters</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <!-- Jakarta EE servlet helpers (NOT jasperreports-servlets-j2ee) -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-servlets</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <!-- JR 7+: JDT/ECJ compiler extracted from core. Without this, JRXML compile
+             falls back to javac and fails with "package net.sf.jasperreports.engine does not exist". -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-jdt</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <!-- Designer barcode4j:* / QRCode Jackson component kinds (same as jasper-preview). -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-barcode4j</artifactId>
+            <version>${jasper.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.barcode4j</groupId>
+            <artifactId>barcode4j</artifactId>
+            <version>2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>avalon-framework</groupId>
+                    <artifactId>avalon-framework-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-cli</groupId>
+                    <artifactId>commons-cli</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.24</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.2</version>
+        </dependency>
+
+        <!-- Community map renderer (stand-alone-tomcat-10/map-src). Maven resolves
+             these instead of the gitignored docker/report-server/map-lib jars.
+             PostgreSQL is provided by Tomcat's shared lib and is not packed into the WAR. -->
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.25.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wdtinc</groupId>
+            <artifactId>mapbox-vector-tile</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2023.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>28.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.geographiclib</groupId>
+            <artifactId>GeographicLib-Java</artifactId>
+            <version>1.49</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>acugis-report-server</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>compile-map</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>11</release>
+                            <compileSourceRoots>
+                                <compileSourceRoot>${project.basedir}/map-src/main/java</compileSourceRoot>
+                            </compileSourceRoots>
+                            <outputDirectory>${project.build.directory}/map-classes</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>map-jar</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <jar destfile="${project.build.directory}/acugis-report-map.jar"
+                                     basedir="${project.build.directory}/map-classes"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>copy-dist</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.basedir}/dist"/>
+                                <copy file="${project.build.directory}/${project.build.finalName}.war"
+                                      tofile="${project.basedir}/dist/acugis-report-server.war"
+                                      overwrite="true"/>
+                                <copy file="${project.basedir}/sample-acugis.properties"
+                                      tofile="${project.basedir}/dist/sample-acugis.properties"
+                                      overwrite="true"/>
+                                <copy file="${project.basedir}/dist-README.txt"
+                                      tofile="${project.basedir}/dist/README.txt"
+                                      overwrite="true"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <!-- JDBC drivers stay in CATALINA_HOME/lib. Barcode4J and ZXing come from
+                         the dependencies above, not from docker/report-server/barcode-lib. -->
+                    <packagingExcludes>
+                        WEB-INF/lib/postgresql-*.jar,
+                        WEB-INF/lib/ojdbc*.jar,
+                        WEB-INF/lib/db2jcc*.jar,
+                        WEB-INF/lib/mysql-connector*.jar,
+                        WEB-INF/lib/mssql-jdbc*.jar,
+                        WEB-INF/lib/sqlite-jdbc*.jar,
+                        WEB-INF/lib/snowflake-jdbc*.jar,
+                        WEB-INF/lib/duckdb_jdbc*.jar
+                    </packagingExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>${project.build.directory}</directory>
+                            <targetPath>WEB-INF/lib</targetPath>
+                            <includes>
+                                <include>acugis-report-map.jar</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <!-- Intentionally no 'docker' profile here — Docker/Tomcat 9 lives under docker/report-server -->
+    </profiles>
+</project>

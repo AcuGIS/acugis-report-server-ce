@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AcuGIS Embed — Responsive</title>
+<style>html,body,#report{margin:0;height:100%;}</style>
+</head>
+<body>
+  <div id="report"></div>
+  <script src="http://localhost:9088/sdk/acugis-report.js"></script>
+  <script>
+    AcuGIS.embedReport({
+      server: "http://localhost:9088",
+      target: "#report",
+      reportId: "REPORT_KEY",
+      token: "emb_REPLACE_ME",
+      width: "100%",
+      height: "100vh",
+      autoResize: true
+    });
+  </script>
+</body>
+</html>

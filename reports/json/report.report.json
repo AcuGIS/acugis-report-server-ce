@@ -1,0 +1,78 @@
+{
+    "name": "Map Report",
+    "description": "Map Report",
+    "report": "report",
+    "type": "map",
+    "datasource": "david",
+    "format": "html",
+    "parameters": [
+        {
+            "name": "p_region",
+            "type": "select",
+            "label": "Region",
+            "required": false,
+            "hidden": false,
+            "source": "sql:select DISTINCT sub_region from usapgservice",
+            "multiple": true
+        },
+        {
+            "name": "p_geometry",
+            "type": "string",
+            "label": "p_geometry",
+            "required": false,
+            "hidden": false
+        },
+        {
+            "name": "p_srid",
+            "type": "string",
+            "label": "p_srid",
+            "required": false,
+            "hidden": false
+        }
+    ],
+    "access_groups": "Administrators,Client1,Editors,Public",
+    "mapDefinition": {
+        "enabled": true,
+        "basemap": "carto_light",
+        "geometryColumn": "geom",
+        "initialZoom": "fit",
+        "renderer": "categorized",
+        "field": "state_name",
+        "classification": "quantile",
+        "classes": 5,
+        "colorRamp": "Blues",
+        "singleSymbol": {
+            "fillColor": "#26a69a",
+            "outlineColor": "#00796b",
+            "outlineWidth": 1.5,
+            "opacity": 0.35,
+            "shape": "circle"
+        },
+        "categories": [],
+        "labels": {
+            "enabled": false,
+            "field": null,
+            "fontSize": 12,
+            "fillColor": "#212121",
+            "halo": true
+        },
+        "popups": {
+            "enabled": false,
+            "fields": [
+                "land_km",
+                "families",
+                "female"
+            ]
+        },
+        "tooltips": {
+            "enabled": false,
+            "fields": []
+        },
+        "sync": {
+            "filterMapFromReport": true,
+            "filterReportFromMap": true,
+            "zoomToReportResults": true,
+            "highlightReturnedFeatures": true
+        }
+    }
+}

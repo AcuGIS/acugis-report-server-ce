@@ -1,0 +1,154 @@
+# Liveness, readiness, diagnostics, and Jasper gateway status (public)
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      tags: [Health]
+      summary: Liveness probe
+      description: Public. Returns process liveness; does not check dependencies.
+      security: []
+      responses:
+        '200':
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/HealthResponse'
+              example:
+                status: ok
+                service: acugis-report-server-go
+
+  /ready:
+    get:
+      operationId: getReady
+      tags: [Health]
+      summary: Readiness probe
+      description: |
+        Public. Checks postgres, filesystem paths, and Jasper reachability.
+        Returns 503 when not ready.
+      security: []
+      responses:
+        '200':
+          description: Ready
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReadyResponse'
+              example:
+                status: ready
+                service: acugis-report-server-go
+                checks:
+                  postgres:
+                    ok: true
+                  filesystem:
+                    ok: true
+                  jasper:
+                    configured: true
+                    reachability: ok
+        '503':
+          description: Not ready
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ReadyResponse'
+              example:
+                status: not_ready
+                service: acugis-report-server-go
+                checks:
+                  postgres:
+                    ok: false
+                    message: connection refused
+
+  /api/v1/diagnostics:
+    get:
+      operationId: getDiagnostics
+      tags: [Health]
+      summary: Ops diagnostics
+      description: |
+        Public. Redacted runtime/config diagnostics (secrets never included).
+        Useful for support and deployment verification.
+      security: []
+      responses:
+        '200':
+          description: Diagnostics snapshot
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Diagnostics'
+              example:
+                service: acugis-report-server-go
+                go_version: go1.22.5
+                app_version: 0.1.0-foundation
+                environment: production
+                base_path: /go
+                postgres_reachable: true
+                filesystem_paths_present: true
+                jasper_endpoint_configured: true
+                jasper_reachable: 'true'
+                auth_disabled: false
+                timestamp: '2026-08-06T05:00:00Z'
+
+  /dev/jasper-status:
+    get:
+      operationId: getJasperStatus
+      tags: [Health]
+      summary: Jasper gateway status
+      description: |
+        Public (dev/ops). Returns gateway configuration and last connectivity
+        summary. When the gateway is not configured, returns
+        `gateway: not_configured`.
+      security: []
+      responses:
+        '200':
+          description: Jasper status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                properties:
+                  service:
+                    type: string
+                  gateway:
+                    type: string
+                    description: Present when not configured
+                  configured:
+                    type: boolean
+                  report_url:
+                    type: string
+                  image_url:
+                    type: string
+                  timeout:
+                    type: string
+                  connectivity:
+                    type: string
+                  last_successful_at:
+                    type: string
+                    format: date-time
+                  last_error_at:
+                    type: string
+                    format: date-time
+                  last_error_summary:
+                    type: string
+                  last_report_name:
+                    type: string
+                  last_format:
+                    type: string
+                  last_status_code:
+                    type: integer
+                  auth_disabled:
+                    type: boolean
+              examples:
+                configured:
+                  summary: Gateway configured
+                  value:
+                    service: acugis-report-server-go
+                    configured: true
+                    report_url: http://jasper:8080/jasperserver/flow.html
+                    connectivity: ok
+                    last_successful_at: '2026-08-06T04:55:00Z'
+                notConfigured:
+                  summary: Gateway missing
+                  value:
+                    service: acugis-report-server-go
+                    gateway: not_configured

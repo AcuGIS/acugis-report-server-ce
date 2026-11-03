@@ -1,0 +1,703 @@
+/**
+ * Federation platform shell — Material 3 / Google Account navigation aesthetic.
+ */
+
+:root {
+  --fed-shell-sidebar-width: 250px;
+  --fed-shell-bg: #f8f9fa;
+  --fed-shell-sidebar-bg: #f7f8fc;
+  --fed-shell-border: #e8eaed;
+  --fed-shell-text: #202124;
+  --fed-shell-text-muted: #5f6368;
+  --fed-shell-active-bg: #e8f0fe;
+  --fed-shell-active-fg: #1967d2;
+  --fed-shell-nav-pill-active-bg: #eef3fd;
+  --fed-shell-nav-hover-bg: rgba(0, 0, 0, 0.04);
+  --fed-shell-hover-bg: #f1f3f4;
+  --fed-shell-pill-shadow: none;
+  --fed-shell-card-shadow: 0 1px 2px rgba(60, 64, 67, 0.12), 0 1px 3px rgba(60, 64, 67, 0.08);
+  --fed-shell-radius: 12px;
+  --fed-shell-header-h: 64px;
+  --fed-shell-nav-pill-radius: 28px;
+  --fed-shell-nav-icon-size: 36px;
+}
+
+html.fed-shell-ready,
+html.fed-shell-ready body {
+  background: var(--fed-shell-bg);
+  color: var(--fed-shell-text);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body.fed-shell-body {
+  display: block !important;
+  margin: 0;
+  padding-left: var(--fed-shell-sidebar-width);
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: "Roboto", system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body[data-federation-no-shell],
+body[data-federation-no-sidebar] {
+  padding-left: 0 !important;
+}
+
+body[data-federation-no-shell] .fed-shell-sidebar,
+body[data-federation-no-shell] .fed-shell-menu-btn,
+body[data-federation-no-shell] .fed-shell-backdrop,
+body[data-federation-no-sidebar] .fed-shell-sidebar,
+body[data-federation-no-sidebar] .fed-shell-menu-btn,
+body[data-federation-no-sidebar] .fed-shell-backdrop {
+  display: none !important;
+}
+
+body.fed-shell-body * {
+  box-sizing: border-box;
+}
+
+/* Global left rail — Material 3 / Google Account navigation */
+.fed-shell-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--fed-shell-sidebar-width);
+  background: var(--fed-shell-sidebar-bg) !important;
+  border-right: none;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fed-shell-sidebar-brand {
+  display: block;
+  padding: 24px 24px 18px;
+  text-decoration: none;
+  color: var(--fed-shell-text);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  border-bottom: none;
+}
+
+.fed-shell-sidebar-brand .material-icons {
+  display: none;
+}
+
+.fed-shell-nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 12px 24px;
+  background: var(--fed-shell-sidebar-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.fed-shell-nav-main {
+  flex: 1 1 auto;
+}
+
+.fed-shell-nav-footer {
+  flex: 0 0 auto;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(60, 64, 67, 0.12);
+}
+
+.fed-shell-nav-section-label {
+  padding: 24px 16px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  line-height: 1.2;
+  min-height: 1.2em;
+  box-sizing: content-box;
+}
+
+.fed-shell-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fed-shell-nav-list > li {
+  margin: 0 0 10px;
+  background: transparent;
+}
+
+.fed-shell-nav-list > li:nth-child(odd),
+.fed-shell-nav-list > li:nth-child(even) {
+  background: transparent;
+}
+
+.fed-shell-nav-list a:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
+
+.fed-shell-nav-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px 8px 10px;
+  margin: 0;
+  border-radius: var(--fed-shell-nav-pill-radius);
+  background-color: transparent;
+  color: var(--fed-shell-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  min-height: 52px;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fed-shell-nav-label {
+  flex: 1;
+  min-width: 0;
+  line-height: 20px;
+}
+
+.fed-shell-nav-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--fed-shell-nav-icon-size);
+  height: var(--fed-shell-nav-icon-size);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+/* Lock glyph box so Material Icons ligature text cannot expand rows before the font loads */
+.fed-shell-nav-icon .material-icons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  overflow: hidden;
+  speak: never;
+}
+
+.fed-shell-nav-icon--blue {
+  background: #d3e3fd;
+  color: #041e49;
+}
+
+.fed-shell-nav-icon--green {
+  background: #ceead6;
+  color: #0d652d;
+}
+
+.fed-shell-nav-icon--teal {
+  background: #c4e7ed;
+  color: #004d40;
+}
+
+.fed-shell-nav-icon--purple {
+  background: #e8def8;
+  color: #311b92;
+}
+
+.fed-shell-nav-icon--pink {
+  background: #f9dedc;
+  color: #7c2d12;
+}
+
+.fed-shell-nav-icon--orange {
+  background: #fedfc8;
+  color: #7c2d12;
+}
+
+.fed-shell-nav-icon--grey {
+  background: #e8eaed;
+  color: #5f6368;
+}
+
+.fed-shell-nav-list a:hover {
+  background-color: var(--fed-shell-nav-hover-bg);
+  box-shadow: none;
+}
+
+.fed-shell-nav-list li.is-active > a {
+  background-color: var(--fed-shell-nav-pill-active-bg);
+  color: var(--fed-shell-text);
+  box-shadow: none;
+}
+
+/* Beat app-level link/sidenav rules (Materialize, legacy templates) */
+body.fed-shell-body .fed-shell-sidebar .fed-shell-nav-list a,
+body.fed-shell-body .fed-shell-sidebar .fed-shell-nav-list a:hover,
+body.fed-shell-body .fed-shell-sidebar .fed-shell-nav-list a:focus {
+  background-color: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fed-shell-text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+body.fed-shell-body .fed-shell-sidebar .fed-shell-nav-list a:hover {
+  background-color: var(--fed-shell-nav-hover-bg);
+}
+
+body.fed-shell-body .fed-shell-sidebar .fed-shell-nav-list li.is-active > a {
+  background-color: var(--fed-shell-nav-pill-active-bg);
+}
+
+.fed-shell-nav-list li.is-disabled > a {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Mobile toggle — hidden by default in HTML ([hidden]); shown only on small screens */
+.fed-shell-menu-btn {
+  display: none !important;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1002;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: var(--fed-shell-card-shadow);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fed-shell-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 999;
+}
+
+/* Top header inside content */
+.fed-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--fed-shell-bg);
+  border-bottom: 1px solid var(--fed-shell-border);
+  min-height: var(--fed-shell-header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+}
+
+.fed-shell-header-title {
+  font-size: 1.375rem;
+  font-weight: 400;
+  color: var(--fed-shell-text);
+  margin: 0;
+}
+
+/* Main content area */
+.fed-shell-main,
+body.fed-shell-body > main.main-content,
+body.fed-shell-body > main.container,
+body.fed-shell-body > main.portal-main {
+  margin-left: 0 !important;
+  padding: 24px 0px 48px 140px;
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+.fed-shell-page {
+  padding-top: 8px;
+}
+
+/* Page header with a back arrow to the section home */
+.fed-page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 32px;
+  padding-top: 8px;
+}
+
+.fed-page-back {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-top: 2px;
+  border-radius: 50%;
+  color: var(--fed-shell-text-muted);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.fed-page-back:hover {
+  background: var(--fed-shell-hover-bg);
+  color: var(--fed-shell-text);
+}
+
+.fed-page-back .material-icons {
+  font-size: 24px;
+}
+
+.fed-page-header-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fed-page-header-body .page-title,
+.fed-page-header-body .fed-shell-page-title {
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--fed-shell-text);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.fed-page-header-body .page-subtitle,
+.fed-page-header-body .fed-shell-page-subtitle {
+  margin: 0;
+  color: var(--fed-shell-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.fed-shell-page-title {
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--fed-shell-text);
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.fed-shell-page-subtitle {
+  margin: 0 0 32px;
+  color: var(--fed-shell-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.fed-hub-breadcrumb {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  color: var(--fed-shell-text-muted);
+  line-height: 1.4;
+}
+
+.fed-hub-breadcrumb a {
+  color: var(--fed-shell-active-fg);
+  text-decoration: none;
+}
+
+.fed-hub-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.fed-hub-breadcrumb-sep {
+  color: var(--fed-shell-text-muted);
+}
+
+.fed-hub-page-header.fed-page-header {
+  margin-bottom: 24px;
+}
+
+.fed-hub-page-header .fed-shell-page-subtitle {
+  margin-bottom: 0;
+}
+
+/* In-content app navigation (Google Account list style) */
+.fed-app-nav {
+  margin-bottom: 28px;
+  background: transparent;
+  box-shadow: none;
+  height: auto;
+  line-height: normal;
+  color: inherit;
+}
+
+/* Materialize (GeoVault, Jasper) styles `nav ul` as a horizontal bar — use div[role=navigation] */
+nav.fed-app-nav {
+  background: transparent !important;
+  box-shadow: none !important;
+  height: auto !important;
+  line-height: normal !important;
+}
+
+nav.fed-app-nav ul.fed-app-nav-list,
+.fed-app-nav .fed-app-nav-list {
+  display: block;
+}
+
+nav.fed-app-nav ul.fed-app-nav-list > li,
+.fed-app-nav .fed-app-nav-list > li {
+  display: block;
+  float: none;
+  flex: none;
+}
+
+nav.fed-app-nav ul.fed-app-nav-list a,
+.fed-app-nav .fed-app-nav-list a {
+  display: flex;
+  height: auto;
+  line-height: inherit;
+  padding: 14px 20px;
+  color: var(--fed-shell-text);
+}
+
+.fed-app-nav-section {
+  margin-bottom: 24px;
+}
+
+.fed-app-nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fed-shell-text-muted);
+  margin: 0 0 8px;
+  padding: 0 4px;
+}
+
+.fed-app-nav-card {
+  background: #fff;
+  border: 1px solid var(--fed-shell-border);
+  border-radius: var(--fed-shell-radius);
+  box-shadow: var(--fed-shell-card-shadow);
+  overflow: hidden;
+}
+
+.fed-app-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fed-app-nav-list li + li {
+  position: relative;
+}
+
+.fed-app-nav-list li + li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 60px;
+  right: 0;
+  height: 1px;
+  background: var(--fed-shell-border);
+}
+
+.fed-app-nav-list a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  text-decoration: none;
+  color: var(--fed-shell-text);
+  transition: background-color 0.15s ease;
+  min-height: 72px;
+  box-sizing: border-box;
+}
+
+.fed-app-nav-list a:hover {
+  background: var(--fed-shell-hover-bg);
+}
+
+.fed-app-nav-list li.is-active a {
+  background: var(--fed-shell-active-bg);
+}
+
+.fed-app-nav-list a .material-icons {
+  color: var(--fed-shell-text-muted);
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fed-app-nav-list li.is-active a .material-icons {
+  color: var(--fed-shell-active-fg);
+}
+
+.fed-app-nav-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fed-app-nav-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.fed-app-nav-desc {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--fed-shell-text-muted);
+  line-height: 1.4;
+}
+
+.fed-app-nav-chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--fed-shell-text-muted);
+  font-size: 20px !important;
+}
+
+/* Workspace home — stacked settings cards (not tile grid) */
+.fed-workspace-nav.fed-app-nav {
+  margin-bottom: 0;
+}
+
+/* Central /services — hide legacy portal top bar and footer when shell takes over */
+body.fed-central-workspace nav.topnav,
+body.fed-central-workspace .portal-footer {
+  display: none !important;
+}
+
+body.fed-central-workspace main.portal-main {
+  margin-left: 0 !important;
+  padding: 24px 40px 48px;
+  max-width: 1200px;
+}
+
+/* Workspace grid */
+.fed-workspace-section {
+  margin-bottom: 36px;
+}
+
+.fed-workspace-section-title {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--fed-shell-text-muted);
+  margin: 0 0 12px;
+  padding-left: 4px;
+}
+
+.fed-workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.fed-workspace-card {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--fed-shell-border);
+  border-radius: var(--fed-shell-radius);
+  padding: 20px;
+  text-decoration: none;
+  color: var(--fed-shell-text);
+  box-shadow: var(--fed-shell-card-shadow);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.fed-workspace-card:hover {
+  border-color: #d2e3fc;
+  box-shadow: 0 2px 8px rgba(60, 64, 67, 0.15);
+  transform: translateY(-1px);
+}
+
+.fed-workspace-card .material-icons {
+  font-size: 32px;
+  color: var(--fed-shell-active-fg);
+  margin-bottom: 12px;
+}
+
+.fed-workspace-card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 6px;
+}
+
+.fed-workspace-card-desc {
+  font-size: 0.8125rem;
+  color: var(--fed-shell-text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Hide legacy per-app sidebars when shell is active */
+body.fed-shell-body .qp-sidebar,
+body.fed-shell-body .qp-sidebar-toggle,
+body.fed-shell-body .qp-sidebar-backdrop,
+body.fed-shell-body #slide-out.app-sidenav,
+body.fed-shell-body .app-sidenav.sidenav-fixed,
+body.fed-shell-body .mobile-menu-btn[data-legacy-sidebar] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.fed-shell-body.has-sidebar {
+  padding-left: var(--fed-shell-sidebar-width) !important;
+}
+
+body.fed-shell-body .main-content {
+  margin-left: 0 !important;
+}
+
+@media (max-width: 992px) {
+  body.fed-shell-body {
+    padding-left: 0;
+  }
+
+  .fed-shell-sidebar {
+    transform: translateX(-100%);
+  }
+
+  html.fed-shell-ready .fed-shell-sidebar {
+    transition: transform 0.25s ease;
+  }
+
+  body.fed-shell-open .fed-shell-sidebar {
+    transform: translateX(0);
+  }
+
+  body.fed-shell-open .fed-shell-backdrop {
+    display: block;
+  }
+
+  .fed-shell-menu-btn {
+    display: flex !important;
+  }
+
+  .fed-shell-main,
+  body.fed-shell-body > main.main-content,
+  body.fed-shell-body > main.container {
+    padding: 72px 20px 32px !important;
+  }
+}
+
+
+
+
+/* ==========================================
+   Google polish overrides (colors only — do not change spacing/metrics here)
+========================================== */
+
+.fed-shell-nav-list li.is-active > a {
+  background: #eef3fd !important;
+  box-shadow: none !important;
+}
+
+.fed-shell-nav-list a:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}

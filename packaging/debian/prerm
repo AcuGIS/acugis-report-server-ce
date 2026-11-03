@@ -1,0 +1,30 @@
+#!/bin/bash
+# Stop services on upgrade/remove. Do not delete application data.
+set -euo pipefail
+
+stop_units() {
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl stop acugis-report-server.service 2>/dev/null || true
+    systemctl stop acugis-tomcat.service 2>/dev/null || true
+  fi
+}
+
+case "$1" in
+  remove|upgrade|deconfigure)
+    stop_units
+    ;;
+  failed-upgrade)
+    ;;
+  *)
+    echo "prerm called with unknown argument: $1" >&2
+    ;;
+esac
+
+if [[ "${1:-}" == "remove" ]]; then
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl disable acugis-report-server.service 2>/dev/null || true
+    systemctl disable acugis-tomcat.service 2>/dev/null || true
+  fi
+fi
+
+exit 0

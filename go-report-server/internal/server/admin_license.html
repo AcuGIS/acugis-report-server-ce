@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+.license-dl { margin: 0; }
+.license-dl div { display: flex; gap: 16px; padding: 6px 0; border-bottom: 1px solid #eceff1; }
+.license-dl dt { width: 160px; color: #607d8b; }
+.license-dl dd { margin: 0; }
+.license-note { color: #546e7a; }
+</style>
+</head>
+<body data-federation-app="jasper" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount data-fed-ssr="1">{{.SidebarNav}}</div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">License</h1>
+        <p class="page-subtitle">Report Server Professional and Report Designer Web are separate products. Either one can be licensed on its own.</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.LogoutURL}}" class="btn-flat waves-effect">Sign out</a>
+    </div>
+</header>
+{{if .Message}}<div class="card-panel green lighten-4">{{.Message}}</div>{{end}}
+{{if .Error}}<div class="card-panel red lighten-4">{{.Error}}</div>{{end}}
+<div class="card"><div class="card-content">
+    <h2 style="margin-top:0">Report Server Professional</h2>
+    {{if .CommunityPackage}}<p class="license-note">Install AcuGIS Report Server Professional to start or activate Professional features.</p>{{end}}
+    <dl class="license-dl">
+        <div><dt>Status</dt><dd>{{if .ProTrial.ShowActive}}Trial active{{else if .ProTrial.ShowExpired}}Trial expired{{else if eq .Status.Status "active"}}Active{{else if eq .Status.Status "expired"}}Expired{{else if eq .Status.Status "wrong_product"}}Invalid license{{else if eq .Status.Status "not_activated"}}Not activated{{else}}Invalid license{{end}}</dd></div>
+        {{if .Status.LicenseID}}<div><dt>License ID</dt><dd>{{.Status.LicenseID}}</dd></div>{{end}}
+        {{if .Status.InstallationID}}<div><dt>Installation ID</dt><dd>{{.Status.InstallationID}}</dd></div>{{end}}
+        {{if and .ProTrial.ShowActive .ProTrial.ExpiresOn}}<div><dt>Trial expires</dt><dd>{{.ProTrial.ExpiresOn}}</dd></div>{{end}}
+        {{if .Status.ExpiresAt}}<div><dt>Expires</dt><dd>{{.Status.ExpiresAt}}</dd></div>{{end}}
+        {{if .Status.LastRefreshAt}}<div><dt>Last refresh</dt><dd>{{.Status.LastRefreshAt}}</dd></div>{{end}}
+    </dl>
+    {{if .ProTrial.ShowActive}}<p>{{.ProTrial.RemainingLabel}}</p>{{end}}
+    {{if .Status.Message}}<p class="license-note">{{.Status.Message}}</p>{{end}}
+    {{if .ProTrial.ShowExpired}}<p>Your Report Server Professional trial has ended.</p>{{end}}
+    {{if .ProTrial.ShowUsed}}<p>The free trial has already been used on this installation.</p>{{end}}
+    {{if .ProTrial.ShowUnavailable}}<p class="license-note">Trial availability is temporarily unavailable.</p>{{end}}
+    {{if and (eq .Status.Status "expired") (not .ProTrial.ShowExpired)}}<p>Professional features are currently unavailable.</p>{{end}}
+    {{if eq .Status.Status "wrong_product"}}<p>The installed license is not for AcuGIS Report Server Professional.</p>{{end}}
+    {{if .ProTrial.ShowStart}}
+    <form method="post" action="" style="margin:16px 0">
+        <input type="hidden" name="action" value="start_trial">
+        <button class="btn waves-effect" type="submit">{{.ProTrial.ButtonLabel}}</button>
+    </form>
+    {{end}}
+    {{if .ShowKey}}
+    <form method="post" action="" autocomplete="off">
+        <input type="hidden" name="action" value="activate">
+        {{if or .ProTrial.ShowStart .ProTrial.ShowActive .ProTrial.ShowExpired .ProTrial.ShowUsed .ProTrial.ShowUnavailable}}<p class="license-note">Already purchased?</p>{{end}}
+        <div class="input-field">
+            <input id="activation_key" name="activation_key" type="text" value="" autocomplete="off" spellcheck="false">
+            <label for="activation_key">Activation Key</label>
+        </div>
+        <button class="btn waves-effect" type="submit">Activate</button>
+    </form>
+    {{end}}
+    {{if .ShowRefresh}}
+    <form method="post" action="" style="margin-top:16px">
+        <input type="hidden" name="action" value="refresh">
+        <button class="btn-flat waves-effect" type="submit">Refresh License</button>
+    </form>
+    {{end}}
+</div></div>
+<div class="card" id="report-designer-web"><div class="card-content">
+    <h2 style="margin-top:0">Report Designer Web</h2>
+    <p class="license-note">Optional. Does not require Report Server Professional, and a Professional license does not enable it.</p>
+    <dl class="license-dl">
+        <div><dt>Status</dt><dd>{{.Designer.Label}}</dd></div>
+        {{if .Designer.Installed}}
+        {{if .Designer.Status.LicenseID}}<div><dt>License ID</dt><dd>{{.Designer.Status.LicenseID}}</dd></div>{{end}}
+        {{if .Designer.Status.InstallationID}}<div><dt>Installation ID</dt><dd>{{.Designer.Status.InstallationID}}</dd></div>{{end}}
+        {{if and .DesignerTrial.ShowActive .DesignerTrial.ExpiresOn}}<div><dt>Trial expires</dt><dd>{{.DesignerTrial.ExpiresOn}}</dd></div>{{end}}
+        {{if .Designer.Status.ExpiresAt}}<div><dt>Expires</dt><dd>{{.Designer.Status.ExpiresAt}}</dd></div>{{end}}
+        {{end}}
+    </dl>
+    {{if .DesignerTrial.ShowActive}}<p>{{.DesignerTrial.RemainingLabel}}</p>{{end}}
+    {{if .Designer.Status.Message}}<p class="license-note">{{.Designer.Status.Message}}</p>{{end}}
+    {{if .DesignerTrial.ShowExpired}}<p>Your Report Designer Web trial has ended.</p>{{end}}
+    {{if .DesignerTrial.ShowUsed}}<p>The free trial has already been used on this installation.</p>{{end}}
+    {{if .DesignerTrial.ShowUnavailable}}<p class="license-note">Trial availability is temporarily unavailable.</p>{{end}}
+    {{if .DesignerTrial.ShowStart}}
+    <p>Try Report Designer Web free for {{.DesignerTrial.TrialDays}} days.</p>
+    <form method="post" action="" style="margin:16px 0">
+        <input type="hidden" name="action" value="start_trial_designer">
+        <button class="btn waves-effect" type="submit">{{.DesignerTrial.ButtonLabel}}</button>
+    </form>
+    {{end}}
+    {{if .Designer.ShowKey}}
+    <form method="post" action="" autocomplete="off">
+        <input type="hidden" name="action" value="activate_designer">
+        {{if or .DesignerTrial.ShowStart .DesignerTrial.ShowActive .DesignerTrial.ShowExpired .DesignerTrial.ShowUsed .DesignerTrial.ShowUnavailable}}<p class="license-note">Already purchased?</p>{{end}}
+        <div class="input-field">
+            <input id="activation_key_designer" name="activation_key_designer" type="text" value="" autocomplete="off" spellcheck="false">
+            <label for="activation_key_designer">Report Designer Web activation key</label>
+        </div>
+        <button class="btn waves-effect" type="submit">Activate Report Designer Web</button>
+    </form>
+    {{end}}
+    {{if .Designer.ShowRefresh}}
+    <form method="post" action="" style="margin-top:16px">
+        <input type="hidden" name="action" value="refresh_designer">
+        <button class="btn-flat waves-effect" type="submit">Refresh Report Designer Web</button>
+    </form>
+    {{end}}
+</div></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

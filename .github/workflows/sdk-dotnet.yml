@@ -1,0 +1,38 @@
+name: SDK .NET
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "sdk/dotnet/**"
+      - ".github/workflows/sdk-dotnet.yml"
+  pull_request:
+    paths:
+      - "sdk/dotnet/**"
+      - ".github/workflows/sdk-dotnet.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/dotnet
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore AcuGIS.Report.sln
+
+      - name: Build
+        run: dotnet build AcuGIS.Report.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test AcuGIS.Report.sln -c Release --no-build --verbosity normal
+
+      - name: Pack (no push)
+        run: dotnet pack src/AcuGIS.Report/AcuGIS.Report.csproj -c Release --no-build -o ./artifacts

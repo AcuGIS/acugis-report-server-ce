@@ -1,0 +1,5 @@
+# Deny direct web access to report definitions; use serve_report_definition.php (authenticated).
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>

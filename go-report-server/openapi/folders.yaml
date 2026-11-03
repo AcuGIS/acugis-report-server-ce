@@ -1,0 +1,361 @@
+# Folders, content placement, permissions, favorites
+paths:
+  /api/v1/folders/tree:
+    get:
+      operationId: getFolderTree
+      tags: [Folders]
+      summary: ACL-filtered folder tree
+      responses:
+        '200':
+          description: Folder tree root nodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './schemas.yaml#/components/schemas/FolderTreeNode'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+
+  /api/v1/folders/browse:
+    get:
+      operationId: browseFolder
+      tags: [Folders]
+      summary: Browse folder contents
+      parameters:
+        - name: folder_id
+          in: query
+          schema:
+            type: integer
+            format: int64
+            default: 0
+          description: Folder id; 0 = Home/root
+      responses:
+        '200':
+          description: Browse result
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/BrowseResult'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/folders/search:
+    get:
+      operationId: searchFolders
+      tags: [Folders]
+      summary: Search folders and items
+      description: Results capped at 50.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          example: finance
+      responses:
+        '200':
+          description: Search hits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/SearchHit'
+                  count:
+                    type: integer
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+
+  /api/v1/folders:
+    post:
+      operationId: createFolder
+      tags: [Folders]
+      summary: Create folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/CreateFolderRequest'
+            example:
+              parent_id: 0
+              name: Finance
+              description: Finance reports
+              icon: folder
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Folder'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+
+  /api/v1/folders/{id}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/FolderId'
+    get:
+      operationId: getFolder
+      tags: [Folders]
+      summary: Get folder
+      responses:
+        '200':
+          description: Folder
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Folder'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    put:
+      operationId: updateFolder
+      tags: [Folders]
+      summary: Update folder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/UpdateFolderRequest'
+            example:
+              name: Finance 2026
+              description: Updated
+      responses:
+        '200':
+          description: Updated folder
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Folder'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    delete:
+      operationId: deleteFolder
+      tags: [Folders]
+      summary: Delete folder
+      parameters:
+        - name: recursive
+          in: query
+          schema:
+            type: boolean
+        - name: confirm
+          in: query
+          schema:
+            type: boolean
+          description: Required for destructive deletes
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+        '409':
+          description: Not empty or conflict
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+
+  /api/v1/folders/{id}/move:
+    post:
+      operationId: moveFolder
+      tags: [Folders]
+      summary: Move folder
+      parameters:
+        - $ref: './schemas.yaml#/components/parameters/FolderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/MoveFolderRequest'
+            example:
+              parent_id: 5
+              sort_order: 10
+      responses:
+        '200':
+          description: Moved folder
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Folder'
+        '409':
+          description: Cycle or conflict
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+
+  /api/v1/folders/{id}/duplicate:
+    post:
+      operationId: duplicateFolder
+      tags: [Folders]
+      summary: Duplicate folder
+      parameters:
+        - $ref: './schemas.yaml#/components/parameters/FolderId'
+      responses:
+        '201':
+          description: Duplicated folder
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Folder'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/folders/{id}/permissions:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/FolderId'
+    get:
+      operationId: getFolderPermissions
+      tags: [Folders]
+      summary: List folder group grants
+      responses:
+        '200':
+          description: Group names with access
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/FolderPermissions'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    put:
+      operationId: setFolderPermissions
+      tags: [Folders]
+      summary: Replace folder group grants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/SetFolderPermissionsRequest'
+            example:
+              group_names: [Administrators, Analysts]
+              permission: view
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/content/move:
+    post:
+      operationId: moveContent
+      tags: [Folders]
+      summary: Place or move content into a folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/MoveContentRequest'
+            example:
+              folder_id: 12
+              content_type: jasper_report
+              content_key: nycdata
+              display_name: NYC Data
+      responses:
+        '200':
+          description: Content item
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ContentItem'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/favorites:
+    get:
+      operationId: listFavorites
+      tags: [Folders]
+      summary: List favorites
+      responses:
+        '200':
+          description: Favorite items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/ContentItem'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+    post:
+      operationId: setFavorite
+      tags: [Folders]
+      summary: Set or unset favorite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/FavoriteRequest'
+            example:
+              content_type: jasper_report
+              content_key: nycdata
+              favorite: true
+      responses:
+        '200':
+          description: Favorite state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  favorite:
+                    type: boolean
+              example:
+                ok: true
+                favorite: true
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'

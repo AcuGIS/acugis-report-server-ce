@@ -1,0 +1,20 @@
+# Ignore build noise when using repo root as Docker context.
+.git
+.github
+**/node_modules
+sdk
+documentation
+clients
+**/*.md
+!docker/README.md
+!docker/data/README.md
+go-report-server/**/*_test.go
+**/.DS_Store
+**/*.exe
+docker/report-server/acugis-report-server.war.bak
+# Locally generated datasource configuration. The image uses context.xml.default.
+docker/report-server/context.xml
+stand-alone-tomcat-10/lib/duckdb_jdbc-*-windows_amd64.jar
+stand-alone-tomcat-10/lib/duckdb_jdbc-*-osx_*.jar
+stand-alone-tomcat-10/target
+.war-tmp.zip

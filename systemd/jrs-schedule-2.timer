@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for Jasper schedule #2
+
+[Timer]
+OnCalendar=*-*-01 08:00:00
+Persistent=true
+Unit=jrs-schedule-2.service
+
+[Install]
+WantedBy=timers.target

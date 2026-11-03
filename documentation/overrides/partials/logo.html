@@ -1,0 +1,7 @@
+{#- AcuGIS diamond mark (icon only; wordmark is in the header brand) -#}
+{% if config.theme.logo %}
+  <img src="{{ config.theme.logo | url }}" alt="AcuGIS">
+{% else %}
+  {% set icon = config.theme.icon.logo or "material/library" %}
+  {% include ".icons/" ~ icon ~ ".svg" %}
+{% endif %}

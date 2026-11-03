@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Docker DuckDB demo — reads /data/demo.duckdb via Go _duckdbSession fill. -->
+<jasperReport name="hello_duckdb" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2c3d4e5-f6a7-8901-bcde-f12345678901">
+  <property name="acugis.jrxml.target" value="7.0.1"/>
+  <query language="SQL"><![CDATA[SELECT id, name, quantity FROM items ORDER BY id]]></query>
+  <field name="id" class="java.lang.Integer"/>
+  <field name="name" class="java.lang.String"/>
+  <field name="quantity" class="java.lang.Integer"/>
+  <title>
+    <band height="40">
+      <element kind="staticText" uuid="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" x="0" y="8" width="400" height="24" fontSize="16.0" bold="true">
+        <text><![CDATA[AcuGIS Docker DuckDB Demo]]></text>
+      </element>
+    </band>
+  </title>
+  <detail>
+    <band height="20">
+      <element kind="textField" uuid="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" x="0" y="0" width="60" height="18">
+        <expression><![CDATA[$F{id}]]></expression>
+      </element>
+      <element kind="textField" uuid="cccccccc-cccc-cccc-cccc-cccccccccccc" x="70" y="0" width="200" height="18">
+        <expression><![CDATA[$F{name}]]></expression>
+      </element>
+      <element kind="textField" uuid="dddddddd-dddd-dddd-dddd-dddddddddddd" x="280" y="0" width="100" height="18">
+        <expression><![CDATA[$F{quantity}]]></expression>
+      </element>
+    </band>
+  </detail>
+</jasperReport>
