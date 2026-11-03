@@ -6,6 +6,11 @@ The server application is written in Go. JasperReports runs under Tomcat 10. Pos
 
 Report Designer Desktop is the separate application used to author JRXML. Designer Web is a separate browser editor that Report Server can proxy when it is installed and licensed on its own. A Report Server Professional license does not license Designer Web.
 
+
+![AcuGIS Report Server](documentation/acugis-report-server-ce.png)
+
+
+
 ## Features
 
 - JRXML catalog, publishing, and execution to PDF, Excel, HTML, and [other formats](documentation/docs/reference/supported-formats.md)
@@ -20,6 +25,8 @@ Report Designer Desktop is the separate application used to author JRXML. Design
 - QGIS, ArcGIS, Data Explorer, dashboards, Map Reports, Dataset Intelligence, audit administration, usage analytics, governance, audit export, OpenID Connect, SAML, and MCP are Professional features. Their source is not in this tree.
 
 Edition boundaries are in the [compatibility matrix](documentation/docs/reference/compatibility-matrix.md). Datasource behavior is in [Supported datasources](documentation/docs/reference/supported-datasources.md).
+
+
 
 ## Architecture
 
