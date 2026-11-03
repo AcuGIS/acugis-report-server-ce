@@ -1,4 +1,4 @@
-# AcuGIS Report Server 1.0.21
+# AcuGIS Report Server 1.0.22
 
 AcuGIS Report Server publishes, runs, and manages JasperReports. It provides a web catalog, scheduling, a versioned REST API, and client libraries for automation.
 
