@@ -49,19 +49,39 @@ See [Licensing](documentation/docs/administration/licensing.md) and the [compati
 
 ## Quick start
 
-Supported installs are a local Debian package, a release tarball, or Docker Compose. Full steps, upgrades, and verification are in [Installation](documentation/docs/administration/installation.md).
+Supported installs are Docker and apt.
 
-### Debian or Ubuntu package
-
-Install the `.deb` you downloaded. `apt-get` pulls dependencies.
+### Docker
 
 ```bash
-sudo apt-get -y install ./acugis-report-server_<version>_amd64.deb
+git clone https://github.com/AcuGIS/report-server-docker
+cd report-server-docker
+docker compose run --rm -it report-server-setup
+docker compose up -d
 ```
 
 The Professional package is a separate proprietary product and is not built from this source tree.
 
 Open `http://127.0.0.1:9088/`.
+
+
+### apt
+
+The tarball is a precompiled Open Source archive. `<edition>` is `oss`.
+
+```bash
+curl -fsSL https://apt.acugis.com/acugis-archive-keyring.gpg \
+    -o /usr/share/keyrings/acugis-archive-keyring.gpg
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/acugis-archive-keyring.gpg] https://apt.acugis.com stable main" \
+    > /etc/apt/sources.list.d/acugis.list
+
+apt update
+
+apt install acugis-report-server
+```
+
+`install.sh` expects packaged artifacts, including `bin/jrs-server`. It refuses to run from a source checkout.
 
 ### Release tarball
 
@@ -74,26 +94,6 @@ sudo ./install.sh
 ```
 
 `install.sh` expects packaged artifacts, including `bin/jrs-server`. It refuses to run from a source checkout.
-
-### Docker Compose
-
-Edit `.env` before the first start. Replace the example passwords. There is no password-generation step.
-
-```bash
-git clone https://github.com/AcuGIS/report-server-docker
-cd report-server-docker
-
-nano .env
-docker compose up -d
-```
-
-Set strong, unique values for `JRS_DB_PASS` (PostgreSQL password used by Report Server) and `JRS_ADMIN_PASSWORD` (initial administrator password). `JRS_ADMIN_USER` defaults to `admin`. The example `change-me-*` values cannot be used to start Report Server.
-
-This source repository also keeps Compose files under `docker/` for a local source build. The standard installation is the Docker deployment repository above.
-
-Open `http://127.0.0.1:9088/`.
-
-The Compose file pulls `acugis/report-server:1.0.21-oss`. Professional modules are not in this tree. A local source build is `docker compose -f compose.yml -f compose.build.yml up -d --build`. Optional services are documented in [Docker](documentation/docs/administration/docker.md).
 
 ## Documentation
 
