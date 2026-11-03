@@ -1,0 +1,56 @@
+{
+  "name": "@acugis/report-embed",
+  "version": "1.0.0",
+  "description": "Official JavaScript/TypeScript Embedding SDK for AcuGIS Report Server",
+  "license": "MIT",
+  "author": "AcuGIS",
+  "homepage": "https://github.com/AcuGIS/acugis-report-server-ce",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AcuGIS/acugis-report-server-ce.git",
+    "directory": "sdk/javascript"
+  },
+  "type": "module",
+  "main": "./dist/acugis-report.esm.js",
+  "module": "./dist/acugis-report.esm.js",
+  "browser": "./dist/acugis-report.min.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/acugis-report.esm.js",
+      "default": "./dist/acugis-report.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "keywords": [
+    "acugis",
+    "report-server",
+    "embed",
+    "analytics",
+    "dashboard",
+    "iframe"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+.report-meta { font-size: 0.88rem; color: var(--subtle-text); }
+.report-meta .meta-row { margin-bottom: 6px; word-break: break-word; }
+.report-meta .meta-label { font-weight: 600; color: #455a64; margin-right: 6px; }
+.report-meta .meta-value, code { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; color: #102a43; background: #eceff1; border-radius: 3px; padding: 1px 4px; }
+.jrs-url-output { white-space: pre-wrap; word-break: break-all; background: #eceff1; border: 1px solid #cfd8dc; border-radius: 4px; padding: 14px; margin: 0; min-height: 52px; user-select: all; }
+.report-frame { width: 100%; height: 420px; border: 1px solid #cfd8dc; border-radius: 4px; background: #ffffff; }
+    </style>
+</head>
+<body data-federation-app="{{.FederationApp}}" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Report URL Builder</h1>
+        <p class="page-subtitle">Preview report metadata, fill parameters, and generate a Jasper report URL.</p>
+    </div>
+</header>
+
+<div class="card">
+    <div class="card-content">
+        <span class="card-title">Report Definition</span>
+        <div class="input-field">
+            <select id="reportFile" autocomplete="off">
+                <option value="" selected>Select a report</option>
+                {{range .ReportFiles}}
+                    <option value="{{.}}">{{.}}</option>
+                {{end}}
+            </select>
+            <label>Report definition</label>
+            {{if not .ReportFiles}}
+                <p class="red-text text-darken-2">No <code>*.report.json</code> files found in <code>reports/json/</code>.</p>
+            {{end}}
+        </div>
+    </div>
+</div>
+
+<div id="reportPanel" class="is-hidden">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Report Details</span>
+            <div class="report-meta">
+                <div class="meta-row"><span class="meta-label">Name</span><span id="metaName">-</span></div>
+                <div class="meta-row"><span class="meta-label">Datasource</span><span class="meta-value" id="metaDatasource">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Parameters</span>
+            <form id="paramForm" class="row"></form>
+            <p id="noVisibleParams" class="muted-small is-hidden">No visible parameters (all hidden).</p>
+        </div>
+    </div>
+
+    <div class="card-actions-row" style="margin-bottom:16px;">
+        <button type="button" id="btnBuild" class="btn waves-effect waves-light teal">
+            Build Report URL
+            <i class="material-icons right">link</i>
+        </button>
+        <button type="button" id="btnRun" class="btn waves-effect waves-light blue-grey">
+            Run Report
+            <i class="material-icons right">open_in_new</i>
+        </button>
+    </div>
+    <div id="buildError" class="card-panel amber lighten-4 amber-text text-darken-4 is-hidden" role="alert"></div>
+
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Generated URL</span>
+            <pre id="urlOut" class="jrs-url-output">-</pre>
+        </div>
+    </div>
+
+    <div id="htmlPreviewWrap" class="card is-hidden">
+        <div class="card-content">
+            <span class="card-title">HTML Preview</span>
+            <button type="button" id="btnIframe" class="btn-small waves-effect waves-light blue-grey" style="margin-bottom:12px;">
+                <i class="material-icons left">preview</i>Load in iframe
+            </button>
+            <iframe id="reportIframe" title="Report preview" class="report-frame"></iframe>
+        </div>
+    </div>
+</div>
+
+<div id="loadError" class="card-panel red lighten-4 red-text text-darken-4 is-hidden" role="alert"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="../assets/js/report-param-submit.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    const selectEl = document.getElementById('reportFile');
+    const reportPanel = document.getElementById('reportPanel');
+    const metaName = document.getElementById('metaName');
+    const metaDatasource = document.getElementById('metaDatasource');
+    const paramForm = document.getElementById('paramForm');
+    const noVisibleParams = document.getElementById('noVisibleParams');
+    const btnBuild = document.getElementById('btnBuild');
+    const btnRun = document.getElementById('btnRun');
+    const btnIframe = document.getElementById('btnIframe');
+    const htmlPreviewWrap = document.getElementById('htmlPreviewWrap');
+    const reportIframe = document.getElementById('reportIframe');
+    const urlOut = document.getElementById('urlOut');
+    const loadError = document.getElementById('loadError');
+    const buildError = document.getElementById('buildError');
+    const reportEndpoint = {{.ReportEndpointJS}};
+
+    let current = null;
+
+    const PLACEHOLDER_MAP_BBOX = '12.34,45.67,12.89,45.99';
+    const PLACEHOLDER_FEATURE_ID = '123';
+
+    function isParamHidden(p) {
+        if (p && p.type === 'hidden') {
+            return true;
+        }
+        return !!(p && p.hidden === true);
+    }
+
+    function getAutomaticParamValue(p) {
+        if (!p || p.source == null) {
+            return null;
+        }
+        const src = String(p.source);
+        if (src === 'map.bbox') {
+            return PLACEHOLDER_MAP_BBOX;
+        }
+        if (src === 'feature.id') {
+            return PLACEHOLDER_FEATURE_ID;
+        }
+        return null;
+    }
+
+    function isAutoSourcedParam(p) {
+        return getAutomaticParamValue(p) !== null;
+    }
+
+    function setLoadError(msg) {
+        if (!msg) {
+            loadError.classList.add('is-hidden');
+            loadError.textContent = '';
+            return;
+        }
+        loadError.textContent = msg;
+        loadError.classList.remove('is-hidden');
+    }
+
+    function setBuildError(msg) {
+        if (!msg) {
+            buildError.classList.add('is-hidden');
+            buildError.textContent = '';
+            return;
+        }
+        buildError.textContent = msg;
+        buildError.classList.remove('is-hidden');
+    }
+
+    function clearForm() {
+        paramForm.innerHTML = '';
+    }
+
+    function getBuiltUrlFromOutput() {
+        const u = urlOut.textContent.trim();
+        if (!u || u === '-' || u.indexOf('?') === -1) {
+            return '';
+        }
+        return u;
+    }
+
+    function syncHtmlPreviewVisibility() {
+        if (!current || !current.definition) {
+            htmlPreviewWrap.classList.add('is-hidden');
+            reportIframe.src = 'about:blank';
+            return;
+        }
+        const fmt = getOutputFormat(current.definition);
+        if (fmt === 'html') {
+            htmlPreviewWrap.classList.remove('is-hidden');
+        } else {
+            htmlPreviewWrap.classList.add('is-hidden');
+            reportIframe.src = 'about:blank';
+        }
+    }
+
+    function getDatasourceName(definition) {
+        if (!definition) {
+            return '';
+        }
+        if (definition.dataSource != null) {
+            return String(definition.dataSource).trim();
+        }
+        if (definition.datasource != null) {
+            return String(definition.datasource).trim();
+        }
+        if (definition.datasourceName != null) {
+            return String(definition.datasourceName).trim();
+        }
+        if (definition.datasource_name != null) {
+            return String(definition.datasource_name).trim();
+        }
+        if (definition.data_source != null) {
+            return String(definition.data_source).trim();
+        }
+        return '';
+    }
+
+    function getParameters(definition) {
+        if (!definition) {
+            return [];
+        }
+        if (Array.isArray(definition.params)) {
+            return definition.params;
+        }
+        if (Array.isArray(definition.parameters)) {
+            return definition.parameters;
+        }
+        return [];
+    }
+
+    function getOutputFormat(definition) {
+        if (!definition) {
+            return '';
+        }
+        const fmt = definition.format != null ? definition.format : definition.outputFormat;
+        return String(fmt || '').toLowerCase();
+    }
+
+    function normalizeDefinition(data) {
+        const def = data && typeof data === 'object' ? data : {};
+        return {
+            name: def.name != null ? String(def.name) : '',
+            report: def.report != null ? String(def.report) : '',
+            datasource: getDatasourceName(def),
+            format: getOutputFormat(def),
+            params: getParameters(def)
+        };
+    }
+
+    function renderParameters(parameters) {
+        clearForm();
+        let visible = 0;
+        (parameters || []).forEach(function (p, idx) {
+            if (isParamHidden(p) || isAutoSourcedParam(p)) {
+                return;
+            }
+            visible++;
+            const name = p.name || ('param_' + idx);
+            const id = 'param_' + name.replace(/[^\w-]/g, '_');
+            const col = document.createElement('div');
+            col.className = 'input-field col s12 m6';
+
+            let input;
+            const t = (p.type || 'string').toLowerCase();
+            if (t === 'integer') {
+                input = document.createElement('input');
+                input.type = 'number';
+                input.step = '1';
+                if (p.default !== null && p.default !== undefined && p.default !== '') {
+                    input.value = String(p.default);
+                }
+            } else if (t === 'date') {
+                input = document.createElement('input');
+                input.type = 'date';
+                if (p.default) {
+                    input.value = String(p.default).slice(0, 10);
+                }
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                if (p.default !== null && p.default !== undefined) {
+                    input.value = String(p.default);
+                }
+            }
+            input.id = id;
+            input.name = name;
+            input.dataset.paramName = name;
+            input.dataset.required = p.required ? '1' : '0';
+
+            col.appendChild(input);
+            const label = document.createElement('label');
+            label.setAttribute('for', id);
+            label.textContent = p.label || name;
+            if (input.value !== '') {
+                label.className = 'active';
+            }
+            if (p.required) {
+                const req = document.createElement('span');
+                req.className = 'red-text';
+                req.textContent = ' *';
+                label.appendChild(req);
+            }
+            col.appendChild(label);
+            paramForm.appendChild(col);
+        });
+        if (visible === 0) {
+            noVisibleParams.classList.remove('is-hidden');
+        } else {
+            noVisibleParams.classList.add('is-hidden');
+        }
+        if (window.jrsInitMaterialize) {
+            window.jrsInitMaterialize(paramForm);
+        }
+    }
+
+    function resolveParamValue(p) {
+        const auto = getAutomaticParamValue(p);
+        if (auto !== null) {
+            return auto;
+        }
+        if (isParamHidden(p)) {
+            if (p.default !== null && p.default !== undefined) {
+                return String(p.default);
+            }
+            return '';
+        }
+        const el = paramForm.querySelector('[data-param-name="' + CSS.escape(p.name) + '"]');
+        if (!el) {
+            return '';
+        }
+        return (el.value || '').trim();
+    }
+
+    selectEl.addEventListener('change', function () {
+        setLoadError('');
+        setBuildError('');
+        urlOut.textContent = '-';
+        current = null;
+        clearForm();
+        noVisibleParams.classList.add('is-hidden');
+        htmlPreviewWrap.classList.add('is-hidden');
+        reportIframe.src = 'about:blank';
+
+        const file = selectEl.value;
+        if (!file) {
+            reportPanel.classList.add('is-hidden');
+            return;
+        }
+
+        const reportKey = file.replace(/\.report\.json$/, '');
+        const url = 'get_report_config?report=' + encodeURIComponent(reportKey);
+        fetch(url, { credentials: 'same-origin' })
+            .then(function (r) {
+                if (!r.ok) {
+                    throw new Error('HTTP ' + r.status + ' loading ' + file);
+                }
+                return r.json();
+            })
+            .then(function (data) {
+                const normalized = normalizeDefinition(data);
+                current = { definition: normalized };
+                metaName.textContent = normalized.name || '-';
+                metaDatasource.textContent = normalized.datasource || '-';
+                renderParameters(normalized.params);
+                syncHtmlPreviewVisibility();
+                reportPanel.classList.remove('is-hidden');
+            })
+            .catch(function (e) {
+                reportPanel.classList.add('is-hidden');
+                setLoadError(e.message || String(e));
+            });
+    });
+
+    btnBuild.addEventListener('click', function () {
+        setBuildError('');
+        if (!current) {
+            setBuildError('Select a report first.');
+            return;
+        }
+
+        const def = current.definition;
+        const params = getParameters(def);
+        const missing = [];
+        params.forEach(function (p) {
+            if (!p || !p.name) {
+                return;
+            }
+            if (isParamHidden(p) || isAutoSourcedParam(p)) {
+                return;
+            }
+            if (p.required && !resolveParamValue(p)) {
+                missing.push(p.label || p.name);
+            }
+        });
+        if (missing.length) {
+            setBuildError('Required parameters missing: ' + missing.join(', '));
+            return;
+        }
+
+        const q = [];
+        const repName = def.report != null ? String(def.report) : '';
+        q.push('_repName=' + encodeURIComponent(repName));
+        const ds = getDatasourceName(def);
+        q.push('_dataSource=' + encodeURIComponent(ds));
+        const repFormat = getOutputFormat(def) || 'pdf';
+        q.push('_repFormat=' + encodeURIComponent(repFormat));
+
+        params.forEach(function (p) {
+            if (!p || !p.name) {
+                return;
+            }
+            const val = resolveParamValue(p);
+            const submitted = window.JrsReportParams.scalarQueryValue(p, val, {
+                hidden: isParamHidden(p),
+                autoSourced: isAutoSourcedParam(p)
+            });
+            if (submitted === null) {
+                return;
+            }
+            q.push(encodeURIComponent(p.name) + '=' + encodeURIComponent(submitted));
+        });
+
+        const built = reportEndpoint + '?' + q.join('&');
+        urlOut.textContent = built;
+    });
+
+    btnRun.addEventListener('click', function () {
+        setBuildError('');
+        const u = getBuiltUrlFromOutput();
+        if (!u) {
+            setBuildError('Build the URL first.');
+            return;
+        }
+        window.open(u, '_blank');
+    });
+
+    btnIframe.addEventListener('click', function () {
+        setBuildError('');
+        const u = getBuiltUrlFromOutput();
+        if (!u) {
+            setBuildError('Build the URL first.');
+            return;
+        }
+        reportIframe.src = u;
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        M.FormSelect.init(document.querySelectorAll('select'));
+    });
+})();
+</script>
+</main>
+</body>
+</html>

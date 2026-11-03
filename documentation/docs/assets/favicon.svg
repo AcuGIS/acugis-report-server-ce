@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="AcuGIS">
+  <rect width="32" height="32" rx="7" fill="#1967d2"/>
+  <path d="M9 23 L16 7 L23 23 Z" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linejoin="round"/>
+  <circle cx="16" cy="17" r="2.2" fill="#ffffff"/>
+</svg>

@@ -1,0 +1,204 @@
+site_name: AcuGIS Report Server
+site_description: Documentation for AcuGIS Report Server — User Guide, Administration, Developer Guide, and Reference
+site_url: https://github.com/AcuGIS/acugis-report-server-ce
+repo_url: https://github.com/AcuGIS/acugis-report-server-ce
+repo_name: AcuGIS/acugis-report-server-ce
+edit_uri: edit/main/documentation/docs/
+docs_dir: docs
+site_dir: site
+strict: true
+copyright: Copyright &copy; 2026 AcuGIS
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Plus Jakarta Sans
+    code: IBM Plex Mono
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+
+extra_css:
+  - assets/acugis/acugis-nav.css
+  - stylesheets/extra.css
+
+extra_javascript:
+  - assets/acugis/acugis-nav.js
+
+extra:
+  generator: false
+  version:
+    provider: mike
+    default: latest
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/AcuGIS/acugis-report-server-ce
+
+plugins:
+  - material/search
+  - mike:
+      canonical_version: latest
+      version_selector: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Overview: getting-started/overview.md
+      - Quickstart: getting-started/quickstart.md
+      - Authentication: getting-started/authentication.md
+      - Concepts: getting-started/concepts.md
+  - User Guide:
+      - Overview: user-guide/index.md
+      - Reports: user-guide/reports.md
+      - Parameters: user-guide/parameters.md
+      - Folders: user-guide/folders.md
+      - Resources: user-guide/resources.md
+      - Datasources: user-guide/datasources.md
+      - Embedded Maps: user-guide/embedded-maps.md
+      - Report execution: user-guide/report-execution.md
+      - Output formats: user-guide/output-formats.md
+      - Searching: user-guide/searching.md
+      - Permissions: user-guide/permissions.md
+      - Report Designer:
+          - Overview: user-guide/designer/overview.md
+          - JRXML compatibility: user-guide/designer/jrxml-compatibility.md
+          - Publishing: user-guide/designer/publishing.md
+  - Administration:
+      - Installation: administration/installation.md
+      - Configuration: administration/configuration.md
+      - Security: administration/security.md
+      - Authentication: administration/authentication.md
+      - Licensing: administration/licensing.md
+      - Designer Web: administration/designer-web.md
+      - API Tokens: administration/api-tokens.md
+      - Permissions: administration/permissions.md
+      - Users: administration/users.md
+      - Groups: administration/groups.md
+      - Auditing: administration/auditing.md
+      - Backups: administration/backups.md
+      - Diagnostics: administration/diagnostics.md
+      - Logging: administration/logging.md
+      - Performance: administration/performance.md
+      - Deployment: administration/deployment.md
+      - Docker: administration/docker.md
+      - Reverse proxy: administration/reverse-proxy.md
+      - Upgrades: administration/upgrades.md
+      - Troubleshooting: administration/troubleshooting.md
+      - Health checks: administration/health-checks.md
+  - Developer Guide:
+      - Overview: developer/overview.md
+      - Authentication: developer/authentication.md
+      - REST API:
+          - Overview: developer/rest-api/overview.md
+          - Authentication: developer/rest-api/authentication.md
+          - Reports: developer/rest-api/reports.md
+          - Parameters & execute: developer/rest-api/parameters.md
+          - Binary responses: developer/rest-api/binary-responses.md
+          - Compatibility: developer/rest-api/compatibility.md
+      - CLI:
+          - Overview: developer/cli/overview.md
+          - Installation: developer/cli/installation.md
+          - Authentication: developer/cli/authentication.md
+          - Profiles: developer/cli/profiles.md
+          - Reports: developer/cli/reports.md
+          - Publishing: developer/cli/publishing.md
+          - Folders: developer/cli/folders.md
+          - Resources: developer/cli/resources.md
+          - Datasources: developer/cli/datasources.md
+          - Automation: developer/cli/automation.md
+      - SDKs:
+          - Overview: developer/sdk/overview.md
+          - Python: developer/sdk/python.md
+          - .NET: developer/sdk/dotnet.md
+          - Java: developer/sdk/java.md
+          - Go: developer/sdk/go.md
+      - JavaScript Embedding:
+          - Overview: developer/embedding/overview.md
+          - Quick Start: developer/embedding/quickstart.md
+          - Authentication: developer/embedding/authentication.md
+          - Reports: developer/embedding/reports.md
+          - Parameters: developer/embedding/parameters.md
+          - Events & Methods: developer/embedding/events-methods.md
+          - Security: developer/embedding/security.md
+          - API Reference: developer/embedding/api-reference.md
+      - OpenAPI: developer/openapi.md
+      - Swagger: developer/swagger.md
+      - Embedded analytics: developer/embedded-analytics.md
+      - Tutorials:
+          - Publishing a report: developer/tutorials/publishing-a-report.md
+          - Running a report: developer/tutorials/running-a-report.md
+          - Embedding Report Server: developer/tutorials/embedding.md
+          - Building a Python integration: developer/tutorials/python-integration.md
+          - Building an ASP.NET integration: developer/tutorials/aspnet-integration.md
+          - Building a Spring Boot integration: developer/tutorials/spring-boot-integration.md
+          - Building a Go HTTP integration: developer/tutorials/go-http-integration.md
+          - Running reports from the CLI: developer/tutorials/running-reports-cli.md
+          - Automating with GitHub Actions: developer/tutorials/github-actions.md
+  - Reference:
+      - REST API: reference/rest-api.md
+      - CLI: reference/cli.md
+      - SDK: reference/sdk.md
+      - Supported datasources: reference/supported-datasources.md
+      - Supported output formats: reference/supported-formats.md
+      - Environment variables: reference/environment-variables.md
+      - Compatibility matrix: reference/compatibility-matrix.md
+      - OpenAPI: reference/openapi.md
+      - Error codes: reference/error-codes.md
+      - Configuration: reference/configuration.md
+  - Release Notes: release-notes/index.md

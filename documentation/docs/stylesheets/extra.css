@@ -1,0 +1,1098 @@
+/* ==========================================================================
+   AcuGIS Report Server — documentation theme
+   SaaS docs aesthetic (Stripe / GitHub Docs inspired)
+   ========================================================================== */
+
+:root {
+  --acugis-blue: #1967d2;
+  --acugis-blue-soft: #e8f0fe;
+  --acugis-bg: #f8fafc;
+  --acugis-surface: #ffffff;
+  --acugis-text: #0f172a;
+  --acugis-muted: #64748b;
+  --acugis-border: #e2e8f0;
+  --acugis-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --acugis-shadow-hover: 0 8px 28px rgba(15, 23, 42, 0.1);
+  --acugis-radius: 16px;
+  --acugis-radius-sm: 12px;
+  --acugis-transition: 180ms ease;
+
+  --acugis-green: #059669;
+  --acugis-green-soft: #ecfdf5;
+  --acugis-purple: #7c3aed;
+  --acugis-purple-soft: #f5f3ff;
+  --acugis-orange: #ea580c;
+  --acugis-orange-soft: #fff7ed;
+  --acugis-teal: #0d9488;
+  --acugis-teal-soft: #f0fdfa;
+  --acugis-pink: #db2777;
+  --acugis-pink-soft: #fdf2f8;
+
+  --md-primary-fg-color: #1967d2;
+  --md-primary-fg-color--light: #4a86e0;
+  --md-primary-fg-color--dark: #1557b0;
+  --md-accent-fg-color: #1967d2;
+  --md-default-bg-color: #f8fafc;
+  --md-default-fg-color: #0f172a;
+  --md-default-fg-color--light: #64748b;
+  --md-typeset-a-color: #1967d2;
+}
+
+[data-md-color-scheme="slate"] {
+  --acugis-bg: #0b1220;
+  --acugis-surface: #111827;
+  --acugis-text: #e2e8f0;
+  --acugis-muted: #94a3b8;
+  --acugis-border: #1f2937;
+  --acugis-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.2);
+  --acugis-shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --acugis-blue-soft: rgba(25, 103, 210, 0.18);
+  --acugis-green-soft: rgba(5, 150, 105, 0.18);
+  --acugis-purple-soft: rgba(124, 58, 237, 0.18);
+  --acugis-orange-soft: rgba(234, 88, 12, 0.18);
+  --acugis-teal-soft: rgba(13, 148, 136, 0.18);
+  --acugis-pink-soft: rgba(219, 39, 119, 0.18);
+
+  --md-primary-fg-color: #8ab4f8;
+  --md-primary-fg-color--light: #aecbfa;
+  --md-primary-fg-color--dark: #1967d2;
+  --md-accent-fg-color: #8ab4f8;
+  --md-typeset-a-color: #8ab4f8;
+  --md-default-bg-color: #0b1220;
+  --md-default-fg-color: #e2e8f0;
+  --md-default-fg-color--light: #94a3b8;
+}
+
+/* --------------------------------------------------------------------------
+   Layout & typography
+   -------------------------------------------------------------------------- */
+
+.md-grid {
+  max-width: 1480px;
+}
+
+.md-main {
+  background: var(--acugis-bg);
+}
+
+.md-content {
+  padding-bottom: 3rem;
+}
+
+.md-typeset {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--acugis-text);
+}
+
+.md-typeset h1 {
+  font-size: 2.625rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--acugis-text);
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+}
+
+.md-typeset h2 {
+  font-size: 1.625rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--acugis-text);
+  margin-top: 2rem;
+}
+
+.md-typeset h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--acugis-text);
+}
+
+.md-typeset p,
+.md-typeset li {
+  font-size: 1.05rem;
+  color: var(--acugis-text);
+}
+
+.md-typeset code {
+  border-radius: 6px;
+  font-size: 0.92em;
+}
+
+.md-typeset pre > code {
+  border-radius: var(--acugis-radius-sm);
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: var(--acugis-radius-sm);
+}
+
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: var(--acugis-blue);
+}
+
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: var(--acugis-blue-soft);
+}
+
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before {
+  background-color: var(--acugis-blue);
+}
+
+.md-typeset .tabbed-set > input:checked + label {
+  color: var(--acugis-blue);
+  border-color: var(--acugis-blue);
+}
+
+.md-typeset table:not([class]) {
+  border-radius: var(--acugis-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--acugis-shadow);
+  border: 1px solid var(--acugis-border);
+}
+
+.md-typeset table:not([class]) th {
+  background: var(--acugis-blue-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Header & branding
+   -------------------------------------------------------------------------- */
+
+.md-header {
+  background: linear-gradient(180deg, #0b3d91 0%, #1967d2 100%);
+  box-shadow: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.md-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.9rem 0.35rem;
+  min-height: 3.4rem;
+}
+
+.md-header__title {
+  display: none !important;
+}
+
+.md-header__button.md-logo {
+  padding: 0.25rem;
+  margin: 0 0.1rem 0 0;
+  order: 0;
+  flex-shrink: 0;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 1.7rem;
+  width: 1.7rem;
+}
+
+/* Hide Material version selector (mike) in the header */
+.md-header .md-version,
+.md-version {
+  display: none !important;
+}
+
+/* Keep the drawer toggle for mobile only */
+.md-header__button[for="__drawer"] {
+  order: 2;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-header__button[for="__drawer"] {
+    display: none;
+  }
+}
+
+.acugis-brand {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.4rem;
+  order: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-right: 1rem;
+  padding: 0.15rem 0.35rem 0.15rem 0.1rem;
+  white-space: nowrap;
+  text-decoration: none !important;
+  color: #ffffff;
+  position: relative;
+  z-index: 2;
+}
+
+.acugis-brand:hover {
+  text-decoration: none !important;
+  opacity: 0.92;
+}
+
+.acugis-brand__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+}
+
+.acugis-brand__product {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.md-header__button.md-icon {
+  transition: background-color var(--acugis-transition), color var(--acugis-transition);
+  border-radius: 10px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.md-header__button.md-icon:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Visible header search bar (desktop) */
+.acugis-header-search {
+  display: none;
+  align-items: center;
+  gap: 0.55rem;
+  order: 3;
+  flex: 0 0 auto;
+  width: 260px;
+  max-width: 32vw;
+  height: 2.15rem;
+  margin: 0 0.25rem;
+  padding: 0 0.7rem 0 0.75rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition:
+    background-color var(--acugis-transition),
+    border-color var(--acugis-transition);
+}
+
+.acugis-header-search:hover {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.acugis-header-search__icon {
+  display: inline-flex;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.acugis-header-search__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.acugis-header-search__text {
+  flex: 1;
+  font-size: 0.82rem;
+  opacity: 0.85;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.acugis-header-search__kbd {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.12rem 0.4rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.acugis-header-search-icon {
+  order: 3;
+  flex-shrink: 0;
+}
+
+@media screen and (min-width: 60em) {
+  .acugis-header-search {
+    display: inline-flex;
+  }
+
+  .acugis-header-search-icon {
+    display: none;
+  }
+}
+
+/* Material search dialog — hidden until opened; custom bar is the trigger */
+.md-header__inner > .md-search {
+  position: absolute !important;
+  left: 0;
+  top: 100%;
+  width: 100vw;
+  max-width: 100vw;
+  z-index: 10;
+}
+
+.md-header__inner > .md-search:not([data-md-state="active"]) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0);
+}
+
+.md-header__inner > .md-search[data-md-state="active"] {
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.md-header .md-search__inner {
+  width: min(40rem, calc(100% - 2rem));
+}
+
+.md-header__option {
+  order: 4;
+  flex-shrink: 0;
+}
+
+/* GitHub: icon only */
+.md-header__source {
+  order: 5;
+  flex-shrink: 0;
+  margin-left: 0.15rem;
+  width: auto !important;
+  max-width: none !important;
+  padding: 0 !important;
+}
+
+.md-header__source .md-source {
+  color: #ffffff;
+}
+
+.md-header__source .md-source__repository,
+.md-source__repository {
+  display: none;
+}
+
+.md-source__icon + .md-source__repository {
+  display: none;
+}
+
+.md-header__source .md-source__icon {
+  margin: 0;
+}
+
+.md-header__source .md-source__icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Top navigation tabs
+   -------------------------------------------------------------------------- */
+
+.md-tabs {
+  background: transparent;
+  min-height: 2.6rem;
+}
+
+.md-header--lifted .md-tabs,
+.md-tabs {
+  background: linear-gradient(180deg, rgba(25, 103, 210, 0) 0%, rgba(11, 61, 145, 0.15) 100%);
+}
+
+.md-tabs__list {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.15rem 0 0.7rem;
+}
+
+.md-tabs__link {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0;
+  padding: 0.45rem 0.7rem;
+  opacity: 0.9;
+  border-radius: 0;
+  color: #ffffff;
+  transition:
+    opacity var(--acugis-transition),
+    box-shadow var(--acugis-transition);
+}
+
+.md-tabs__link:hover {
+  opacity: 1;
+  background: transparent;
+  box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.55);
+}
+
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  opacity: 1;
+  font-weight: 650;
+  background: transparent;
+  box-shadow: inset 0 -2px 0 #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebars & TOC
+   -------------------------------------------------------------------------- */
+
+.md-sidebar {
+  padding-top: 0.5rem;
+}
+
+.md-nav__link {
+  border-radius: 8px;
+  margin: 0.1rem 0;
+  transition:
+    background-color var(--acugis-transition),
+    color var(--acugis-transition);
+}
+
+.md-nav__link:hover {
+  color: var(--acugis-blue);
+  background: var(--acugis-blue-soft);
+}
+
+.md-nav__link--active,
+.md-nav__item .md-nav__link--active {
+  color: var(--acugis-blue);
+  font-weight: 650;
+}
+
+.md-sidebar--secondary .md-nav--secondary {
+  background: var(--acugis-surface);
+  border: 1px solid var(--acugis-border);
+  border-radius: var(--acugis-radius);
+  box-shadow: var(--acugis-shadow);
+  padding: 1rem 0.85rem 1.1rem;
+  position: sticky;
+  top: calc(73px + 5.5rem);
+}
+
+.md-sidebar--secondary .md-nav__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acugis-muted);
+  background: transparent;
+  box-shadow: none;
+  padding: 0.25rem 0.65rem 0.85rem;
+  margin-bottom: 0.15rem;
+}
+
+.md-sidebar--secondary .md-nav__link {
+  font-size: 0.92rem;
+  padding: 0.45rem 0.7rem 0.45rem 2.05rem;
+  position: relative;
+  color: var(--acugis-muted);
+}
+
+.md-sidebar--secondary .md-nav__link::before {
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  top: 50%;
+  width: 0.95rem;
+  height: 0.95rem;
+  border: 0;
+  border-radius: 0;
+  transform: translateY(-50%);
+  opacity: 0.85;
+  background: center / contain no-repeat;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231967d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+
+.md-sidebar--secondary .md-nav__link[href*="editions"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231967d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'/%3E%3C/svg%3E");
+}
+
+.md-sidebar--secondary .md-nav__link[href*="client-environment"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231967d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='14' rx='2'/%3E%3Cpath d='M8 21h8M12 17v4'/%3E%3C/svg%3E");
+}
+
+.md-sidebar--secondary .md-nav__link[href*="live-api"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231967d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z'/%3E%3C/svg%3E");
+}
+
+.md-sidebar--secondary .md-nav__link[href*="next-steps"]::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231967d2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}
+
+.md-sidebar--secondary .md-nav__link:hover {
+  color: var(--acugis-text);
+  background: var(--acugis-blue-soft);
+}
+
+.md-sidebar--secondary .md-nav__link--active,
+.md-sidebar--secondary .md-nav__link--active:focus {
+  color: var(--acugis-blue);
+  background: var(--acugis-blue-soft);
+  font-weight: 650;
+}
+
+.md-sidebar--secondary .md-nav__link--active::before {
+  opacity: 1;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.md-sidebar--secondary .md-nav__link--active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--acugis-blue);
+}
+
+/* --------------------------------------------------------------------------
+   Home shell
+   -------------------------------------------------------------------------- */
+
+.acugis-home {
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Hero — open band (matches screenshot)
+   -------------------------------------------------------------------------- */
+
+.acugis-hero {
+  position: relative;
+  margin: 0 0 2rem;
+  padding: 2.75rem 0 2.25rem;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.acugis-hero::before {
+  content: "";
+  position: absolute;
+  inset: -1rem -2rem auto auto;
+  width: min(52%, 520px);
+  height: 280px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(99, 102, 241, 0.14), transparent 55%),
+    radial-gradient(circle at 70% 30%, rgba(25, 103, 210, 0.16), transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='260' fill='none'%3E%3Cg stroke='%2393c5fd' stroke-width='1' opacity='0.45'%3E%3Cpath d='M40 180 L120 80 L210 140 L300 40 L380 110'/%3E%3Ccircle cx='40' cy='180' r='3.5' fill='%2393c5fd'/%3E%3Ccircle cx='120' cy='80' r='3.5' fill='%2393c5fd'/%3E%3Ccircle cx='210' cy='140' r='3.5' fill='%2393c5fd'/%3E%3Ccircle cx='300' cy='40' r='3.5' fill='%2393c5fd'/%3E%3Ccircle cx='380' cy='110' r='3.5' fill='%2393c5fd'/%3E%3Cpath d='M90 200 L160 120 L250 170 L340 90'/%3E%3Ccircle cx='90' cy='200' r='2.5' fill='%23a5b4fc'/%3E%3Ccircle cx='160' cy='120' r='2.5' fill='%23a5b4fc'/%3E%3Ccircle cx='250' cy='170' r='2.5' fill='%23a5b4fc'/%3E%3Ccircle cx='340' cy='90' r='2.5' fill='%23a5b4fc'/%3E%3C/g%3E%3C/svg%3E") right 10% top 20% / 420px 260px no-repeat;
+  opacity: 0.95;
+}
+
+[data-md-color-scheme="slate"] .acugis-hero::before {
+  opacity: 0.35;
+}
+
+.acugis-hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 46rem;
+}
+
+.acugis-hero h1 {
+  margin: 0 0 1rem !important;
+  font-size: clamp(2.5rem, 4.5vw, 3.5rem) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  color: var(--acugis-text);
+}
+
+.acugis-hero__lead {
+  margin: 0 0 1.75rem !important;
+  max-width: 42rem;
+  font-size: 1.2rem !important;
+  line-height: 1.55 !important;
+  color: var(--acugis-muted) !important;
+}
+
+.acugis-hero__lead a {
+  color: var(--acugis-blue) !important;
+  font-weight: 650;
+  text-decoration: none !important;
+}
+
+.acugis-hero__lead a:hover {
+  text-decoration: underline !important;
+}
+
+/* Hero search — opens Material search dialog via for="__search" */
+.acugis-hero-search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(100%, 640px);
+  height: 54px;
+  padding: 0 1.15rem;
+  border-radius: 14px;
+  background: var(--acugis-surface);
+  border: 1px solid var(--acugis-border);
+  box-shadow: var(--acugis-shadow);
+  cursor: pointer;
+  transition:
+    border-color var(--acugis-transition),
+    box-shadow var(--acugis-transition);
+}
+
+.acugis-hero-search:hover,
+.acugis-hero-search:focus-within {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(25, 103, 210, 0.12), var(--acugis-shadow-hover);
+}
+
+.acugis-hero-search__icon {
+  display: inline-flex;
+  color: var(--acugis-muted);
+  flex-shrink: 0;
+}
+
+.acugis-hero-search__placeholder {
+  flex: 1;
+  font-size: 1.05rem;
+  color: var(--acugis-muted);
+  user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   Category cards — 2-col, solid icons (matches screenshot)
+   -------------------------------------------------------------------------- */
+
+.acugis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin: 0 0 1.75rem;
+}
+
+.acugis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.5rem 1.55rem 1.35rem;
+  border: 1px solid var(--acugis-border);
+  border-radius: var(--acugis-radius);
+  background: var(--acugis-surface);
+  color: inherit;
+  box-shadow: var(--acugis-shadow);
+  text-decoration: none !important;
+  transition:
+    transform var(--acugis-transition),
+    box-shadow var(--acugis-transition),
+    border-color var(--acugis-transition);
+}
+
+.acugis-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--acugis-shadow-hover);
+  text-decoration: none !important;
+}
+
+.acugis-card__top {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.acugis-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+.acugis-card__icon svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.acugis-card__title {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.acugis-card__desc {
+  display: block;
+  color: var(--acugis-muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  flex: 1;
+  padding-left: 0.1rem;
+}
+
+.acugis-card__cta {
+  display: inline-flex;
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.acugis-card--blue .acugis-card__icon { background: var(--acugis-blue); }
+.acugis-card--blue .acugis-card__title,
+.acugis-card--blue .acugis-card__cta { color: var(--acugis-blue); }
+.acugis-card--blue:hover { border-color: #93c5fd; }
+
+.acugis-card--green .acugis-card__icon { background: var(--acugis-green); }
+.acugis-card--green .acugis-card__title,
+.acugis-card--green .acugis-card__cta { color: var(--acugis-green); }
+.acugis-card--green:hover { border-color: #6ee7b7; }
+
+.acugis-card--purple .acugis-card__icon { background: var(--acugis-purple); }
+.acugis-card--purple .acugis-card__title,
+.acugis-card--purple .acugis-card__cta { color: var(--acugis-purple); }
+.acugis-card--purple:hover { border-color: #c4b5fd; }
+
+.acugis-card--orange .acugis-card__icon { background: var(--acugis-orange); }
+.acugis-card--orange .acugis-card__title,
+.acugis-card--orange .acugis-card__cta { color: var(--acugis-orange); }
+.acugis-card--orange:hover { border-color: #fdba74; }
+
+.acugis-card--teal .acugis-card__icon { background: var(--acugis-teal); }
+.acugis-card--teal .acugis-card__title,
+.acugis-card--teal .acugis-card__cta { color: var(--acugis-teal); }
+.acugis-card--teal:hover { border-color: #5eead4; }
+
+.acugis-card--pink .acugis-card__icon { background: var(--acugis-pink); }
+.acugis-card--pink .acugis-card__title,
+.acugis-card--pink .acugis-card__cta { color: var(--acugis-pink); }
+.acugis-card--pink:hover { border-color: #f9a8d4; }
+
+/* --------------------------------------------------------------------------
+   Bottom info bar — one row, four compact cells
+   -------------------------------------------------------------------------- */
+
+.acugis-info-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0 0 1.5rem;
+  background: var(--acugis-surface);
+  border: 1px solid var(--acugis-border);
+  border-radius: var(--acugis-radius);
+  box-shadow: var(--acugis-shadow);
+  overflow: hidden;
+}
+
+.acugis-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.15rem 1.1rem;
+  text-decoration: none !important;
+  color: inherit;
+  border-right: 1px solid var(--acugis-border);
+  transition: background-color var(--acugis-transition);
+}
+
+.acugis-info-item:last-child {
+  border-right: 0;
+}
+
+.acugis-info-item:hover {
+  background: var(--acugis-blue-soft);
+  text-decoration: none !important;
+}
+
+.acugis-info-item__icon {
+  display: inline-flex;
+  color: var(--acugis-blue);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.acugis-info-item__icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.acugis-info-item__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.acugis-info-item__body strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--acugis-text);
+  letter-spacing: -0.01em;
+}
+
+.acugis-info-item__body span {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--acugis-muted);
+}
+
+/* Full section content kept below the marketing bar */
+.acugis-details {
+  margin-top: 2rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--acugis-border);
+}
+
+.acugis-details > h2:first-of-type {
+  margin-top: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.md-footer {
+  border-top: 1px solid var(--acugis-border);
+  background: var(--acugis-bg);
+}
+
+.md-footer-meta {
+  background: var(--acugis-bg);
+}
+
+.md-footer-meta__inner {
+  padding: 1.35rem 0.8rem;
+}
+
+.acugis-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1.5rem;
+  width: 100%;
+  color: var(--acugis-muted);
+  font-size: 0.9rem;
+}
+
+.acugis-footer__right {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.15rem;
+}
+
+.acugis-footer a {
+  color: var(--acugis-muted);
+  transition: color var(--acugis-transition);
+}
+
+.acugis-footer a:hover {
+  color: var(--acugis-blue);
+}
+
+.acugis-footer__meta {
+  color: var(--acugis-muted);
+}
+
+.md-social {
+  margin-left: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Home page content tweaks
+   -------------------------------------------------------------------------- */
+
+/* Hide Material's duplicate top title when hero provides the H1 */
+.md-main:has(.acugis-home) article.md-content__inner > h1:first-child,
+.md-main:has(.acugis-hero) article.md-content__inner > h1:first-child {
+  display: none;
+}
+
+/* Home landing: full-width composition + TOC */
+.md-main:has(.acugis-home) .md-sidebar--primary,
+.md-main:has(.acugis-hero) .md-sidebar--primary,
+.md-main:has(.acugis-home) .md-sidebar--secondary,
+.md-main:has(.acugis-hero) .md-sidebar--secondary {
+  display: none;
+}
+
+.md-main:has(.acugis-home) .md-path,
+.md-main:has(.acugis-home) nav[aria-label="Breadcrumb"],
+.md-main:has(.acugis-home) .md-content__button {
+  display: none;
+}
+
+.md-main:has(.acugis-home) .md-content__inner > .md-typeset > *:first-child,
+.md-main:has(.acugis-home) .acugis-home {
+  margin-top: 0;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-main:has(.acugis-home) .md-content,
+  .md-main:has(.acugis-hero) .md-content {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 72rem;
+  }
+
+  .md-main:has(.acugis-home) .md-main__inner,
+  .md-main:has(.acugis-hero) .md-main__inner {
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsiveness
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 76.1875em) {
+  .acugis-info-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .acugis-info-item:nth-child(2) {
+    border-right: 0;
+  }
+
+  .acugis-info-item:nth-child(1),
+  .acugis-info-item:nth-child(2) {
+    border-bottom: 1px solid var(--acugis-border);
+  }
+}
+
+@media screen and (max-width: 44em) {
+  .acugis-grid,
+  .acugis-info-bar {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .acugis-info-bar {
+    gap: 0;
+  }
+
+  .acugis-info-item {
+    border-right: 0;
+    border-bottom: 1px solid var(--acugis-border);
+  }
+
+  .acugis-info-item:last-child {
+    border-bottom: 0;
+  }
+
+  .acugis-hero {
+    padding: 1.5rem 0 1.75rem;
+  }
+
+  .acugis-hero h1 {
+    font-size: 2.15rem !important;
+  }
+
+  .acugis-hero__lead {
+    font-size: 1.05rem !important;
+  }
+
+  .acugis-hero::before {
+    opacity: 0.45;
+    width: 70%;
+  }
+
+  .acugis-header-search {
+    display: none;
+  }
+
+  .acugis-header-search-icon {
+    display: inline-flex;
+  }
+
+  .acugis-brand__product {
+    display: inline;
+    font-size: 0.95rem;
+  }
+
+  .md-typeset h1 {
+    font-size: 2rem;
+  }
+
+  .md-sidebar--secondary .md-nav--secondary {
+    position: static;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Corporate header above the Report Server documentation bar
+   Header source: main-website/shared/acugis-nav.css
+   -------------------------------------------------------------------------- */
+
+.acugis-gn {
+  color-scheme: light;
+}
+
+.md-header {
+  top: 73px;
+  z-index: 4;
+}
+
+@media screen and (max-width: 76.234375em) {
+  .md-sidebar--primary {
+    top: 73px;
+    height: calc(100% - 73px);
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-header--lifted ~ .md-container .md-sidebar {
+    top: calc(73px + 4.8rem);
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .md-header {
+    top: 65px;
+  }
+
+  .md-sidebar--primary {
+    top: 65px;
+    height: calc(100% - 65px);
+  }
+
+  .md-sidebar--secondary .md-nav--secondary {
+    top: calc(65px + 5.5rem);
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-main__inner {
+    margin-top: 1.25rem;
+  }
+
+  .md-content__inner {
+    margin: 0 1.2rem 0 1.5rem;
+  }
+}

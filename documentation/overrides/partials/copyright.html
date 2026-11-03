@@ -1,0 +1,20 @@
+<div class="md-copyright acugis-footer">
+  <div class="acugis-footer__left">
+    {% if config.copyright %}
+      <div class="md-copyright__highlight">
+        {{ config.copyright }}
+      </div>
+    {% else %}
+      <div class="md-copyright__highlight">
+        Copyright © 2026 AcuGIS
+      </div>
+    {% endif %}
+  </div>
+  <div class="acugis-footer__right">
+    <span class="acugis-footer__meta">AcuGIS Report Server Documentation</span>
+    {% if config.repo_url %}
+      <a href="{{ config.repo_url }}" target="_blank" rel="noopener">GitHub</a>
+    {% endif %}
+    <a href="https://acugis.com/" target="_blank" rel="noopener">Contact</a>
+  </div>
+</div>

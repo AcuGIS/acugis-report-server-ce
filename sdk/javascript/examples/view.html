@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AcuGIS Embed — View</title></head>
+<body>
+  <div id="view" style="height:90vh"></div>
+  <script src="http://localhost:9088/sdk/acugis-report.js"></script>
+  <script>
+    AcuGIS.embedView({
+      server: "http://localhost:9088",
+      target: "#view",
+      viewId: "owner/view-key",
+      token: "emb_REPLACE_ME"
+    });
+  </script>
+</body>
+</html>

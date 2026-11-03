@@ -1,0 +1,196 @@
+Advanced: Dynamic Parameter Sources (SQL-driven dropdowns)
+=========================================================
+
+Standalone Jasper Report Services supports dynamic parameter values populated from a PostgreSQL query.
+This allows dropdowns to automatically reflect current data (e.g., list of salespeople, categories, regions).
+
+Overview
+--------
+
+Instead of hardcoding options in JSON, you can define a SQL query that returns values for the parameter.
+
+Example use cases:
+
+- SalesPerson list from database
+- Product categories
+- Regions or states
+- Any lookup table
+
+Parameter Configuration
+-----------------------
+
+In your report JSON, define a parameter like this:
+
+::
+
+   {
+     "name": "SalesPerson",
+     "type": "select",
+     "multiple": true,
+     "label": "Sales Person",
+     "source": "sql:SELECT DISTINCT salesperson FROM sales ORDER BY salesperson"
+   }
+
+Key fields:
+
+- ``type: select`` ? enables dropdown
+- ``multiple: true`` ? allows multi-select (IN clause support)
+- ``source: sql:...`` ? dynamic query
+
+SQL Requirements
+----------------
+
+Your SQL must return a single column:
+
+.. code-block:: sql
+
+   SELECT DISTINCT salesperson FROM sales ORDER BY salesperson
+
+Optional (label/value pair):
+
+.. code-block:: sql
+
+   SELECT id, name FROM users ORDER BY name
+
+In this case:
+
+- First column = value
+- Second column = label
+
+How It Works
+------------
+
+1. The standalone app detects:
+
+::
+
+   source starts with "sql:"
+
+2. It executes the query using the report datasource
+
+3. Results are converted into dropdown options
+
+4. User selects values ? sent to Jasper as parameters
+
+Implementation Notes (for Developers)
+------------------------------------
+
+Your backend must:
+
+1. Parse:
+
+::
+
+   source = "sql:..."
+
+2. Execute query against the datasource (pg_store connection)
+
+3. Return array:
+
+::
+
+   [
+     {"value": "Bob", "label": "Bob"},
+     {"value": "Alice", "label": "Alice"}
+   ]
+
+4. Inject into parameter options before rendering UI
+
+Security Considerations
+----------------------
+
+**IMPORTANT:** Never allow raw user input in SQL.
+
+Best practices:
+
+- Only allow predefined queries stored in JSON
+- Do not concatenate user input into SQL
+- Use read-only database user if possible
+
+Optional Enhancement (Recommended)
+---------------------------------
+
+Instead of embedding SQL directly, use named sources:
+
+::
+
+   "source": "lookup:salespersons"
+
+Then map in backend:
+
+::
+
+   salespersons ? SELECT DISTINCT salesperson FROM sales
+
+Benefits:
+
+- Cleaner JSON
+- Centralized query control
+- Easier maintenance
+
+Multi-Select Behavior
+--------------------
+
+For multi-select parameters:
+
+::
+
+   "multiple": true
+
+The report viewer will send:
+
+::
+
+   SalesPerson=Bob&SalesPerson=Alice
+
+Ensure your JRXML uses:
+
+::
+
+   class="java.util.Collection"
+
+and SQL uses:
+
+.. code-block:: sql
+
+   WHERE salesperson IN ($P!{SalesPerson})
+
+Troubleshooting
+---------------
+
+Dropdown is empty
+^^^^^^^^^^^^^^^^^
+
+- Verify SQL runs manually
+- Check database connection (pg_store)
+- Ensure correct datasource selected
+
+SQL error
+^^^^^^^^^
+
+- Test query in database directly
+- Check table/column names
+
+Wrong values returned
+^^^^^^^^^^^^^^^^^^^^^
+
+- Ensure correct column order
+- Use DISTINCT if needed
+
+Performance issues
+^^^^^^^^^^^^^^^^^^
+
+- Add indexes to lookup columns
+- Limit result set if very large
+
+Summary
+-------
+
+Dynamic parameter sources allow:
+
+- Live data-driven dropdowns
+- No hardcoded values
+- Better user experience
+- More flexible reports
+
+This is the recommended approach for production use.

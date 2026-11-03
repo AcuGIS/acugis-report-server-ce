@@ -1,0 +1,464 @@
+# Public OSS source export exclusions.
+#
+# Paths are relative to the repository root. A trailing slash excludes a
+# directory and everything under it. This file is the exclusion manifest for
+# scripts/export-oss-source.sh. It does not delete anything in the private tree.
+#
+# Lines starting with # are comments. OSS stubs (*_oss.go, stub_oss.go,
+# build_oss.go, wire_oss.go, admin_authentication_oss.*) are not listed and
+# stay in the export.
+
+# ---------------------------------------------------------------------------
+# Professional MCP server
+# ---------------------------------------------------------------------------
+go-report-server/internal/mcp/
+go-report-server/internal/server/mcp.go
+go-report-server/internal/server/mcp_test.go
+
+# ---------------------------------------------------------------------------
+# Professional Go implementation (!oss)
+# ---------------------------------------------------------------------------
+go-report-server/cmd/jrs-run-schedule/wire_professional.go
+go-report-server/cmd/jrs-server/wire_professional.go
+go-report-server/datasourcefs/maps_pro.go
+# internal/arcgis is the Open Source Feature Server catalog (jasper_arcgis).
+# wire_oss.go and datasource_arcgis.go compile it. Professional ArcGIS map
+# rendering stays out: server/arcgis.go, the Java ArcGIS* classes, and
+# arcgis-connections.properties.
+go-report-server/internal/auditexport/adapters.go
+go-report-server/internal/auditexport/adapters_test.go
+go-report-server/internal/auditexport/filter.go
+go-report-server/internal/auditexport/filter_test.go
+go-report-server/internal/auditexport/memory.go
+go-report-server/internal/auditexport/repository.go
+go-report-server/internal/auditexport/service.go
+go-report-server/internal/auditexport/types.go
+go-report-server/internal/auditexport/worker.go
+go-report-server/internal/auditexport/worker_test.go
+go-report-server/internal/datasetintel/discover_reports.go
+go-report-server/internal/datasetintel/discover_reports_test.go
+go-report-server/internal/datasetintel/discover_views.go
+go-report-server/internal/datasetintel/discover_views_test.go
+go-report-server/internal/datasetintel/errors.go
+go-report-server/internal/datasetintel/field_metadata_test.go
+go-report-server/internal/datasetintel/health.go
+go-report-server/internal/datasetintel/health_test.go
+go-report-server/internal/datasetintel/identity.go
+go-report-server/internal/datasetintel/models.go
+go-report-server/internal/datasetintel/open.go
+go-report-server/internal/datasetintel/profiler.go
+go-report-server/internal/datasetintel/profiler_basic.go
+go-report-server/internal/datasetintel/profiler_pg.go
+go-report-server/internal/datasetintel/report_discover_test.go
+go-report-server/internal/datasetintel/report_executor.go
+go-report-server/internal/datasetintel/report_executor_test.go
+go-report-server/internal/datasetintel/report_fingerprint.go
+go-report-server/internal/datasetintel/report_map_params_test.go
+go-report-server/internal/datasetintel/report_memory.go
+go-report-server/internal/datasetintel/report_models.go
+go-report-server/internal/datasetintel/report_params.go
+go-report-server/internal/datasetintel/report_params_test.go
+go-report-server/internal/datasetintel/report_profile.go
+go-report-server/internal/datasetintel/report_profile_test.go
+go-report-server/internal/datasetintel/report_repository.go
+go-report-server/internal/datasetintel/report_security_test.go
+go-report-server/internal/datasetintel/report_service.go
+go-report-server/internal/datasetintel/repository.go
+go-report-server/internal/datasetintel/service.go
+go-report-server/internal/datasetintel/snowflake_profile_test.go
+go-report-server/internal/embeddedmap/qgis_wms.go
+go-report-server/internal/explorer/analysis.go
+go-report-server/internal/explorer/connect.go
+go-report-server/internal/explorer/dialect.go
+go-report-server/internal/explorer/dialect_test.go
+go-report-server/internal/explorer/errors.go
+go-report-server/internal/explorer/export.go
+go-report-server/internal/explorer/features.go
+go-report-server/internal/explorer/features_test.go
+go-report-server/internal/explorer/map_catalog_adapters.go
+go-report-server/internal/explorer/map_provider.go
+go-report-server/internal/explorer/map_provider_test.go
+go-report-server/internal/explorer/map_remote.go
+go-report-server/internal/explorer/map_report_dataset.go
+go-report-server/internal/explorer/map_service.go
+go-report-server/internal/explorer/map_spatial_table.go
+go-report-server/internal/explorer/metadata.go
+go-report-server/internal/explorer/models.go
+go-report-server/internal/explorer/query.go
+go-report-server/internal/explorer/query_test.go
+go-report-server/internal/explorer/report_attach_geom.go
+go-report-server/internal/explorer/report_attach_geom_test.go
+go-report-server/internal/explorer/report_dataset.go
+go-report-server/internal/explorer/report_dataset_test.go
+go-report-server/internal/explorer/report_features.go
+go-report-server/internal/explorer/report_geom.go
+go-report-server/internal/explorer/report_geom_test.go
+go-report-server/internal/explorer/report_query.go
+go-report-server/internal/explorer/report_source.go
+go-report-server/internal/explorer/report_source_test.go
+go-report-server/internal/explorer/service.go
+go-report-server/internal/explorer/service_interactive_test.go
+go-report-server/internal/explorer/spatial_analysis.go
+go-report-server/internal/explorer/spatial_analysis_test.go
+go-report-server/internal/explorer/spatial_derived.go
+go-report-server/internal/explorer/spatial_provider.go
+go-report-server/internal/explorer/spatial_report_stream.go
+go-report-server/internal/explorer/statistics.go
+go-report-server/internal/explorer/statistics_math.go
+go-report-server/internal/explorer/statistics_sql.go
+go-report-server/internal/explorer/statistics_test.go
+go-report-server/internal/explorer/summary.go
+go-report-server/internal/explorer/v1_legacy_test.go
+go-report-server/internal/explorer/views.go
+go-report-server/internal/explorer/views_test.go
+go-report-server/internal/extid/extid_test.go
+go-report-server/internal/extid/models.go
+go-report-server/internal/extid/repository.go
+go-report-server/internal/governance/errors.go
+go-report-server/internal/governance/identity.go
+go-report-server/internal/governance/json_helpers.go
+go-report-server/internal/governance/list.go
+go-report-server/internal/governance/models.go
+go-report-server/internal/governance/repository.go
+go-report-server/internal/governance/service.go
+go-report-server/internal/governance/service_test.go
+go-report-server/internal/license/build_professional.go
+go-report-server/internal/license/manager_test.go
+go-report-server/internal/license/trial_test.go
+go-report-server/internal/mapreport/from_post.go
+go-report-server/internal/mapreport/selection.go
+go-report-server/internal/mapreport/selection_test.go
+go-report-server/internal/mapreport/service_professional.go
+go-report-server/internal/modules/professional.go
+go-report-server/internal/modules/professional_test.go
+go-report-server/internal/oidcauth/discovery.go
+go-report-server/internal/oidcauth/edition_test.go
+go-report-server/internal/oidcauth/flow.go
+go-report-server/internal/oidcauth/oidc_test.go
+go-report-server/internal/oidcauth/provision.go
+go-report-server/internal/oidcauth/service.go
+go-report-server/internal/oidcauth/settings.go
+go-report-server/internal/openapi/bundle_professional.go
+go-report-server/internal/qgis/models.go
+go-report-server/internal/qgis/properties.go
+go-report-server/internal/qgis/properties_test.go
+go-report-server/internal/qgis/repository.go
+go-report-server/internal/qgis/sanitize.go
+go-report-server/internal/qgis/sanitize_test.go
+go-report-server/internal/samlauth/fuzzkey_exclude_test.go
+go-report-server/internal/samlauth/flow.go
+go-report-server/internal/samlauth/metadata.go
+go-report-server/internal/samlauth/provision.go
+go-report-server/internal/samlauth/replay.go
+go-report-server/internal/samlauth/saml_test.go
+go-report-server/internal/samlauth/service.go
+go-report-server/internal/samlauth/settings.go
+go-report-server/internal/samlauth/spkey.go
+go-report-server/internal/samlauth/testdata/
+go-report-server/internal/server/admin_audit.go
+go-report-server/internal/server/admin_audit.html
+go-report-server/internal/server/admin_audit_export.go
+go-report-server/internal/server/admin_audit_export.html
+go-report-server/internal/server/admin_authentication.go
+go-report-server/internal/server/admin_authentication.html
+go-report-server/internal/server/admin_embed_explorer_test.go
+go-report-server/internal/server/admin_governance.go
+go-report-server/internal/server/admin_governance.html
+go-report-server/internal/server/admin_usage.go
+go-report-server/internal/server/admin_usage.html
+go-report-server/internal/server/arcgis.go
+go-report-server/internal/server/arcgis_connections.html
+go-report-server/internal/server/audit_api.go
+go-report-server/internal/server/audit_api_test.go
+go-report-server/internal/server/audit_edition_test.go
+go-report-server/internal/server/audit_export_api.go
+go-report-server/internal/server/audit_export_api_test.go
+go-report-server/internal/server/auth_oidc.go
+go-report-server/internal/server/auth_saml.go
+go-report-server/internal/server/dashboards.go
+go-report-server/internal/server/dashboards.html
+go-report-server/internal/server/dataset_intelligence.go
+go-report-server/internal/server/dataset_intelligence.html
+go-report-server/internal/server/dataset_intelligence_report.go
+go-report-server/internal/server/dataset_intelligence_report_test.go
+go-report-server/internal/server/edition_professional_test.go
+go-report-server/internal/server/embed_bound_pro_test.go
+go-report-server/internal/server/debug_embedded_map.go
+go-report-server/internal/server/embed_professional.go
+go-report-server/internal/server/explorer.go
+go-report-server/internal/server/explorer.html
+go-report-server/internal/server/explorer_report_exec.go
+go-report-server/internal/server/explorer_report_query_phase1_test.go
+go-report-server/internal/server/explorer_test.go
+go-report-server/internal/server/explorer_v1_phase2_test.go
+go-report-server/internal/server/explorer_v1_phase3_test.go
+go-report-server/internal/server/explorer_views.go
+go-report-server/internal/server/explorer_views_cli_test.go
+go-report-server/internal/server/governance_api.go
+go-report-server/internal/server/governance_api_test.go
+go-report-server/internal/server/license_admin_test.go
+go-report-server/internal/server/license_trial_test.go
+go-report-server/internal/server/map.go
+go-report-server/internal/server/map_test.go
+go-report-server/internal/server/qgis.go
+go-report-server/internal/server/qgis_connections.html
+go-report-server/internal/server/qgis_proxy.go
+go-report-server/internal/server/qgis_proxy_test.go
+go-report-server/internal/server/routes_professional.go
+go-report-server/internal/server/usage_api.go
+go-report-server/internal/server/usage_api_test.go
+go-report-server/internal/server/usage_catalog.go
+go-report-server/internal/usage/match.go
+go-report-server/internal/usage/memory.go
+go-report-server/internal/usage/percentile.go
+go-report-server/internal/usage/performance_test.go
+go-report-server/internal/usage/periods.go
+go-report-server/internal/usage/repository.go
+go-report-server/internal/usage/repository_sql_test.go
+go-report-server/internal/usage/service.go
+go-report-server/internal/usage/types.go
+go-report-server/internal/usage/usage_test.go
+
+# ---------------------------------------------------------------------------
+# Professional OpenAPI modules (both copies)
+# ---------------------------------------------------------------------------
+go-report-server/openapi/dashboards.yaml
+go-report-server/openapi/explorer.yaml
+go-report-server/openapi/mapreports.yaml
+go-report-server/internal/openapi/spec/dashboards.yaml
+go-report-server/internal/openapi/spec/explorer.yaml
+go-report-server/internal/openapi/spec/mapreports.yaml
+
+# ---------------------------------------------------------------------------
+# Professional SDK clients and examples
+# ---------------------------------------------------------------------------
+sdk/go/explorer.go
+sdk/java/src/main/java/com/acugis/report/services/ExplorerService.java
+sdk/dotnet/src/AcuGIS.Report/Services/ExplorerService.cs
+sdk/python/acugis_report/cli/commands/explorer.py
+sdk/python/acugis_report/cli/commands/dashboards.py
+sdk/python/acugis_report/cli/commands/views.py
+sdk/javascript/examples/dashboard.html
+sdk/javascript/examples/map-report.html
+
+# ---------------------------------------------------------------------------
+# QGIS Server and ArcGIS FeatureServer renderers. Community keeps MapRenderer,
+# PostGIS/MySQL geometry, GeoServer, and WMS. These classes are not referenced
+# by the Community renderer, so the OSS WAR still builds without them.
+stand-alone-tomcat-10/map-src/main/java/com/acugis/map/ArcGISAuth.java
+stand-alone-tomcat-10/map-src/main/java/com/acugis/map/ArcGISMapRenderer.java
+stand-alone-tomcat-10/map-src/main/java/com/acugis/map/QGISAuth.java
+stand-alone-tomcat-10/map-src/main/java/com/acugis/map/QGISFilter.java
+stand-alone-tomcat-10/map-src/main/java/com/acugis/map/QGISMapRenderer.java
+
+# Professional Map Report PHP and browser assets
+# Community embedded maps (lib/embedded_map.php and internal/spatial) stay.
+# ---------------------------------------------------------------------------
+assets/js/spatial-selection.js
+reports/map_columns.php
+reports/map_extent.php
+reports/map_features.php
+lib/map_definition.php
+lib/map_renderer.php
+lib/map_renderer_postgis.php
+lib/map_report.php
+lib/map_request.php
+lib/map_thematic.php
+lib/point_style.php
+
+# ---------------------------------------------------------------------------
+# Schema and migrations.
+#
+# database/schema.sql is the Professional schema and is not copied.
+# The export writes database/schema.oss.sql to database/schema.sql and keeps
+# schema.oss.sql for the OSS Debian packager.
+#
+# database/migrate_arcgis.sql is NOT excluded. It only creates
+# public.jasper_arcgis, the same Open Source Feature Server catalog that
+# schema.oss.sql defines and that scripts/verify-package.sh and
+# scripts/verify-deb.sh require in the OSS package. wire_oss.go reads that
+# catalog. Professional ArcGIS map rendering is excluded separately
+# (Java ArcGISAuth / ArcGISMapRenderer, server/arcgis.go, and
+# arcgis-connections.properties).
+#
+# database/schema.qcarta.sql is a separate QCarta runtime schema, not the
+# public OSS schema.
+#
+# Migration audit against go-report-server/internal/edition (Community
+# allow-list) and scripts/package-release.sh (OSS skips 009-015):
+#   002-007  OSS catalog, ACL, folders, resources, images, tokens. Keep.
+#   008      Comment-only note for Explorer views and dashboards.
+#            FeatureDashboards is denied. Explorer implementation is !oss.
+#            The private OSS packager still copies 008; the public tree does not.
+#   009      di_* Dataset Intelligence. FeatureDataIntelligence is denied.
+#   010      audit_log administration schema. FeatureAudit is denied.
+#            OSS recording creates the table at runtime (audit.Repository).
+#            The OSS packager skips 010 and verification forbids the file.
+#   011      auth_oidc_settings. FeatureSSOOIDC is denied.
+#   012      auth_saml_settings. FeatureSSOSAML is denied.
+#   013      Usage-analytics indexes. FeatureUsageAnalytics is denied.
+#   014      governance_metadata. FeatureGovernance is denied.
+#   015      audit_export_*. FeatureAuditExport is denied.
+#   016      di_report_dataset. FeatureDataIntelligence is denied.
+#            The private OSS packager currently still copies 016; the public
+#            tree does not.
+#   017      embed_allowed_origin. Present in schema.oss.sql. Report embed
+#            is Open Source. Keep.
+# ---------------------------------------------------------------------------
+database/schema.sql
+database/schema.qcarta.sql
+database/migrate_qgis.sql
+database/migrations/008_explorer_view_acl_note.sql
+database/migrations/009_dataset_intelligence.sql
+database/migrations/010_audit_log.sql
+database/migrations/011_oidc_external_identity.sql
+database/migrations/012_saml_sso.sql
+database/migrations/013_usage_analytics_indexes.sql
+database/migrations/014_governance_metadata.sql
+database/migrations/015_audit_export.sql
+database/migrations/016_report_dataset.sql
+database/migrations/professional/
+
+# ---------------------------------------------------------------------------
+# Professional connection examples
+# ---------------------------------------------------------------------------
+docker/report-server/arcgis-connections.properties
+docker/report-server/arcgis-connections.properties.example
+docker/report-server/qgis-connections.properties
+
+# ---------------------------------------------------------------------------
+# Professional documentation and design notes
+# ---------------------------------------------------------------------------
+documentation/docs/administration/mcp-server.md
+documentation/docs/administration/oidc.md
+documentation/docs/administration/saml.md
+documentation/docs/administration/audit-export.md
+documentation/docs/administration/usage-analytics.md
+documentation/docs/user-guide/explorer/
+documentation/docs/user-guide/map-reports.md
+documentation/docs/developer/cli/map-reports.md
+documentation/docs/developer/embedding/map-reports.md
+documentation/docs/developer/rest-api/explorer.md
+documentation/docs/developer/cli/explorer.md
+documentation/docs/developer/embedding/dashboards-views.md
+go-report-server/OIDC_SSO_AUDIT.md
+go-report-server/SAML_SSO_AUDIT.md
+go-report-server/docs/data-explorer-rebuild.md
+go-report-server/docs/data-explorer.md
+go-report-server/docs/dataset-intelligence.md
+go-report-server/docs/governance.md
+go-report-server/docs/handoff-explorer-map-mapreport-unify.md
+go-report-server/docs/oidc-entra-id.md
+go-report-server/docs/oidc-keycloak.md
+go-report-server/docs/oidc-okta.md
+go-report-server/docs/oidc.md
+go-report-server/docs/saml-adfs.md
+go-report-server/docs/saml-entra-id.md
+go-report-server/docs/saml-keycloak.md
+go-report-server/docs/saml-okta.md
+go-report-server/docs/saml.md
+
+# ---------------------------------------------------------------------------
+# Internal engineering and audit notes. Not public product documentation.
+# ---------------------------------------------------------------------------
+documentation/Audit.txt
+go-report-server/OPEN_SOURCE_BUILD_ARCHITECTURE_AUDIT.md
+go-report-server/JAVASCRIPT_EMBED_SDK_AUDIT.md
+go-report-server/docs/EDITIONS.md
+
+# ---------------------------------------------------------------------------
+# Generated and bundled binaries that are not public source.
+# node_modules is rebuilt with npm ci. The Jasper WAR is produced by
+# stand-alone-tomcat-10 Maven package (antrun copies it into dist/).
+# Those commands write into the tree they are run from. oss_export.py
+# rejects the path shape as well as the lines below: any node_modules
+# directory, any Maven target directory, any .war under a dist directory,
+# root dist release tarballs, and .deb packages.
+# Oracle and IBM JDBC jars are omitted from this public source tree.
+# The Professional Docker image copies unmodified ojdbc11.jar, which includes
+# Oracle Free Distribution, Hosting, and Use Terms (META-INF/license.txt).
+# db2jcc4.jar has no license text here and is not copied into any image
+# or Debian package; customers supply it. Other JDBC jars under stand-alone-tomcat-10/lib/
+# stay because packaging and the Docker image copy them and no acquisition
+# step exists for them.
+# ---------------------------------------------------------------------------
+sdk/javascript/node_modules/
+stand-alone-tomcat-10/target/
+dist/*.deb
+dist/*.deb.sha256
+dist/*.tar.gz
+dist/*.tar.gz.sha256
+.war-tmp.zip
+docker/report-server/_war_peek/
+docker/report-server/_ecj.jar
+docker/report-server/_servlet-api.jar
+docker/report-server/acugis-report-server.war
+docker/report-server/acugis-report-server.war.bak
+stand-alone-tomcat-10/dist/acugis-report-server.war
+stand-alone-tomcat-10/lib/ojdbc11.jar
+stand-alone-tomcat-10/lib/db2jcc4.jar
+# DuckDB JDBC is fetched by scripts/package-release.sh when the jar is absent.
+# jasperreports-jdt and ECJ are Maven dependencies of the Community WAR
+# (jasperreports-jdt). These copies are not required in Git to build OSS.
+stand-alone-tomcat-10/lib/duckdb_jdbc-1.5.5.1-linux_amd64.jar
+stand-alone-tomcat-10/lib/ecj-3.33.0.jar
+stand-alone-tomcat-10/lib/jasperreports-jdt-7.0.1.jar
+# Unused copies beside the image Dockerfile. The image copies drivers from
+# stand-alone-tomcat-10/lib, not from these files. _peek.zip is a WAR extract.
+docker/report-server/_peek.zip
+docker/report-server/mssql-jdbc.jar
+docker/report-server/mysql-connector-j-9.7.0.jar
+docker/report-server/ojdbc11.jar
+docker/report-server/postgresql-42.7.3.jar
+docker/report-server/snowflake-jdbc.jar
+docker/report-server/sqlite-jdbc.jar
+
+# Legacy ArcGIS connection admin page. The Go implementation is already excluded.
+# Connection-writer functions in lib/bootstrap.php are removed from the export only.
+reports/arcgis_connections.php
+
+# Legacy PHP report editor. Dead as an Open Source execution path.
+#
+# Jasper report editing ships in the Go page handleEditPage, registered for
+# GET and POST /reports/edit_report and /reports/edit_report.php and rendered
+# from the embedded edit.html template. That handler does not read this file.
+# Native Apache proxies every request to the Go process. The Debian tarball
+# and the Docker image copy reports/portal.css only; they do not install
+# reports/edit_report.php. PHP in those installs is php-cli for
+# scripts/seed_admin.php and scripts/run_schedule.php, and neither includes
+# this page. Root .htaccess and deploy/apache-standalone.conf.example are
+# leftovers from the pre-Go PHP tree; they are not an Open Source install.
+#
+# The page is not Professional-only. It edits Jasper reports as well as Map
+# Reports. It cannot be published as Open Source PHP, because it
+# unconditionally requires lib/map_report.php, which this export omits.
+# Copying that library back would ship Professional Map Report source.
+# The private tree keeps the file.
+reports/edit_report.php
+
+# CLI test for embedded-map schedule helpers. Every function it
+# calls lives in lib/embedded_map.php, but the test unconditionally requires
+# lib/map_renderer.php first. That renderer is Professional Map Report PHP and
+# is omitted above. jrs_normalize_embedded_map() still calls renderer helpers
+# (jrs_map_renderer_ids, thematic ramps, point shapes), so the test cannot run
+# in this tree. It stays in the private repository.
+tests/embedded_map_schedule_test.php
+
+# Generated logs, local schedule state, debug probes, and compiled demos.
+go-report-server/catalina.out
+schedules/logs/
+schedules/output/
+schedules/2_env.sh
+schedules/3_env.sh
+systemd/jrs-schedule-2.service
+systemd/jrs-schedule-3.service
+deploy/jri-report-20.service
+debug/
+debug.php.disabled
+reports/debug_embedded_map.php
+docker/data/demo.duckdb
+DemoReport/demoreport.jasper
+
+# Locally generated Tomcat JNDI configuration. The Docker template is
+# context.xml.default; context.xml.example stays in the export.
+docker/report-server/context.xml

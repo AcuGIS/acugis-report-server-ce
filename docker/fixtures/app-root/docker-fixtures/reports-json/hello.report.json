@@ -1,0 +1,10 @@
+{
+  "name": "Docker Hello",
+  "description": "Docker packaging demo report against DemoPG (application PostgreSQL).",
+  "report": "hello",
+  "type": "jasper",
+  "datasource": "DemoPG",
+  "format": "pdf",
+  "parameters": [],
+  "access_groups": "Administrators,Public"
+}

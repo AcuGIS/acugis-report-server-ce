@@ -1,0 +1,4 @@
+# Vendored MapRenderer jars. Not part of the public source tree.
+# Populate this directory before a WAR rebuild that should include them.
+*
+!.gitignore

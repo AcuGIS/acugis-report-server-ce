@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "acugis-report"
+version = "0.1.0"
+description = "AcuGIS Report Server Python SDK and CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "AcuGIS" }]
+keywords = ["acugis", "jasper", "reports", "cli", "sdk"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+  "httpx>=0.27",
+  "pydantic>=2.0",
+  "typer>=0.12",
+  "rich>=13.0",
+  "pyyaml>=6.0",
+  "tomli>=2.0; python_version < '3.11'",
+  "tomli-w>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-httpx>=0.30",
+  "respx>=0.21",
+]
+
+[project.scripts]
+acugis-report = "acugis_report.cli.app:main"
+
+[project.urls]
+Homepage = "https://github.com/AcuGIS/acugis-report-server-ce"
+Documentation = "https://github.com/AcuGIS/acugis-report-server-ce/tree/main/documentation"
+Repository = "https://github.com/AcuGIS/acugis-report-server-ce"
+
+[tool.hatch.build.targets.wheel]
+packages = ["acugis_report"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

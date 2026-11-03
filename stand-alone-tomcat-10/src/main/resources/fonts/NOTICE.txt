@@ -1,0 +1,40 @@
+AcuGIS Report Server — bundled fonts
+
+This directory is a JasperReports font extension packaged inside the WAR
+(WEB-INF/classes/fonts/). Fonts are freely redistributable open-source faces.
+
+Families
+--------
+dejavu/      DejaVu Sans, DejaVu Serif, DejaVu Sans Mono
+            License: Bitstream Vera / DejaVu Fonts License
+            https://dejavu-fonts.github.io/
+
+liberation/ Liberation Sans, Liberation Serif, Liberation Mono
+            License: SIL Open Font License 1.1
+            https://github.com/liberationfonts/liberation-fonts
+
+nimbus/     Nimbus Sans, Nimbus Roman, Nimbus Mono PS (URW Base35)
+            License: AGPL-3.0 with font exception (Artifex urw-base35)
+            https://github.com/ArtifexSoftware/urw-base35-fonts
+
+carlito/    Carlito (Calibri metric-compatible)
+            License: SIL Open Font License 1.1
+            https://github.com/googlefonts/carlito
+
+caladea/    Caladea (Cambria metric-compatible)
+            License: SIL Open Font License 1.1
+            https://github.com/google/fonts (ofl/caladea)
+
+cousine/    Cousine (Courier New / Consolas metric-compatible)
+            License: Apache License 2.0
+            https://github.com/googlefonts/cousine
+
+noto/       Noto Sans, Noto Serif
+            License: SIL Open Font License 1.1
+            https://github.com/notofonts/latin-greek-cyrillic
+
+Registration
+------------
+jasperreports_extension.properties registers SimpleFontExtensionsRegistryFactory
+with fonts/fonts.xml. Alias families (visible=false) cover common Windows names
+so existing JRXML continues to work without host OS fonts.

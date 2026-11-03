@@ -1,0 +1,46 @@
+name: OpenAPI bundle check
+
+on:
+  pull_request:
+    paths:
+      - "go-report-server/openapi/**"
+      - "go-report-server/internal/openapi/**"
+      - "go-report-server/scripts/**"
+      - "sdk/openapi.bundle.yaml"
+      - ".github/workflows/sdk-openapi-check.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - "go-report-server/openapi/**"
+      - "go-report-server/internal/openapi/**"
+      - "go-report-server/scripts/**"
+      - "sdk/openapi.bundle.yaml"
+      - ".github/workflows/sdk-openapi-check.yml"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.x"
+          cache-dependency-path: go-report-server/go.sum
+
+      - name: Regenerate OpenAPI bundle
+        working-directory: go-report-server
+        run: |
+          go run ./scripts/sync-openapi.go .
+          go run ./scripts/export-openapi.go ../sdk/openapi.bundle.yaml.generated
+
+      - name: Fail if sdk/openapi.bundle.yaml is out of sync
+        run: |
+          if ! cmp -s sdk/openapi.bundle.yaml sdk/openapi.bundle.yaml.generated; then
+            echo "::error::sdk/openapi.bundle.yaml is out of sync with go-report-server OpenAPI sources."
+            echo "Regenerate with: ./sdk/scripts/regenerate-openapi.sh"
+            diff -u sdk/openapi.bundle.yaml sdk/openapi.bundle.yaml.generated || true
+            exit 1
+          fi
+          echo "OpenAPI bundle is in sync."

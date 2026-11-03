@@ -1,0 +1,44 @@
+# Optional Mailpit SMTP for scheduled-email testing.
+# Usage (from docker/):
+#   docker compose -f compose.yml -f compose.mailpit.yml up -d --build
+#
+# UI: http://localhost:8025/
+# Scheduler/report-server send to host "mailpit" port 1025 (Compose network).
+
+services:
+  mailpit:
+    image: axllent/mailpit:v1.21.8
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    expose:
+      - "1025"
+    restart: unless-stopped
+
+  report-server:
+    environment:
+      JRS_SMTP_HOST: mailpit
+      JRS_SMTP_PORT: "1025"
+      JRS_SMTP_FROM: reports@example.com
+      JRS_SMTP_HELO: acugis-report-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  report-scheduler:
+    environment:
+      JRS_SMTP_HOST: mailpit
+      JRS_SMTP_PORT: "1025"
+      JRS_SMTP_FROM: reports@example.com
+      JRS_SMTP_HELO: acugis-report-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      report-server:
+        condition: service_healthy
+      mailpit:
+        condition: service_started

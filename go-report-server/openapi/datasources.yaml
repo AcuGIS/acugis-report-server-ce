@@ -1,0 +1,414 @@
+# Datasource list/create/delete and Jasper context.xml generation
+paths:
+  /api/v1/datasources:
+    get:
+      operationId: listDatasources
+      tags: [Datasources]
+      summary: List datasource names
+      description: |
+        Returns an array of `{name}` objects only (no connection details).
+
+        **Limitations (current API):**
+        - List returns names only — no host, credentials, or metadata
+        - No GET-by-id endpoint
+        - No dedicated PUT; create POST upserts by `name`
+        - Empty array when the datasource store is unavailable (not 503)
+      responses:
+        '200':
+          description: Datasource names
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './schemas.yaml#/components/schemas/DatasourceName'
+              example:
+                - name: reporting_db
+                - name: MainPG
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+    post:
+      operationId: createDatasource
+      tags: [Datasources]
+      summary: Create or upsert datasource
+      description: |
+        Service-admin only. Body is **application/x-www-form-urlencoded** (not JSON).
+
+        Upsert by `name` with connection fields, or delete via `action=delete` + `id`.
+
+        **Limitations:** no dedicated PUT; POST upserts by name. No GET-by-id.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Datasource name (upsert key)
+                  example: reporting_db
+                db_type:
+                  type: string
+                  example: postgresql
+                host:
+                  type: string
+                  example: db.example.com
+                port:
+                  type: string
+                  example: '5432'
+                dbname:
+                  type: string
+                  example: reporting
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                  description: On update, omit or leave blank to keep the existing password/token.
+                schema_name:
+                  type: string
+                  example: public
+                connection_method:
+                  type: string
+                  description: Cassandra only — `standard` or `astra` (Designer-compatible).
+                  enum: [standard, astra]
+                local_datacenter:
+                  type: string
+                  description: Cassandra standard only — local datacenter name.
+                  example: datacenter1
+                default_dataset:
+                  type: string
+                  description: BigQuery only — optional default dataset (schema).
+                  example: demo
+                location:
+                  type: string
+                  description: BigQuery only — optional job location (US, EU, us-central1).
+                  example: US
+                credentials_resource_uuid:
+                  type: string
+                  format: uuid
+                  description: BigQuery only — Service Account JSON content resource UUID. On update, omit or leave blank to keep the existing credential reference. Never send raw JSON.
+                duckdb_mode:
+                  type: string
+                  enum: [database, files]
+                  description: DuckDB only — database file path mode or remote Data Files mode.
+                duckdb_remote_source:
+                  type: string
+                  description: DuckDB Data Files only — HTTP(S) URL queried directly by DuckDB.
+                duckdb_format:
+                  type: string
+                  enum: [auto, parquet, csv, json]
+                  description: DuckDB Data Files format (Auto Detect / Parquet / CSV / JSON).
+                duckdb_auth_type:
+                  type: string
+                  enum: [none, basic, bearer, headers]
+                  description: DuckDB Data Files HTTP authentication (Designer-compatible).
+                duckdb_header_keys:
+                  type: string
+                  description: DuckDB Custom Headers mode — comma-separated or JSON array of header names (values in password).
+                duckdb_alias:
+                  type: string
+                  description: DuckDB Data Files optional logical alias (defaults from URL basename).
+                auth_type:
+                  type: string
+                  description: e.g. password or key-based auth
+                public_key_resource_uuid:
+                  type: string
+                  format: uuid
+                private_key_resource_uuid:
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                  enum: [delete]
+                  description: When `delete`, remove by `id` instead of upsert
+                id:
+                  type: string
+                  description: Numeric id when `action=delete`
+            examples:
+              upsert:
+                summary: Create or update by name
+                value:
+                  name: reporting_db
+                  db_type: postgresql
+                  host: db.example.com
+                  port: '5432'
+                  dbname: reporting
+                  username: reporter
+                  password: secret
+                  schema_name: public
+                  auth_type: password
+              cassandra_astra:
+                summary: DataStax Astra (Data API)
+                value:
+                  name: AstraCustomers
+                  db_type: cassandra
+                  connection_method: astra
+                  host: https://xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-us-east-2.apps.astra.datastax.com
+                  dbname: default_keyspace
+                  password: AstraCS:example-token
+              bigquery:
+                summary: Google BigQuery (collection fill)
+                value:
+                  name: My BigQuery
+                  db_type: bigquery
+                  dbname: flawless-spirit-386523
+                  default_dataset: demo
+                  location: US
+                  credentials_resource_uuid: 11111111-2222-3333-4444-555555555555
+              duckdb_files:
+                summary: DuckDB remote Parquet (collection fill)
+                value:
+                  name: NYC Taxi
+                  db_type: duckdb
+                  duckdb_mode: files
+                  duckdb_remote_source: https://acugis.cloud/yellow_tripdata_2024-01.parquet
+                  duckdb_format: parquet
+                  duckdb_auth_type: none
+              duckdb_database:
+                summary: DuckDB database file on server
+                value:
+                  name: Analytics
+                  db_type: duckdb
+                  duckdb_mode: database
+                  dbname: /srv/data/analytics.duckdb
+              delete:
+                summary: Delete via POST action
+                value:
+                  action: delete
+                  id: '3'
+      responses:
+        '200':
+          description: Mutation succeeded
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/DatasourceMutationResponse'
+              example:
+                ok: true
+                message: Datasource saved
+        '400':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ValidationError'
+              example:
+                error: validation failed
+                errors:
+                  - name is required
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          description: Datasource store unavailable
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: datasource store unavailable
+
+  /api/v1/datasources/{id}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/DatasourceId'
+    delete:
+      operationId: deleteDatasource
+      tags: [Datasources]
+      summary: Delete datasource by id
+      description: |
+        Service-admin only. Path `{id}` is preferred; the handler also accepts
+        a query `id` as a fallback.
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/DatasourceMutationResponse'
+              example:
+                ok: true
+        '400':
+          description: Missing id
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: id required
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/datasources/test:
+    post:
+      operationId: testDatasource
+      tags: [Datasources]
+      summary: Test Cassandra / Astra / BigQuery / DuckDB datasource connectivity
+      description: |
+        Service-admin only. Verifies Standard Cassandra (gocql), DataStax Astra
+        (Data API), Google BigQuery, or DuckDB using the same form fields as create/upsert.
+        Blank password/token (Cassandra/DuckDB) or blank credentials_resource_uuid (BigQuery)
+        reloads the saved secret/reference when `name` matches an existing datasource.
+        Secrets and Service Account JSON contents are never returned.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                db_type:
+                  type: string
+                  example: cassandra
+                connection_method:
+                  type: string
+                  enum: [standard, astra]
+                host:
+                  type: string
+                  description: Contact points or Astra HTTPS API endpoint
+                port:
+                  type: string
+                  example: '9042'
+                dbname:
+                  type: string
+                  description: Keyspace (Cassandra) or Project ID (BigQuery)
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                  description: Cassandra password or Astra token
+                local_datacenter:
+                  type: string
+                default_dataset:
+                  type: string
+                  description: BigQuery optional default dataset
+                location:
+                  type: string
+                  description: BigQuery optional location
+                credentials_resource_uuid:
+                  type: string
+                  format: uuid
+                  description: BigQuery Service Account JSON resource UUID
+      responses:
+        '200':
+          description: Test result (ok may still be false)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  message:
+                    type: string
+              example:
+                ok: true
+                message: Connected · https://….apps.astra.datastax.com
+        '400':
+          description: Validation failed or unsupported type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/datasources/context:
+    post:
+      operationId: generateJasperContext
+      tags: [Datasources]
+      summary: Generate Jasper context.xml
+      description: |
+        Service-edit ACL. Writes JasperReports Server style `context.xml` from
+        configured datasources and returns the path plus notes. Cassandra/Astra
+        and Google BigQuery datasources are omitted (collection fill, not JDBC JNDI).
+      responses:
+        '200':
+          description: Context generated
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/JasperContextResponse'
+              example:
+                ok: true
+                path: /var/lib/jasper/context.xml
+                notes:
+                  - Wrote 2 datasources
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '500':
+          description: Generation failed (often plain text for legacy clients)
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: No datasources configured
+
+  /reports/generate_jasper_context.php:
+    get:
+      operationId: generateJasperContextPHP
+      tags: [Datasources]
+      summary: Generate Jasper context (PHP alias GET)
+      deprecated: true
+      description: Prefer `POST /api/v1/datasources/context`. May return plain text.
+      responses:
+        '200':
+          description: Context generated
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/JasperContextResponse'
+            text/plain:
+              schema:
+                type: string
+              example: Context XML generated at /var/lib/jasper/context.xml
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '500':
+          description: Generation failed
+          content:
+            text/plain:
+              schema:
+                type: string
+    post:
+      operationId: generateJasperContextPHPPost
+      tags: [Datasources]
+      summary: Generate Jasper context (PHP alias POST)
+      deprecated: true
+      description: Prefer `POST /api/v1/datasources/context`.
+      responses:
+        '200':
+          description: Context generated
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/JasperContextResponse'
+            text/plain:
+              schema:
+                type: string
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '500':
+          description: Generation failed
+          content:
+            text/plain:
+              schema:
+                type: string

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+      window.EMBED_ORIGINS_API = {{.APIBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+.origin-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid #eceff1; }
+.origin-row:last-child { border-bottom:0; }
+.origin-value { font-family:ui-monospace,Consolas,monospace; word-break:break-all; }
+.origin-meta { color:#607d8b; font-size:0.82rem; margin-left:8px; }
+.origin-add { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:16px; }
+.origin-add input { flex:1; min-width:240px; margin:0; height:40px; }
+.origin-error { color:#c62828; margin-top:12px; }
+.empty-state { color:#90a4ae; padding:12px 0; }
+    </style>
+</head>
+<body data-federation-app="jasper" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount data-fed-ssr="1">{{.SidebarNav}}</div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Embedded Analytics</h1>
+        <p class="page-subtitle">Allowed Origins</p>
+    </div>
+</header>
+<div class="card">
+    <div class="card-content">
+        <p>Applications hosted on these origins may embed reports and dashboards from this Report Server.</p>
+        <div id="originList"></div>
+        <p id="originEmpty" class="empty-state" hidden>No origins configured.</p>
+        <p id="originError" class="origin-error" role="alert" hidden></p>
+        <div class="origin-add">
+            <input id="originInput" type="url" placeholder="https://app.example.com" autocomplete="off" spellcheck="false">
+            <button type="button" class="btn waves-effect waves-light teal" id="originAdd">Add Origin</button>
+        </div>
+    </div>
+</div>
+</main>
+<script>
+(function () {
+  var api = window.EMBED_ORIGINS_API;
+  var listEl = document.getElementById('originList');
+  var emptyEl = document.getElementById('originEmpty');
+  var errorEl = document.getElementById('originError');
+  var input = document.getElementById('originInput');
+
+  function showError(message) {
+    errorEl.hidden = !message;
+    errorEl.textContent = message || '';
+  }
+
+  function render(origins) {
+    listEl.textContent = '';
+    var items = Array.isArray(origins) ? origins : [];
+    emptyEl.hidden = items.length !== 0;
+    items.forEach(function (item) {
+      var row = document.createElement('div');
+      row.className = 'origin-row';
+      var value = document.createElement('div');
+      var code = document.createElement('span');
+      code.className = 'origin-value';
+      code.textContent = item.origin || '';
+      value.appendChild(code);
+      if (!item.removable) {
+        var meta = document.createElement('span');
+        meta.className = 'origin-meta';
+        meta.textContent = 'System configured';
+        value.appendChild(meta);
+      }
+      row.appendChild(value);
+      if (item.removable) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-flat';
+        btn.textContent = 'Remove';
+        btn.addEventListener('click', function () { removeOrigin(item.origin); });
+        row.appendChild(btn);
+      }
+      listEl.appendChild(row);
+    });
+  }
+
+  function applyPayload(payload, fallback) {
+    if (payload && Array.isArray(payload.origins)) {
+      render(payload.origins);
+      showError('');
+      return;
+    }
+    showError(fallback || 'Could not load allowed origins.');
+  }
+
+  function request(method, origin) {
+    var opts = { method: method, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' } };
+    if (origin) opts.body = JSON.stringify({ origin: origin });
+    return fetch(api, opts).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (payload) {
+        return { ok: res.ok, status: res.status, payload: payload };
+      });
+    });
+  }
+
+  function load() {
+    request('GET').then(function (result) {
+      if (!result.ok) {
+        showError((result.payload && result.payload.error) || 'Could not load allowed origins.');
+        return;
+      }
+      applyPayload(result.payload);
+    }).catch(function () { showError('Could not load allowed origins.'); });
+  }
+
+  function addOrigin() {
+    var origin = (input.value || '').trim();
+    if (!origin) {
+      showError('Enter an origin like https://app.example.com.');
+      return;
+    }
+    request('POST', origin).then(function (result) {
+      if (!result.ok) {
+        showError((result.payload && result.payload.error) || 'Could not add that origin.');
+        return;
+      }
+      input.value = '';
+      applyPayload(result.payload, 'Could not add that origin.');
+    }).catch(function () { showError('Could not add that origin.'); });
+  }
+
+  function removeOrigin(origin) {
+    request('DELETE', origin).then(function (result) {
+      if (!result.ok) {
+        showError((result.payload && result.payload.error) || 'Could not remove that origin.');
+        return;
+      }
+      applyPayload(result.payload, 'Could not remove that origin.');
+    }).catch(function () { showError('Could not remove that origin.'); });
+  }
+
+  document.getElementById('originAdd').addEventListener('click', addOrigin);
+  input.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      addOrigin();
+    }
+  });
+  load();
+})();
+</script>
+</body>
+</html>

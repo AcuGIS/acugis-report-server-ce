@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}</style>
+</head>
+<body data-federation-app="jasper" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Authentication</h1>
+        <p class="page-subtitle">Local username and password authentication.</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.LogoutURL}}" class="btn-flat waves-effect">Sign out</a>
+    </div>
+</header>
+<div class="card"><div class="card-content">
+    <p>This Open Source build includes local login. Manage accounts under Users and Groups. OpenID Connect and SAML SSO are included in the Professional distribution.</p>
+</div></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

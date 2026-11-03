@@ -1,0 +1,11 @@
+{{/* Static shell chrome — shell.js fills [data-fed-shell-nav-mount] */}}
+{{define "shell-chrome"}}
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Platform navigation">
+  <a class="fed-shell-sidebar-brand" href="/">AcuGIS</a>
+  <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden>
+  <i class="material-icons">menu</i>
+</button>
+<div class="fed-shell-backdrop"></div>
+{{end}}

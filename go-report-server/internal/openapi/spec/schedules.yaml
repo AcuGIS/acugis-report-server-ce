@@ -1,0 +1,15 @@
+# Schedules REST API — pending
+#
+# No /api/v1/schedules list/get/CRUD endpoints are registered yet.
+# Current HTML/form surfaces (see docs/api-inventory.md § Schedules):
+#   GET  /schedules.php            — Schedules list UI (PlatformAdmin)
+#   GET  /edit_schedule.php        — Create/edit schedule UI (query id; 0 = add)
+#   POST /action/schedule.php      — Schedule CRUD + run_now
+#                                    Form flags: create | update | delete | run_now
+#                                    Fields: schedule_mode, report_name/name,
+#                                    datasource_name, format, filename, email/noemail,
+#                                    email_subject, email_body, email_template,
+#                                    url_opt_params, enabled, id
+#
+# CLI: jrs-run-schedule <schedule_id> (headless, not HTTP).
+paths: {}

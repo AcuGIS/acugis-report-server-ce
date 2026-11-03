@@ -1,0 +1,35 @@
+# Local source build. This is not the customer Compose path.
+# From docker/:
+#   SOURCE_REVISION=<40-hex> VERSION=1.0.21 \
+#     docker compose -f compose.yml -f compose.build.yml up -d --build
+#
+# Release images:
+#   make docker-build-oss VERSION=1.0.21
+#   make docker-build-professional VERSION=1.0.21
+
+services:
+  report-server:
+    build:
+      context: ..
+      dockerfile: docker/report-server/Dockerfile
+      args:
+        GO_VERSION: "1.26.3"
+        TOMCAT_VERSION: "10.1.57"
+        JAVA_VERSION: "17"
+        BUILD_EDITION: oss
+        VERSION: ${VERSION:-1.0.21}
+        SOURCE_REVISION: ${SOURCE_REVISION:?Set SOURCE_REVISION to the 40-character commit id}
+    image: acugis-report-server:local
+
+  report-scheduler:
+    build:
+      context: ..
+      dockerfile: docker/report-server/Dockerfile
+      args:
+        GO_VERSION: "1.26.3"
+        TOMCAT_VERSION: "10.1.57"
+        JAVA_VERSION: "17"
+        BUILD_EDITION: oss
+        VERSION: ${VERSION:-1.0.21}
+        SOURCE_REVISION: ${SOURCE_REVISION:?Set SOURCE_REVISION to the 40-character commit id}
+    image: acugis-report-server:local

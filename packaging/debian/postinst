@@ -1,0 +1,39 @@
+#!/bin/bash
+# Debian postinst for AcuGIS Report Server.
+# Does not duplicate the tarball installer: sources native-setup.sh after unpack.
+set -euo pipefail
+
+EDITION="@EDITION@"
+PACKAGE="@PACKAGE@"
+BASE="${JRS_INSTALL_DIR:-/opt/acugis-report-server}"
+
+case "$1" in
+  configure)
+    export SCRIPT_DIR="$BASE"
+    export JRS_SKIP_DEPS=1
+    export JRS_APACHE_OVERWRITE="${JRS_APACHE_OVERWRITE:-0}"
+    # Units are shipped in /lib/systemd/system/; do not write /etc/systemd/system/.
+    export JRS_SKIP_SYSTEMD_UNIT_INSTALL=1
+
+    if [[ ! -f "$BASE/scripts/native-setup.sh" ]]; then
+      echo "ERROR: $BASE/scripts/native-setup.sh missing after unpack" >&2
+      exit 1
+    fi
+    # shellcheck disable=SC1091
+    source "$BASE/scripts/native-setup.sh"
+
+    if [[ "$EDITION" == "oss" ]]; then
+      guard_edition
+    fi
+
+    configure_instance
+    print_instance_summary
+    ;;
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+  *)
+    echo "postinst called with unknown argument: $1" >&2
+    ;;
+esac
+
+exit 0

@@ -1,0 +1,1212 @@
+# Shared OpenAPI components for AcuGIS Report Server.
+# Merged into the master document by internal/openapi.
+
+components:
+  parameters:
+    ReportKey:
+      name: key
+      in: path
+      required: true
+      description: Report key (`[a-z0-9_-]+`)
+      schema:
+        type: string
+        pattern: '^[a-z0-9_-]+$'
+      example: nycdata
+    FolderId:
+      name: id
+      in: path
+      required: true
+      description: Folder numeric id
+      schema:
+        type: integer
+        format: int64
+      example: 12
+    ResourceUUID:
+      name: uuid
+      in: path
+      required: true
+      description: Content resource UUID
+      schema:
+        type: string
+        format: uuid
+    TokenId:
+      name: id
+      in: path
+      required: true
+      description: Personal access token id
+      schema:
+        type: integer
+        format: int64
+    ParameterName:
+      name: name
+      in: path
+      required: true
+      description: Report parameter name
+      schema:
+        type: string
+      example: city
+    DatasourceId:
+      name: id
+      in: path
+      required: true
+      description: Datasource numeric id
+      schema:
+        type: integer
+        format: int64
+    ViewKey:
+      name: key
+      in: path
+      required: true
+      description: Saved explorer view key
+      schema:
+        type: string
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/Error'
+          example:
+            error: authentication required
+    Forbidden:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/Error'
+          example:
+            error: Permission denied
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/Error'
+          example:
+            error: not found
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/Error'
+          example:
+            error: bad request
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/ValidationError'
+          example:
+            error: validation failed
+            errors:
+              - data_source is required
+    ServiceUnavailable:
+      description: Dependency unavailable
+      content:
+        application/json:
+          schema:
+            $ref: './schemas.yaml#/components/schemas/Error'
+          example:
+            error: application database unavailable
+    PlainTextError:
+      description: Plain-text error (Jasper execute/image gateways)
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: Jasper gateway unavailable
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        service:
+          type: string
+          description: Present on some 404 responses
+        code:
+          type: string
+          description: Optional machine code (e.g. unsupported_datasource)
+        hint:
+          type: string
+      additionalProperties: true
+
+    ValidationError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+      additionalProperties: true
+
+    SuccessResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        message:
+          type: string
+      additionalProperties: true
+
+    User:
+      type: object
+      description: Authenticated user identity (`GET /api/v1/auth/me`)
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        groups:
+          type: array
+          items:
+            type: string
+        is_admin:
+          type: boolean
+        permissions:
+          type: array
+          items:
+            type: string
+          description: Reserved; tokens inherit full user ACL (currently empty)
+        auth_disabled:
+          type: boolean
+          description: Present when JRS_AUTH_DISABLED is set
+      example:
+        id: 1
+        username: admin
+        email: admin@example.com
+        groups: [Administrators]
+        is_admin: true
+        permissions: []
+
+    Group:
+      type: object
+      description: Group entity (REST pending; schema reserved for future /api/v1/groups)
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+
+    Token:
+      type: object
+      description: Plaintext personal access token (returned once on create/rotate)
+      properties:
+        token:
+          type: string
+          description: Full plaintext PAT (`jrs_…`); shown only once
+          example: jrs_abcdefghijklmnopqrstuvwxyz0123456789
+        id:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+        message:
+          type: string
+          example: This token will only be shown once.
+
+    TokenMetadata:
+      type: object
+      description: Personal access token metadata (no secret)
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        token_prefix:
+          type: string
+          example: jrs_abcdef12
+        scopes:
+          type: array
+          items:
+            type: string
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by_ip:
+          type: string
+        last_used_ip:
+          type: string
+        active:
+          type: boolean
+
+    CreateTokenRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: CI Server
+        description:
+          type: string
+        expires_in:
+          type: string
+          enum: [never, 30d, 90d, 1y, custom]
+          default: never
+        expires_at:
+          type: string
+          description: RFC3339 or YYYY-MM-DD when expires_in=custom
+          example: "2027-01-01"
+
+    UpdateTokenRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        expires_in:
+          type: string
+          enum: [never, 30d, 90d, 1y, custom]
+        expires_at:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          format: password
+
+    ReportSummary:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        datasource:
+          type: string
+        type:
+          type: string
+          description: "jasper | map"
+        format:
+          type: string
+        has_thumbnail:
+          type: boolean
+
+    ReportListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportSummary'
+        count:
+          type: integer
+
+    Report:
+      type: object
+      description: Full report definition JSON (shape varies by report type)
+      additionalProperties: true
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        report:
+          type: string
+        type:
+          type: string
+        datasource:
+          type: string
+        format:
+          type: string
+        parameters:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        access_groups:
+          type: array
+          items:
+            type: string
+        mapDefinition:
+          type: object
+          additionalProperties: true
+        embeddedMap:
+          type: object
+          additionalProperties: true
+
+    ReportCreateResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        key:
+          type: string
+        message:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+        run_url:
+          type: string
+        json_url:
+          type: string
+
+    ReportMutationResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        key:
+          type: string
+
+    ReportConfig:
+      type: object
+      description: Viewer configuration with enriched parameters and optional map metadata
+      additionalProperties: true
+      properties:
+        report:
+          type: string
+        type:
+          type: string
+        reportTypeLabel:
+          type: string
+        parameters:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        map:
+          $ref: '#/components/schemas/MapLayerMeta'
+        mapDefinition:
+          type: object
+          additionalProperties: true
+
+    MapLayerMeta:
+      type: object
+      properties:
+        type:
+          type: string
+        spatial_capable:
+          type: boolean
+        table:
+          type: string
+        schema:
+          type: string
+        geometry_column:
+          type: string
+        srid:
+          type: integer
+        geometry_type:
+          type: string
+        report_fields:
+          type: array
+          items:
+            type: string
+        geometry_columns:
+          type: array
+          items:
+            type: string
+        error:
+          type: string
+
+    ParameterOption:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+
+    ParameterLookupResponse:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterOption'
+
+    Folder:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        parent_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        sort_order:
+          type: integer
+        acl_inherit:
+          type: boolean
+        created_by:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        path:
+          type: string
+        child_folder_count:
+          type: integer
+        child_item_count:
+          type: integer
+
+    FolderTreeNode:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        parent_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+        icon:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderTreeNode'
+
+    ContentItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        folder_id:
+          type: integer
+          format: int64
+        content_type:
+          type: string
+          enum: [jasper_report, dashboard, explorer_view, template, content_resource, content_folder]
+        content_key:
+          type: string
+        display_name:
+          type: string
+        sort_order:
+          type: integer
+        acl_inherit:
+          type: boolean
+        created_by:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        folder_path:
+          type: string
+        resource_type:
+          type: string
+        original_filename:
+          type: string
+        size_bytes:
+          type: integer
+          format: int64
+        mime_type:
+          type: string
+        extension:
+          type: string
+        width:
+          type: integer
+        height:
+          type: integer
+
+    Breadcrumb:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+
+    BrowseResult:
+      type: object
+      properties:
+        folder:
+          $ref: '#/components/schemas/Folder'
+        breadcrumbs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Breadcrumb'
+        folders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Folder'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentItem'
+
+    SearchHit:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum: [folder, item]
+        id:
+          type: integer
+          format: int64
+        folder_id:
+          type: integer
+          format: int64
+        content_type:
+          type: string
+        content_key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        folder_path:
+          type: string
+        icon:
+          type: string
+        resource_type:
+          type: string
+          description: For explorer_view items, "view" or "dashboard"
+
+    CreateFolderRequest:
+      type: object
+      required: [name]
+      properties:
+        parent_id:
+          type: integer
+          format: int64
+          description: 0 = Home/root
+          example: 0
+        name:
+          type: string
+          example: Finance
+        description:
+          type: string
+        icon:
+          type: string
+        sort_order:
+          type: integer
+        acl_inherit:
+          type: boolean
+
+    UpdateFolderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        sort_order:
+          type: integer
+        acl_inherit:
+          type: boolean
+
+    MoveFolderRequest:
+      type: object
+      required: [parent_id]
+      properties:
+        parent_id:
+          type: integer
+          format: int64
+        sort_order:
+          type: integer
+
+    MoveContentRequest:
+      type: object
+      required: [folder_id, content_type, content_key]
+      properties:
+        folder_id:
+          type: integer
+          format: int64
+        content_type:
+          type: string
+          enum: [jasper_report, dashboard, explorer_view, template, content_resource, content_folder]
+        content_key:
+          type: string
+          description: For explorer_view, use owner/viewKey (e.g. alice/sales-overview)
+        display_name:
+          type: string
+        sort_order:
+          type: integer
+        acl_inherit:
+          type: boolean
+
+    FolderPermissions:
+      type: object
+      properties:
+        group_names:
+          type: array
+          items:
+            type: string
+          example: [Administrators, Analysts]
+
+    SetFolderPermissionsRequest:
+      type: object
+      required: [group_names]
+      properties:
+        group_names:
+          type: array
+          items:
+            type: string
+        permission:
+          type: string
+          description: Default view
+          example: view
+
+    ViewPermissions:
+      type: object
+      description: Access Groups ACL for a saved explorer view or dashboard
+      properties:
+        ref:
+          type: string
+          example: alice/sales-overview
+        group_names:
+          type: array
+          items:
+            type: string
+          example: [Sales, Ops]
+        available_groups:
+          type: array
+          items:
+            type: string
+        can_edit:
+          type: boolean
+        resource_type:
+          type: string
+          example: explorer_view
+
+    SetViewPermissionsRequest:
+      type: object
+      required: [group_names]
+      properties:
+        group_names:
+          type: array
+          items:
+            type: string
+          description: Replaces Access Group grants (no permission level field)
+
+    FavoriteRequest:
+      type: object
+      required: [content_type, content_key]
+      properties:
+        content_type:
+          type: string
+        content_key:
+          type: string
+        favorite:
+          type: boolean
+          default: true
+
+    Resource:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        uuid:
+          type: string
+          format: uuid
+        folder_id:
+          type: integer
+          format: int64
+        display_name:
+          type: string
+        resource_type:
+          type: string
+          enum: [public_key, private_key, client_certificate, ca_certificate, generic_file, image]
+        original_filename:
+          type: string
+        extension:
+          type: string
+        storage_filename:
+          type: string
+        mime_type:
+          type: string
+        sha256:
+          type: string
+        size_bytes:
+          type: integer
+          format: int64
+        width:
+          type: integer
+        height:
+          type: integer
+        has_alpha:
+          type: boolean
+        created_by:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        folder_path:
+          type: string
+        resource_path:
+          type: string
+
+    ResourceCreateJSON:
+      type: object
+      required: [display_name, resource_type, content]
+      properties:
+        folder_id:
+          type: integer
+          format: int64
+        display_name:
+          type: string
+        resource_type:
+          type: string
+        content:
+          type: string
+          description: Pasted text content (JSON create path)
+        original_filename:
+          type: string
+        extension:
+          type: string
+        mime_type:
+          type: string
+
+    ResourceUpdateRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+        resource_type:
+          type: string
+        folder_id:
+          type: integer
+          format: int64
+
+    DatasourceName:
+      type: object
+      properties:
+        name:
+          type: string
+          example: reporting_db
+
+    DatasourceMutationResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        message:
+          type: string
+
+    JasperContextResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        path:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+
+    MapExtent:
+      type: object
+      properties:
+        p_geometry:
+          type: string
+          description: Geometry/WKT or encoded spatial filter for report params
+        p_srid:
+          type: integer
+          example: 4326
+
+    MapColumnsResult:
+      type: object
+      properties:
+        schema:
+          type: string
+        table:
+          type: string
+        geometry_column:
+          type: string
+        geometry_columns:
+          type: array
+          items:
+            type: string
+        columns:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+        report_fields:
+          type: array
+          items:
+            type: string
+        srid:
+          type: integer
+        error:
+          type: string
+
+    FeatureCollection:
+      type: object
+      description: GeoJSON FeatureCollection (map reports / explorer)
+      required: [type, features]
+      properties:
+        type:
+          type: string
+          enum: [FeatureCollection]
+        features:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        crs:
+          type: object
+          additionalProperties: true
+        meta:
+          type: object
+          additionalProperties: true
+        mapDefinition:
+          type: object
+          additionalProperties: true
+        error:
+          type: string
+        detail:
+          type: string
+
+    ExplorerQuery:
+      type: object
+      description: Visual query request (`QueryRequest`)
+      properties:
+        datasource:
+          type: string
+          example: reporting_db
+        schema:
+          type: string
+          example: public
+        table:
+          type: string
+          example: parcels
+        columns:
+          type: array
+          items:
+            type: string
+          example: [id, name, geom]
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerFilter'
+        group_by:
+          type: array
+          items:
+            type: string
+        aggregates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerAggregate'
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerSort'
+        limit:
+          type: integer
+        offset:
+          type: integer
+        page_size:
+          type: integer
+        page:
+          type: integer
+        source_mode:
+          type: string
+          enum: [table, report]
+        report_key:
+          type: string
+        report_cache_key:
+          type: string
+
+    ExplorerFilter:
+      type: object
+      properties:
+        column:
+          type: string
+        operator:
+          type: string
+          enum: ["=", "<>", ">", "<", ">=", "<=", LIKE, IN, BETWEEN, "IS NULL", "IS NOT NULL"]
+        value: {}
+        value_to: {}
+        values:
+          type: array
+          items: {}
+
+    ExplorerAggregate:
+      type: object
+      properties:
+        func:
+          type: string
+          enum: [COUNT, SUM, AVG, MIN, MAX]
+        column:
+          type: string
+        alias:
+          type: string
+
+    ExplorerSort:
+      type: object
+      properties:
+        column:
+          type: string
+        direction:
+          type: string
+          enum: [ASC, DESC]
+
+    ExplorerResult:
+      type: object
+      description: Paged query result (`QueryResult`)
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        total_rows:
+          type: integer
+          format: int64
+        page:
+          type: integer
+        page_size:
+          type: integer
+        truncated:
+          type: boolean
+        engine:
+          type: string
+        executed_at:
+          type: string
+          format: date-time
+
+    ExplorerColumn:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        udt_name:
+          type: string
+        nullable:
+          type: boolean
+        is_primary:
+          type: boolean
+        is_geometry:
+          type: boolean
+        ordinal:
+          type: integer
+
+    TableMeta:
+      type: object
+      properties:
+        datasource:
+          type: string
+        engine:
+          type: string
+        schema:
+          type: string
+        table:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerColumn'
+        primary_key:
+          type: array
+          items:
+            type: string
+        geometry_column:
+          type: string
+        srid:
+          type: integer
+        spatial_capable:
+          type: boolean
+
+    SavedView:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        owner_username:
+          type: string
+        datasource:
+          type: string
+        schema:
+          type: string
+        table:
+          type: string
+        columns:
+          type: array
+          items:
+            type: string
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerFilter'
+        group_by:
+          type: array
+          items:
+            type: string
+        aggregates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerAggregate'
+        sort:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorerSort'
+        limit:
+          type: integer
+        chart:
+          type: object
+          additionalProperties: true
+        map:
+          type: object
+          additionalProperties: true
+        widgets:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        panel_layout:
+          type: object
+          additionalProperties: true
+        source_mode:
+          type: string
+        report_key:
+          type: string
+        report_name:
+          type: string
+        is_dashboard:
+          type: boolean
+          description: When true, this saved view is designated as a Dashboard (same object; no separate dashboard record)
+        dashboard_widget:
+          type: boolean
+          description: Legacy alias of is_dashboard
+          deprecated: true
+        folder_id:
+          type: integer
+          format: int64
+          description: Optional folder placement on create/update
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        can_edit:
+          type: boolean
+          description: Present on GET responses
+        ref:
+          type: string
+          description: Stable owner/key reference
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        service:
+          type: string
+          example: acugis-report-server-go
+
+    ReadyResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ready, not_ready]
+        service:
+          type: string
+        checks:
+          type: object
+          additionalProperties: true
+
+    Diagnostics:
+      type: object
+      description: Ops diagnostics (redacted config, table presence, flags)
+      additionalProperties: true
+      properties:
+        service:
+          type: string
+        go_version:
+          type: string
+        app_version:
+          type: string
+        environment:
+          type: string
+        base_path:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

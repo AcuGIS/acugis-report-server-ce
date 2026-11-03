@@ -1,0 +1,11 @@
+{{/* Federation global sidebar — include via Go: {{template "federation-sidebar" .}} */}}
+{{define "federation-sidebar"}}
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Platform navigation">
+  <a class="fed-shell-sidebar-brand" href="/">AcuGIS</a>
+  <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" data-fed-shell-menu hidden>
+  <i class="material-icons">menu</i>
+</button>
+<div class="fed-shell-backdrop" data-fed-shell-backdrop></div>
+{{end}}

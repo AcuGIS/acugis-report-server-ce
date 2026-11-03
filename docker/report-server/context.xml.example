@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example Tomcat conf/context.xml fragment for PostgreSQL JNDI.
+
+  After copying stock conf into ./config (see DOCKER.md), either:
+  - Merge the <Resource> below into your real config/context.xml inside <Context>, or
+  - Replace config/context.xml with this file (adjust url/user/password).
+
+  Match the Resource `name` to what the WAR resolves for `_dataSource` (often `jdbc/MainPG`
+  or a short name like `MainPG`—check Acugis/Jasper configuration if lookups fail).
+-->
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <!-- PostgreSQL pooled DataSource (Tomcat 9 JDBC pool) -->
+    <Resource
+            name="jdbc/MainPG"
+            auth="Container"
+            type="javax.sql.DataSource"
+            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+            driverClassName="org.postgresql.Driver"
+            url="jdbc:postgresql://host.docker.internal:5432/your_database"
+            username="your_user"
+            password="your_password"
+            initialSize="0"
+            maxTotal="20"
+            maxIdle="10"
+            maxWaitMillis="10000"
+            validationQuery="SELECT 1"
+            testOnBorrow="true"/>
+</Context>

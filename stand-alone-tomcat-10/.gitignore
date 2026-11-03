@@ -1,0 +1,11 @@
+﻿_build_work/
+_classes_out/
+dist/*.war
+!dist/acugis-report-server.war
+lib/_ecj.jar
+lib/jakarta.servlet-api-*.jar
+lib/jasperreports-servlets-*.jar
+# DuckDB JDBC is platform-specific (sync-duckdb-jdbc.ps1 / package-release fetch).
+lib/duckdb_jdbc-*.jar
+!lib/duckdb_jdbc-*-linux_amd64.jar
+target/

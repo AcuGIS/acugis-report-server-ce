@@ -1,0 +1,2542 @@
+{
+  "version": "1.0",
+  "name": "DemoReport",
+  "artifactBase": "demoreport",
+  "uuid": "6787e84b-5cc1-4374-a1e6-9b789839e233",
+  "page": {
+    "width": 612,
+    "height": 792,
+    "orientation": "Portrait",
+    "marginTop": 20,
+    "marginBottom": 20,
+    "marginLeft": 20,
+    "marginRight": 20,
+    "columnCount": 1,
+    "columnWidth": 572,
+    "columnSpacing": 0
+  },
+  "dataSource": {
+    "provider": "postgis",
+    "connectionId": "88f5480b-e55c-448c-a5a8-32887da7f2cb",
+    "connectionName": "david"
+  },
+  "query": {
+    "mode": "visual",
+    "connectionId": "88f5480b-e55c-448c-a5a8-32887da7f2cb",
+    "tables": [
+      {
+        "id": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "schema": "public",
+        "name": "usapgservice",
+        "alias": "u"
+      }
+    ],
+    "joins": [],
+    "select": [
+      {
+        "id": "1de407da-9ccf-4523-be64-0408650f103f",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "fid",
+        "selected": false
+      },
+      {
+        "id": "03656db1-10ae-4218-9908-583603db649a",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "ogc_fid",
+        "selected": false
+      },
+      {
+        "id": "5922c7e9-6d02-4bb5-8416-0a47d7cb8b1d",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "state_name",
+        "selected": true
+      },
+      {
+        "id": "2f36c975-961a-44c3-a723-411db96d8551",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "state_fips",
+        "selected": false
+      },
+      {
+        "id": "7587d431-719e-47e0-8a38-b2049cde77c8",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "sub_region",
+        "selected": true
+      },
+      {
+        "id": "cd29373a-c027-4a57-9221-f453da0c413f",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "state_abbr",
+        "selected": false
+      },
+      {
+        "id": "9d7352b2-a26b-4898-8dac-366e50126006",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "land_km",
+        "selected": true
+      },
+      {
+        "id": "e73fa420-6b72-4e36-8e7f-a58e56c8a88c",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "water_km",
+        "selected": true
+      },
+      {
+        "id": "dd710d05-f0c9-41a1-8adf-1d9098a08e21",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "persons",
+        "selected": true
+      },
+      {
+        "id": "2e18f2c6-67f3-4827-ae21-9d69502eddd5",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "families",
+        "selected": true
+      },
+      {
+        "id": "418a7af1-454f-4806-b5ed-9336e4ac9592",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "houshold",
+        "selected": true
+      },
+      {
+        "id": "f0a3a88b-cc44-4549-ade7-0a7d17ca0950",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "male",
+        "selected": false
+      },
+      {
+        "id": "4e7aa071-4dff-42fa-a2cc-64f4e65afdac",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "female",
+        "selected": false
+      },
+      {
+        "id": "a3476ee5-9192-4352-b486-9bd5996a2648",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "workers",
+        "selected": false
+      },
+      {
+        "id": "1b2c8ba6-9eb6-4e03-9eb3-3761ba96ae93",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "drvalone",
+        "selected": false
+      },
+      {
+        "id": "a2af33a5-174e-4bf6-8cba-e9a9ec19acbf",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "carpool",
+        "selected": false
+      },
+      {
+        "id": "013cc89f-3c48-4e34-b544-c4f8e4fb0b9c",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "employed",
+        "selected": false
+      },
+      {
+        "id": "d975caae-47cb-4220-be28-fcb211a89986",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "unemploy",
+        "selected": false
+      },
+      {
+        "id": "ee1de5e0-05e9-4510-9223-3cdf5e531849",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "geom",
+        "selected": false
+      }
+    ],
+    "filters": [
+      {
+        "id": "b2449d2a-7315-4d0d-8777-ba441571db04",
+        "logic": "AND",
+        "tableId": "34221bbd-1f65-4a0f-87a5-d4b113b54344",
+        "column": "sub_region",
+        "operator": "IN",
+        "value": ":p_region",
+        "isParam": true,
+        "paramName": "p_region"
+      }
+    ],
+    "groupBy": [],
+    "orderBy": [],
+    "generatedSql": "SELECT \"u\".\"state_name\", \"u\".\"sub_region\", \"u\".\"land_km\", \"u\".\"water_km\", \"u\".\"persons\", \"u\".\"families\", \"u\".\"houshold\"\nFROM \"public\".\"usapgservice\" \"u\"\nWHERE $X{IN, \"u\".\"sub_region\", p_region}",
+    "geometryColumn": "geom"
+  },
+  "bands": [
+    {
+      "id": "bc5b9b9f-272a-46d9-b8a4-864f37bea09e",
+      "type": "title",
+      "name": "Title",
+      "height": 48,
+      "backgroundColor": "#FFFFFF",
+      "borderColor": "#0F3460",
+      "items": [
+        "36b9dd2c-67de-44c1-a07f-db9facf04c4d"
+      ]
+    },
+    {
+      "id": "622dd6b2-5348-4b47-97ba-6adc01a0464b",
+      "type": "pageHeader",
+      "name": "Page Header",
+      "height": 30,
+      "backgroundColor": "#F3F6FA",
+      "items": []
+    },
+    {
+      "id": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "type": "columnHeader",
+      "name": "Column Header",
+      "height": 24,
+      "backgroundColor": "#E8E8E8",
+      "items": [
+        "aa4c9261-b588-4911-bbb0-dc6d6e659fa5",
+        "0e13dce5-d673-4cb3-b8f6-eb7bb5499a11",
+        "368c37bc-a7be-44b6-879e-a884f2d06001",
+        "d267b7fa-1d76-4949-bc71-8adde1d99a7a",
+        "a982467d-b319-423c-aae3-505778da4f0a",
+        "6f31dfa1-1a02-4b34-b042-00ad383afe45"
+      ]
+    },
+    {
+      "id": "9c1f1f80-c1df-47f7-97ea-3bb82d38cd33",
+      "type": "groupHeader",
+      "name": "sub_region Header",
+      "height": 30,
+      "backgroundColor": "#EEF5EE",
+      "groupId": "5ee56984-a7f2-4694-b73e-5e669a440931",
+      "items": [
+        "3159a6ec-6448-45b6-84df-ab6adfc03b29",
+        "3fd431b6-a0a6-4db2-86b5-3ee4a02cb5e2"
+      ]
+    },
+    {
+      "id": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "type": "detail",
+      "name": "Detail",
+      "height": 22,
+      "backgroundColor": "#FFFFFF",
+      "items": [
+        "6d95b525-f533-4125-be8f-b90219226806",
+        "9b73d4b2-a130-464c-b239-3b9ae76b2f44",
+        "06d02b34-cb2e-4fa7-89d3-c7bcbb0b53e9",
+        "fe93d5a0-8987-45de-852e-fdd6e7a1c72c",
+        "7aa64c47-7699-4205-b12b-b62815b5dd03",
+        "e7f501b7-a0a3-4738-ac64-8aac85e57174"
+      ]
+    },
+    {
+      "id": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "type": "groupFooter",
+      "name": "sub_region Footer",
+      "height": 313,
+      "backgroundColor": "#F9F9F9",
+      "groupId": "5ee56984-a7f2-4694-b73e-5e669a440931",
+      "items": [
+        "a515b6fb-65db-42ea-850d-5ee72531c3a4",
+        "3278d8be-c53d-408b-a4a1-85fed96c3b2d",
+        "10b4ddb2-4afa-49e8-ab0f-8527ef124012",
+        "53d2de03-f8ec-4898-aad0-a2085454e420",
+        "40221b58-6042-49d4-a04f-bcf13c63d3af",
+        "e47e35b8-215d-4f2f-92b2-2b8286c7933f",
+        "56d78c11-6010-4148-a88c-ed1deea93f69",
+        "075b1ba6-50ba-41f2-a03f-393c6c21d0ea",
+        "42c2728d-0db9-4b78-9598-f8325d125c3c"
+      ]
+    },
+    {
+      "id": "e4c0f8c8-1037-4067-8bdc-7f2b7c574ffa",
+      "type": "columnFooter",
+      "name": "Column Footer",
+      "height": 25,
+      "backgroundColor": "#F5F5F5",
+      "items": []
+    },
+    {
+      "id": "47441731-4348-4f3b-a3d1-63cddc222fc2",
+      "type": "pageFooter",
+      "name": "Page Footer",
+      "height": 28,
+      "backgroundColor": "#F5F5F5",
+      "items": [
+        "b95314d3-db72-47d9-86f8-d4951c84e6d6"
+      ]
+    },
+    {
+      "id": "c37d8658-58a1-4378-ae16-716d8242c86b",
+      "type": "summary",
+      "name": "Summary",
+      "height": 40,
+      "backgroundColor": "#F9F9F9",
+      "items": []
+    }
+  ],
+  "groups": [
+    {
+      "id": "5ee56984-a7f2-4694-b73e-5e669a440931",
+      "name": "sub_region",
+      "expression": "$F{sub_region}",
+      "order": 0,
+      "headerBandId": "9c1f1f80-c1df-47f7-97ea-3bb82d38cd33",
+      "footerBandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "sortOrder": "Ascending",
+      "keepTogether": true,
+      "startNewPage": false,
+      "reprintHeaderOnEachPage": true,
+      "fieldName": "sub_region",
+      "showGroupColumnHeader": false,
+      "hideColumnHeaderIfNoDetail": false,
+      "hideColumnHeaderForMapOnly": false,
+      "hideColumnHeaderForChartOnly": false
+    }
+  ],
+  "elements": {
+    "06d02b34-cb2e-4fa7-89d3-c7bcbb0b53e9": {
+      "id": "06d02b34-cb2e-4fa7-89d3-c7bcbb0b53e9",
+      "type": "field",
+      "name": "land_km",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 163.42857142857142,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "\u003cland_km\u003e",
+      "expression": "$F{land_km}",
+      "binding": {
+        "type": "field",
+        "field": "land_km"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "075b1ba6-50ba-41f2-a03f-393c6c21d0ea": {
+      "id": "075b1ba6-50ba-41f2-a03f-393c6c21d0ea",
+      "type": "field",
+      "name": "Sum_houshold_sub_region",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 104,
+        "y": 88,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "\u003cSum_houshold_sub_region\u003e",
+      "binding": {
+        "type": "variable",
+        "variable": "Sum_houshold_sub_region"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "0e13dce5-d673-4cb3-b8f6-eb7bb5499a11": {
+      "id": "0e13dce5-d673-4cb3-b8f6-eb7bb5499a11",
+      "type": "staticText",
+      "name": "Sub Region",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 81.71428571428571,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "Sub Region",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "10b4ddb2-4afa-49e8-ab0f-8527ef124012": {
+      "id": "10b4ddb2-4afa-49e8-ab0f-8527ef124012",
+      "type": "staticText",
+      "name": "Sum_persons_sub_region Label",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 0,
+        "y": 32,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "Total Persons",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "3159a6ec-6448-45b6-84df-ab6adfc03b29": {
+      "id": "3159a6ec-6448-45b6-84df-ab6adfc03b29",
+      "type": "staticText",
+      "name": "sub_region Label",
+      "bandId": "9c1f1f80-c1df-47f7-97ea-3bb82d38cd33",
+      "bounds": {
+        "x": 0,
+        "y": 4,
+        "width": 80,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "sub_region:",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "3278d8be-c53d-408b-a4a1-85fed96c3b2d": {
+      "id": "3278d8be-c53d-408b-a4a1-85fed96c3b2d",
+      "type": "field",
+      "name": "Sum_land_km_sub_region",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 104,
+        "y": 4,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "\u003cSum_land_km_sub_region\u003e",
+      "binding": {
+        "type": "variable",
+        "variable": "Sum_land_km_sub_region"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "368c37bc-a7be-44b6-879e-a884f2d06001": {
+      "id": "368c37bc-a7be-44b6-879e-a884f2d06001",
+      "type": "staticText",
+      "name": "Land Km",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 163.42857142857142,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "Land Km",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "36b9dd2c-67de-44c1-a07f-db9facf04c4d": {
+      "id": "36b9dd2c-67de-44c1-a07f-db9facf04c4d",
+      "type": "staticText",
+      "name": "Usapgservice",
+      "bandId": "bc5b9b9f-272a-46d9-b8a4-864f37bea09e",
+      "bounds": {
+        "x": 0,
+        "y": 10,
+        "width": 572,
+        "height": 28
+      },
+      "visible": true,
+      "foregroundColor": "#0F3460",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle",
+      "styleName": "Heading1",
+      "text": "Demo Report",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 18,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "3fd431b6-a0a6-4db2-86b5-3ee4a02cb5e2": {
+      "id": "3fd431b6-a0a6-4db2-86b5-3ee4a02cb5e2",
+      "type": "field",
+      "name": "sub_region",
+      "bandId": "9c1f1f80-c1df-47f7-97ea-3bb82d38cd33",
+      "bounds": {
+        "x": 84,
+        "y": 4,
+        "width": 160,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "\u003csub_region\u003e",
+      "binding": {
+        "type": "field",
+        "field": "sub_region"
+      },
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "40221b58-6042-49d4-a04f-bcf13c63d3af": {
+      "id": "40221b58-6042-49d4-a04f-bcf13c63d3af",
+      "type": "staticText",
+      "name": "Sum_families_sub_region Label",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 0,
+        "y": 60,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "Total Families",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "42c2728d-0db9-4b78-9598-f8325d125c3c": {
+      "id": "42c2728d-0db9-4b78-9598-f8325d125c3c",
+      "type": "map",
+      "name": "Map",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 216,
+        "y": 8,
+        "width": 336,
+        "height": 296
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#E8F0E8",
+      "border": {
+        "width": 0,
+        "color": "#4A7C4A",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "binding": {},
+      "datasetScope": "currentGroup",
+      "showLegend": true,
+      "source": "reportDataset",
+      "connectionId": "88f5480b-e55c-448c-a5a8-32887da7f2cb",
+      "schema": "public",
+      "table": "usapgservice",
+      "geometryColumn": "geom",
+      "locationSource": "geometry",
+      "styleSource": "default",
+      "layers": [
+        {
+          "id": "0d2e2449-c8ab-4f7f-a452-a541ceeca27a",
+          "name": "public.usapgservice (geom)",
+          "enabled": true,
+          "nativeName": "usapgservice",
+          "title": "public.usapgservice (geom)",
+          "schema": "public",
+          "table": "usapgservice",
+          "geometryColumn": "geom"
+        }
+      ],
+      "extentMode": "currentGroup",
+      "projection": "EPSG:4326",
+      "basemap": "osm",
+      "showScaleBar": true,
+      "showNorthArrow": true,
+      "symbology": {
+        "renderer": "choropleth",
+        "field": "persons",
+        "classification": "quantile",
+        "classes": 5,
+        "colorRamp": "Blues",
+        "singleSymbol": {
+          "fillColor": "#26a69a",
+          "outlineColor": "#00796b",
+          "outlineWidth": 1.5,
+          "opacity": 0.35,
+          "shape": "circle"
+        }
+      },
+      "labels": {
+        "enabled": false,
+        "fontFamily": "SansSerif",
+        "fontSize": 10,
+        "fontColor": "#000000",
+        "haloColor": "#FFFFFF",
+        "haloWidth": 2,
+        "placement": "right"
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "53d2de03-f8ec-4898-aad0-a2085454e420": {
+      "id": "53d2de03-f8ec-4898-aad0-a2085454e420",
+      "type": "field",
+      "name": "Sum_persons_sub_region",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 104,
+        "y": 32,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "\u003cSum_persons_sub_region\u003e",
+      "binding": {
+        "type": "variable",
+        "variable": "Sum_persons_sub_region"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "56d78c11-6010-4148-a88c-ed1deea93f69": {
+      "id": "56d78c11-6010-4148-a88c-ed1deea93f69",
+      "type": "staticText",
+      "name": "Sum_houshold_sub_region Label",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 0,
+        "y": 88,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "Total Houshold",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "6d95b525-f533-4125-be8f-b90219226806": {
+      "id": "6d95b525-f533-4125-be8f-b90219226806",
+      "type": "field",
+      "name": "state_name",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 0,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "\u003cstate_name\u003e",
+      "expression": "$F{state_name}",
+      "binding": {
+        "type": "field",
+        "field": "state_name"
+      },
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "6f31dfa1-1a02-4b34-b042-00ad383afe45": {
+      "id": "6f31dfa1-1a02-4b34-b042-00ad383afe45",
+      "type": "staticText",
+      "name": "Houshold",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 394.2857142857143,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "Houshold",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "7aa64c47-7699-4205-b12b-b62815b5dd03": {
+      "id": "7aa64c47-7699-4205-b12b-b62815b5dd03",
+      "type": "field",
+      "name": "families",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 312.57142857142856,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "families",
+      "expression": "$F{families}",
+      "binding": {
+        "type": "field",
+        "field": "families"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "9b73d4b2-a130-464c-b239-3b9ae76b2f44": {
+      "id": "9b73d4b2-a130-464c-b239-3b9ae76b2f44",
+      "type": "field",
+      "name": "sub_region",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 81.71428571428571,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "\u003csub_region\u003e",
+      "expression": "$F{sub_region}",
+      "binding": {
+        "type": "field",
+        "field": "sub_region"
+      },
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "a515b6fb-65db-42ea-850d-5ee72531c3a4": {
+      "id": "a515b6fb-65db-42ea-850d-5ee72531c3a4",
+      "type": "staticText",
+      "name": "Sum_land_km_sub_region Label",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 0,
+        "y": 4,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "Total Land Km",
+      "binding": {},
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "a982467d-b319-423c-aae3-505778da4f0a": {
+      "id": "a982467d-b319-423c-aae3-505778da4f0a",
+      "type": "staticText",
+      "name": "Families",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 312.57142857142856,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "Families",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "aa4c9261-b588-4911-bbb0-dc6d6e659fa5": {
+      "id": "aa4c9261-b588-4911-bbb0-dc6d6e659fa5",
+      "type": "staticText",
+      "name": "State Name",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 0,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "State Name",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "b95314d3-db72-47d9-86f8-d4951c84e6d6": {
+      "id": "b95314d3-db72-47d9-86f8-d4951c84e6d6",
+      "type": "field",
+      "name": "PageNumber",
+      "bandId": "47441731-4348-4f3b-a3d1-63cddc222fc2",
+      "bounds": {
+        "x": 412,
+        "y": 6,
+        "width": 160,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#666666",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Center",
+      "verticalAlign": "Middle",
+      "styleName": "Footer",
+      "text": "Page n of m",
+      "expression": "\"Page \" + $V{PAGE_NUMBER} + \" of \" + $V{PAGE_COUNT}",
+      "binding": {},
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 9,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "d267b7fa-1d76-4949-bc71-8adde1d99a7a": {
+      "id": "d267b7fa-1d76-4949-bc71-8adde1d99a7a",
+      "type": "staticText",
+      "name": "Persons",
+      "bandId": "845587a0-d467-4b04-85cc-d3ca3065024a",
+      "bounds": {
+        "x": 230.85714285714283,
+        "y": 4,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableHeader",
+      "text": "Persons",
+      "binding": {},
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "e47e35b8-215d-4f2f-92b2-2b8286c7933f": {
+      "id": "e47e35b8-215d-4f2f-92b2-2b8286c7933f",
+      "type": "field",
+      "name": "Sum_families_sub_region",
+      "bandId": "366b5c88-a689-43ec-a1c0-8c740c9c812e",
+      "bounds": {
+        "x": 104,
+        "y": 60,
+        "width": 100,
+        "height": 20
+      },
+      "visible": true,
+      "foregroundColor": "#16213E",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "Body",
+      "text": "\u003cSum_families_sub_region\u003e",
+      "binding": {
+        "type": "variable",
+        "variable": "Sum_families_sub_region"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "e7f501b7-a0a3-4738-ac64-8aac85e57174": {
+      "id": "e7f501b7-a0a3-4738-ac64-8aac85e57174",
+      "type": "field",
+      "name": "houshold",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 394.2857142857143,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "houshold",
+      "expression": "$F{houshold}",
+      "binding": {
+        "type": "field",
+        "field": "houshold"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    },
+    "fe93d5a0-8987-45de-852e-fdd6e7a1c72c": {
+      "id": "fe93d5a0-8987-45de-852e-fdd6e7a1c72c",
+      "type": "field",
+      "name": "persons",
+      "bandId": "7a156cb8-c710-464b-ad5e-74566bda6150",
+      "bounds": {
+        "x": 230.85714285714283,
+        "y": 3,
+        "width": 79.71428571428571,
+        "height": 16
+      },
+      "visible": true,
+      "foregroundColor": "#000000",
+      "backgroundColor": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#000000",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top",
+      "styleName": "TableCell",
+      "text": "persons",
+      "expression": "$F{persons}",
+      "binding": {
+        "type": "field",
+        "field": "persons"
+      },
+      "pattern": "#,##0.##",
+      "blankWhenNull": true,
+      "font": {
+        "family": "SansSerif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "crosstabCornerStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabRowHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabColumnHeaderStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabMeasureStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      },
+      "crosstabGrandTotalStyle": {
+        "border": {
+          "width": 0,
+          "color": "",
+          "style": ""
+        }
+      }
+    }
+  },
+  "parameters": [
+    {
+      "id": "a5465051-7d02-46b3-a4dc-10c7f551ae2a",
+      "name": "p_region",
+      "type": "Text",
+      "selection": "multiple",
+      "defaultValues": [
+        "Mtn",
+        "Pacific"
+      ],
+      "required": false,
+      "hidden": false
+    }
+  ],
+  "fields": [
+    {
+      "id": "1f9f45fc-6de1-4884-99a8-638cefb60fe0",
+      "name": "state_name",
+      "class": "java.lang.String",
+      "dataType": "text"
+    },
+    {
+      "id": "f35cfc41-1013-4f84-863e-be1272d7455c",
+      "name": "sub_region",
+      "class": "java.lang.String",
+      "dataType": "text"
+    },
+    {
+      "id": "893aef7a-9da7-4c7c-95ce-ad704b5186cf",
+      "name": "land_km",
+      "class": "java.lang.Double",
+      "dataType": "double"
+    },
+    {
+      "id": "98683ebd-8582-40e0-95f4-9960e75bea62",
+      "name": "water_km",
+      "class": "java.lang.Double",
+      "dataType": "double"
+    },
+    {
+      "id": "ce8465aa-91fc-488a-a44b-c80a9d07a067",
+      "name": "persons",
+      "class": "java.lang.Double",
+      "dataType": "double"
+    },
+    {
+      "id": "acba3c83-2683-4cdd-85ed-4de154611110",
+      "name": "families",
+      "class": "java.lang.Double",
+      "dataType": "double"
+    },
+    {
+      "id": "27eb9d19-d1c1-4d7c-a585-c8281c0daa04",
+      "name": "houshold",
+      "class": "java.lang.Double",
+      "dataType": "double"
+    }
+  ],
+  "variables": [
+    {
+      "id": "6193382c-8e7a-4e15-8e3d-93b43c2c3e16",
+      "name": "Sum_land_km_sub_region",
+      "class": "java.lang.Double",
+      "expression": "$F{land_km}",
+      "calculation": "Sum",
+      "resetType": "Group",
+      "resetGroup": "sub_region",
+      "incrementType": "None"
+    },
+    {
+      "id": "fdc7c0bc-07c9-447a-88b3-9c147ecb81da",
+      "name": "Sum_water_km_sub_region",
+      "class": "java.lang.Double",
+      "expression": "$F{water_km}",
+      "calculation": "Sum",
+      "resetType": "Group",
+      "resetGroup": "sub_region",
+      "incrementType": "None"
+    },
+    {
+      "id": "3eb6a395-51c8-4f3d-92e8-c4db9cc1b74b",
+      "name": "Sum_persons_sub_region",
+      "class": "java.lang.Double",
+      "expression": "$F{persons}",
+      "calculation": "Sum",
+      "resetType": "Group",
+      "resetGroup": "sub_region",
+      "incrementType": "None"
+    },
+    {
+      "id": "a092f8aa-91a8-4b50-9ae9-d8bb84c10efa",
+      "name": "Sum_families_sub_region",
+      "class": "java.lang.Double",
+      "expression": "$F{families}",
+      "calculation": "Sum",
+      "resetType": "Group",
+      "resetGroup": "sub_region",
+      "incrementType": "None"
+    },
+    {
+      "id": "a640dff0-e759-48e4-a939-3edf08a366ee",
+      "name": "Sum_houshold_sub_region",
+      "class": "java.lang.Double",
+      "expression": "$F{houshold}",
+      "calculation": "Sum",
+      "resetType": "Group",
+      "resetGroup": "sub_region",
+      "incrementType": "None"
+    }
+  ],
+  "datasets": [],
+  "queryString": "SELECT \"u\".\"state_name\", \"u\".\"sub_region\", \"u\".\"land_km\", \"u\".\"water_km\", \"u\".\"persons\", \"u\".\"families\", \"u\".\"houshold\"\nFROM \"public\".\"usapgservice\" \"u\"\nWHERE $X{IN, \"u\".\"sub_region\", p_region}",
+  "language": "java",
+  "themeName": "classic",
+  "styles": [
+    {
+      "name": "Heading1",
+      "font": {
+        "family": "Serif",
+        "size": 18,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "bold": true,
+      "foreground": "#0F3460",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "Heading2",
+      "font": {
+        "family": "Serif",
+        "size": 14,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "bold": true,
+      "foreground": "#16213E",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "Body",
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "foreground": "#16213E",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top"
+    },
+    {
+      "name": "Caption",
+      "font": {
+        "family": "Serif",
+        "size": 9,
+        "bold": false,
+        "italic": true,
+        "underline": false
+      },
+      "italic": true,
+      "foreground": "#666666",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top"
+    },
+    {
+      "name": "TableHeader",
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "bold": true,
+      "foreground": "#16213E",
+      "background": "#E8E8E8",
+      "border": {
+        "width": 1,
+        "color": "#999999",
+        "style": "solid"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "TableCell",
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "foreground": "#16213E",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 1,
+        "color": "#999999",
+        "style": "solid"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "Footer",
+      "font": {
+        "family": "Serif",
+        "size": 9,
+        "bold": false,
+        "italic": false,
+        "underline": false
+      },
+      "foreground": "#666666",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Center",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "MapTitle",
+      "font": {
+        "family": "Serif",
+        "size": 12,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "bold": true,
+      "foreground": "#1A1A2E",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Middle"
+    },
+    {
+      "name": "LegendTitle",
+      "font": {
+        "family": "Serif",
+        "size": 10,
+        "bold": true,
+        "italic": false,
+        "underline": false
+      },
+      "bold": true,
+      "foreground": "#16213E",
+      "background": "#FFFFFF00",
+      "border": {
+        "width": 0,
+        "color": "#999999",
+        "style": "none"
+      },
+      "horizontalAlign": "Left",
+      "verticalAlign": "Top"
+    }
+  ],
+  "summaryNewPage": false,
+  "summaryWithPageHeaderAndFooter": false
+}

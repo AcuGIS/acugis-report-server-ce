@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}</style>
+</head>
+<body data-federation-app="{{.FederationApp}}" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Publish Report</h1>
+        <p class="page-subtitle">Upload a JRXML file and bind it to a datasource. Parameter names and types are imported automatically on first publish.</p>
+    </div>
+</header>
+
+{{if not .HasDatasources}}
+    <div class="card-panel amber lighten-4 amber-text text-darken-4">
+        No datasources were found. Load <code>database/schema.sql</code> and add at least one row to
+        <code>public.jasper_datasource</code> before publishing reports.
+    </div>
+{{end}}
+
+{{if .Message}}
+    <div class="card-panel {{if eq .MessageType "success"}}green lighten-4 green-text text-darken-4{{else}}red lighten-4 red-text text-darken-4{{end}}" role="alert">
+        <div>{{.Message}}</div>
+        {{if and (eq .MessageType "success") .RunReportURL .ViewJSONURL}}
+            <div class="card-actions-row" style="margin-top:12px;">
+                <a href="{{.RunReportURL}}" class="btn-small waves-effect waves-light teal">Run report</a>
+                <a href="{{.ViewJSONURL}}" class="btn-small waves-effect waves-light blue-grey" target="_blank" rel="noopener noreferrer">View JSON</a>
+            </div>
+        {{end}}
+        {{if .PublishNotes}}
+            <ul style="margin-top:12px;">
+                {{range .PublishNotes}}<li>{{.}}</li>{{end}}
+            </ul>
+        {{end}}
+    </div>
+{{end}}
+
+<div class="card">
+    <div class="card-content">
+        <span class="card-title">Report Package</span>
+        <form action="" method="post" enctype="multipart/form-data" id="publishReportForm">
+            <div class="row">
+                <div class="input-field col s12 m6">
+                    <input type="text" id="report_name" name="report_name" required placeholder="Enter report name">
+                    <label for="report_name" class="active">Report Name</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <input type="text" id="report_description" name="report_description" placeholder="Shown on report cards">
+                    <label for="report_description" class="active">Description</label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <select id="report_type" name="report_type">
+                        <option value="jasper" selected>Jasper Report</option>
+                        {{if .AllowMapReports}}
+                        <option value="map">Map Report</option>
+                        {{end}}
+                    </select>
+                    <label>Report Type</label>
+                    {{if .AllowMapReports}}
+                    <span class="helper-text">Map Report pairs a Jasper report with an interactive map. Configure the Map tab after publishing.</span>
+                    {{end}}
+                </div>
+                <div class="file-field input-field col s12 m6">
+                    <div class="btn blue-grey"><span>JRXML</span>
+                        <input type="file" id="jrxml_file" name="jrxml_file" accept=".jrxml,application/xml,text/xml" required>
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Upload JRXML file">
+                    </div>
+                </div>
+                <div class="file-field input-field col s12 m6">
+                    <div class="btn blue-grey lighten-1"><span>JASPER</span>
+                        <input type="file" id="jasper_file" name="jasper_file" accept=".jasper,application/octet-stream">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Optional compiled .jasper file">
+                    </div>
+                    <span class="helper-text">If provided, this file is saved as the compiled report.</span>
+                </div>
+                <div class="file-field input-field col s12 m6">
+                    <div class="btn blue-grey lighten-1"><span>Thumbnail</span>
+                        <input type="file" id="thumbnail_file" name="thumbnail_file" accept=".png,.jpg,.jpeg,.webp">
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" placeholder="Optional report thumbnail">
+                    </div>
+                </div>
+                <div class="input-field col s12 m6">
+                    <select id="data_source" name="data_source" required>
+                        <option value="" disabled selected>Select data source</option>
+                        {{range .DataSources}}
+                            <option value="{{.}}" {{if index $.CassandraDatasources .}}data-cassandra="1"{{end}} {{if index $.BigQueryDatasources .}}data-bigquery="1"{{end}} {{if index $.DuckDBDatasources .}}data-duckdb="1"{{end}} {{if index $.ArcGISDatasources .}}data-arcgis="1"{{end}}>{{.}}</option>
+                        {{end}}
+                    </select>
+                    <label>Datasource</label>
+                </div>
+                <div class="col s12" id="cassandra_query_info" style="display:none; margin-bottom:12px;">
+                    <p class="muted-small" style="margin:0;">
+                        CQL is taken automatically from the uploaded JRXML (Report Designer).
+                        Select a Server Cassandra/Astra datasource for connection credentials only — do not re-enter the query.
+                    </p>
+                </div>
+                <div class="col s12" id="bigquery_query_info" style="display:none; margin-bottom:12px;">
+                    <p class="muted-small" style="margin:0;">
+                        GoogleSQL is taken automatically from the uploaded JRXML (Report Designer collection query).
+                        Select a Server Google BigQuery datasource for Project ID and Service Account credentials only — do not embed Designer JSON paths or keys.
+                    </p>
+                </div>
+                <div class="col s12" id="arcgis_query_info" style="display:none; margin-bottom:12px;">
+                    <p class="muted-small" style="margin:0;">
+                        ArcGIS attributes are read from the JRXML (<code>acugis.datasource.connection</code>).
+                        Select the ArcGIS Feature Server datasource with that exact name.
+                        Report Server keeps its own credentials and does not copy them from Designer.
+                    </p>
+                </div>
+                <div class="col s12" id="duckdb_query_info" style="display:none; margin-bottom:12px;">
+                    <p class="muted-small" style="margin:0;">
+                        DuckDB SQL is taken automatically from the uploaded JRXML (<code>language=SQL</code>; legacy <code>language=duckdb</code> still works).
+                        Map to a Server DuckDB Datasource. Reports fill via DuckDB JDBC <code>REPORT_CONNECTION</code> (not collection data).
+                        Local Designer <code>.duckdb</code> paths are not portable — use a Server filesystem path for Database mode.
+                        Remote Data Files authentication is resolved from the Server Datasource (never from JRXML).
+                    </p>
+                </div>
+                <div id="cassandra_advanced" style="display:none; margin-bottom:8px;">
+                    <details>
+                        <summary class="muted-small" style="cursor:pointer; margin-bottom:8px;">Advanced: imported reports without Designer query</summary>
+                        <div class="file-field input-field col s12 m6" id="project_json_field">
+                            <div class="btn blue-grey lighten-1"><span>project.json</span>
+                                <input type="file" id="project_json" name="project_json" accept=".json,application/json">
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Optional project.json (imports CQL)">
+                            </div>
+                        </div>
+                        <div class="input-field col s12" id="cql_query_field">
+                            <textarea id="query" name="query" class="materialize-textarea" style="min-height:120px;"></textarea>
+                            <label for="query" class="active">CQL / Query (manual override)</label>
+                            <span class="helper-text">Fallback only when the JRXML has no language=cassandra query.</span>
+                        </div>
+                    </details>
+                </div>
+                {{if .AccessGroups}}
+                    <div class="input-field col s12 m6">
+                        <select name="access_groups[]" multiple>
+                            <option value="" disabled>Choose access groups</option>
+                            {{range .AccessGroups}}
+                                <option value="{{.}}">{{.}}</option>
+                            {{end}}
+                        </select>
+                        <label>Access Groups</label>
+                        <span class="helper-text">Optional metadata for external access control.</span>
+                    </div>
+                {{end}}
+            </div>
+
+            <hr class="section-divider">
+            <div class="card-actions-row" style="justify-content:space-between; margin-bottom:16px;">
+                <span class="card-title" style="margin:0;">Parameters</span>
+                <button type="button" class="btn-small waves-effect waves-light blue-grey" id="addParameterBtn">
+                    <i class="material-icons left">add</i>Add Parameter
+                </button>
+            </div>
+            <div id="parameterRows"></div>
+            <div class="form-actions">
+                <button type="submit" class="btn waves-effect waves-light teal">
+                    Publish Report
+                    <i class="material-icons right">publish</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<template id="parameterRowTemplate">
+    <div class="parameter-row">
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <input type="text" class="param-name" name="params[__INDEX__][name]" placeholder="e.g. parcel_id">
+                <label class="active">Name</label>
+            </div>
+            <div class="input-field col s12 m2">
+                <select class="param-type" name="params[__INDEX__][type]">
+                    <option value="string">Text</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="select">Select (Dropdown)</option>
+                </select>
+                <label>Type</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <input type="text" class="param-label" name="params[__INDEX__][label]" placeholder="Display label">
+                <label class="active">Label</label>
+            </div>
+            <div class="col s12 m4">
+                <div class="select-source-settings is-hidden">
+                    <div style="margin-bottom:10px;">
+                        <div class="muted-small" style="margin-bottom:6px;">Source Type</div>
+                        <label style="margin-right:16px;">
+                            <input type="radio" class="param-source-type" name="params[__INDEX__][source_type]" value="static" checked>
+                            <span>Static Options</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="param-source-type" name="params[__INDEX__][source_type]" value="sql">
+                            <span>SQL Query</span>
+                        </label>
+                    </div>
+                    <div class="input-field static-options">
+                        <textarea class="materialize-textarea param-options options-input" name="params[__INDEX__][options]"></textarea>
+                        <label>Options (one per line)</label>
+                    </div>
+                    <div class="sql-options" style="display:none;">
+                        <div class="input-field">
+                            <textarea class="materialize-textarea param-sql sql-input" name="params[__INDEX__][sql]" placeholder="SELECT label, value FROM table"></textarea>
+                            <label class="active">SQL Query</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m3">
+                <label>
+                    <input class="param-required" type="checkbox" name="params[__INDEX__][required]" value="1">
+                    <span>Required</span>
+                </label>
+            </div>
+            <div class="col s12 m4">
+                <label>
+                    <input class="param-multiple" type="checkbox" name="params[__INDEX__][multiple]" value="1">
+                    <span>Allow multiple values</span>
+                </label>
+            </div>
+            <div class="col s12 m5 right-align">
+                <button type="button" class="btn-small waves-effect waves-light red remove-parameter-btn">
+                    <i class="material-icons left">remove_circle</i>Remove
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    M.FormSelect.init(document.querySelectorAll("select"));
+    M.updateTextFields();
+});
+window.jrsInitMaterialize = function (root) {
+    root = root || document;
+    if (!window.M) return;
+    M.FormSelect.init(root.querySelectorAll("select"));
+    M.updateTextFields();
+};
+(() => {
+    const dsSelect = document.getElementById('data_source');
+    const queryInfo = document.getElementById('cassandra_query_info');
+    const bqInfo = document.getElementById('bigquery_query_info');
+    const duckInfo = document.getElementById('duckdb_query_info');
+    const arcInfo = document.getElementById('arcgis_query_info');
+    const advanced = document.getElementById('cassandra_advanced');
+    const syncCassandraFields = () => {
+        if (!dsSelect) return;
+        const opt = dsSelect.options[dsSelect.selectedIndex];
+        const isCassandra = !!(opt && opt.getAttribute('data-cassandra') === '1');
+        const isBigQuery = !!(opt && opt.getAttribute('data-bigquery') === '1');
+        const isDuckDB = !!(opt && opt.getAttribute('data-duckdb') === '1');
+        const isArcGIS = !!(opt && opt.getAttribute('data-arcgis') === '1');
+        if (queryInfo) queryInfo.style.display = isCassandra ? '' : 'none';
+        if (bqInfo) bqInfo.style.display = isBigQuery ? '' : 'none';
+        if (duckInfo) duckInfo.style.display = isDuckDB ? '' : 'none';
+        if (arcInfo) arcInfo.style.display = isArcGIS ? '' : 'none';
+        if (advanced) advanced.style.display = isCassandra ? '' : 'none';
+    };
+    if (dsSelect) {
+        dsSelect.addEventListener('change', syncCassandraFields);
+        syncCassandraFields();
+    }
+
+    const parameterRows = document.getElementById('parameterRows');
+    const addParameterBtn = document.getElementById('addParameterBtn');
+    const template = document.getElementById('parameterRowTemplate');
+    let paramIndex = 0;
+    const syncRow = (row) => {
+        const typeSelect = row.querySelector('.param-type');
+        const isSelectType = typeSelect && typeSelect.value === 'select';
+        const selectSourceSettings = row.querySelector('.select-source-settings');
+        const multipleEl = row.querySelector('.param-multiple');
+        const staticBox = row.querySelector('.static-options');
+        const sqlBox = row.querySelector('.sql-options');
+        const sourceType = row.querySelector('.param-source-type:checked');
+        selectSourceSettings.classList.toggle('is-hidden', !isSelectType);
+        if (!isSelectType) {
+            multipleEl.checked = false;
+            staticBox.style.display = 'block';
+            sqlBox.style.display = 'none';
+            return;
+        }
+        const useSql = sourceType && sourceType.value === 'sql';
+        staticBox.style.display = useSql ? 'none' : 'block';
+        sqlBox.style.display = useSql ? 'block' : 'none';
+    };
+    const addParameterRow = () => {
+        const html = template.innerHTML.replaceAll('__INDEX__', String(paramIndex++));
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        const row = wrapper.firstElementChild;
+        parameterRows.appendChild(row);
+        syncRow(row);
+        if (window.jrsInitMaterialize) window.jrsInitMaterialize(row);
+    };
+    addParameterBtn.addEventListener('click', addParameterRow);
+    parameterRows.addEventListener('click', (event) => {
+        const removeButton = event.target.closest('.remove-parameter-btn');
+        if (!removeButton) return;
+        removeButton.closest('.parameter-row')?.remove();
+    });
+    parameterRows.addEventListener('change', (event) => {
+        const row = event.target.closest('.parameter-row');
+        if (row) syncRow(row);
+    });
+})();
+</script>
+</main>
+</body>
+</html>

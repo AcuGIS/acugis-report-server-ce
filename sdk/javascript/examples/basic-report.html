@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AcuGIS Embed — Basic Report</title>
+  <style>html,body{margin:0;height:100%;font-family:system-ui} #report{height:90vh}</style>
+</head>
+<body>
+  <div id="report"></div>
+  <script src="http://localhost:9088/sdk/acugis-report.js"></script>
+  <script>
+    // Mint emb_ tokens on your backend via POST /api/v1/embed/token — never use jrs_ PATs here.
+    const EMBED_TOKEN = "emb_REPLACE_ME";
+    AcuGIS.embedReport({
+      server: "http://localhost:9088",
+      target: "#report",
+      reportId: "REPORT_KEY",
+      token: EMBED_TOKEN
+    });
+  </script>
+</body>
+</html>

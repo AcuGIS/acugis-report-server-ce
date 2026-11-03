@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}</style>
+</head>
+<body data-federation-app="{{.FederationApp}}" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Edit Report</h1>
+        <p class="page-subtitle"><code>{{.ReportKey}}</code></p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.CatalogURL}}" class="btn waves-effect waves-light grey">Back to reports</a>
+    </div>
+</header>
+
+{{if .FormErrors}}
+    <div class="card-panel red lighten-4 red-text text-darken-4" role="alert">
+        {{range .FormErrors}}<div>{{.}}</div>{{end}}
+    </div>
+{{end}}
+
+<div class="card">
+    <div class="card-content">
+        <span class="card-title">Report settings</span>
+        <form method="post" enctype="multipart/form-data" id="editReportForm">
+            <ul class="tabs" id="reportTabs">
+                <li class="tab"><a class="active" href="#tab-general" id="tab-general-btn">General</a></li>
+                <li class="tab"><a href="#tab-parameters" id="tab-parameters-btn">Parameters</a></li>
+                <li class="tab"><a href="#tab-permissions" id="tab-permissions-btn">Permissions</a></li>
+                {{if .ShowMapTab}}
+                <li class="tab"><a href="#tab-map" id="tab-map-btn">Map</a></li>
+                {{end}}
+            </ul>
+
+            <div id="reportTabsContent">
+                <div id="tab-general" class="report-tab-pane">
+                    <div class="row">
+                        <div class="input-field col s12 m4">
+                            <input type="text" id="report_name" name="report_name" value="{{.Name}}" required>
+                            <label for="report_name" class="active">Report Name</label>
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <select id="report_type" name="report_type">
+                                <option value="jasper" {{if eq .ReportType "jasper"}}selected{{end}}>Jasper Report</option>
+                                {{if .AllowMapReports}}
+                                <option value="map" {{if eq .ReportType "map"}}selected{{end}}>Map Report</option>
+                                {{end}}
+                            </select>
+                            <label>Report Type</label>
+                            {{if .AllowMapReports}}
+                            <span class="helper-text">A Map Report pairs a Jasper Report with a Map Definition.</span>
+                            {{end}}
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <select id="data_source" name="data_source" required>
+                                <option value="" disabled {{if eq .Datasource ""}}selected{{end}}>Select data source</option>
+                                {{range .DataSources}}
+                                    <option value="{{.}}" {{if eq . $.Datasource}}selected{{end}} {{if index $.CassandraDatasources .}}data-cassandra="1"{{end}} {{if index $.BigQueryDatasources .}}data-bigquery="1"{{end}} {{if index $.DuckDBDatasources .}}data-duckdb="1"{{end}} {{if index $.ArcGISDatasources .}}data-arcgis="1"{{end}}>{{.}}</option>
+                                {{end}}
+                            </select>
+                            <label>Datasource</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <input type="text" id="report_description" name="report_description" value="{{.Description}}" placeholder="Shown on report cards">
+                            <label for="report_description" class="active">Description</label>
+                        </div>
+                        <div class="file-field input-field col s12 m6" id="project_json_field" style="display:none;">
+                            <div class="btn blue-grey lighten-1"><span>project.json</span>
+                                <input type="file" id="project_json" name="project_json" accept=".json,application/json">
+                            </div>
+                            <div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Fallback for imported reports without Designer query"></div>
+                        </div>
+                        <div class="input-field col s12" id="cql_query_field" style="display:none;">
+                            {{if .HasReportQuery}}
+                            <label class="active">Query</label>
+                            <pre id="query_readonly" class="cassandra-query-readonly">{{.QuerySQL}}</pre>
+                            <span class="helper-text">Source: {{.QuerySource}}. The Server datasource supplies connection credentials only.</span>
+                            {{else}}
+                            <p class="muted-small" style="margin:0 0 8px;">No CQL was found in this report’s JRXML. For unusual imported reports, provide a manual override below.</p>
+                            <textarea id="query" name="query" class="materialize-textarea" style="min-height:120px;"></textarea>
+                            <label for="query" class="active">CQL / Query (advanced override)</label>
+                            <span class="helper-text">Fallback only — normal Designer reports embed the query in JRXML.</span>
+                            {{end}}
+                        </div>
+                        <div class="file-field input-field col s12 m4">
+                            <div class="btn blue-grey"><span>JRXML</span>
+                                <input type="file" id="jrxml_file" name="jrxml_file" accept=".jrxml,application/xml,text/xml">
+                            </div>
+                            <div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Optional new JRXML"></div>
+                        </div>
+                        <div class="file-field input-field col s12 m4">
+                            <div class="btn blue-grey lighten-1"><span>JASPER</span>
+                                <input type="file" id="jasper_file" name="jasper_file" accept=".jasper,application/octet-stream">
+                            </div>
+                            <div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Optional new .jasper"></div>
+                        </div>
+                        <div class="file-field input-field col s12 m4">
+                            <div class="btn blue-grey lighten-1"><span>Thumbnail</span>
+                                <input type="file" id="thumbnail_file" name="thumbnail_file" accept=".png,.jpg,.jpeg,.webp">
+                            </div>
+                            <div class="file-path-wrapper"><input class="file-path validate" type="text" placeholder="Optional new thumbnail"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-parameters" class="report-tab-pane is-hidden">
+                    <div class="card-actions-row" style="justify-content:space-between; margin-bottom:16px;">
+                        <span class="card-title" style="margin:0;">Parameters</span>
+                        <button type="button" class="btn-small waves-effect waves-light blue-grey" id="addParameterBtn">
+                            <i class="material-icons left">add</i>Add Parameter
+                        </button>
+                    </div>
+                    <div id="parameterRows">
+                        {{range .Params}}
+                        <div class="parameter-row">
+                            <div class="row">
+                                <div class="input-field col s12 m3">
+                                    <input type="text" class="param-name" name="params[{{.Index}}][name]" value="{{.Name}}" placeholder="e.g. parcel_id">
+                                    <label class="active">Name</label>
+                                </div>
+                                <div class="input-field col s12 m2">
+                                    <select class="param-type" name="params[{{.Index}}][type]">
+                                        <option value="string" {{if eq .Type "string"}}selected{{end}}>Text</option>
+                                        <option value="number" {{if eq .Type "number"}}selected{{end}}>Number</option>
+                                        <option value="date" {{if eq .Type "date"}}selected{{end}}>Date</option>
+                                        <option value="select" {{if eq .Type "select"}}selected{{end}}>Select (Dropdown)</option>
+                                    </select>
+                                    <label>Type</label>
+                                </div>
+                                <div class="input-field col s12 m3">
+                                    <input type="text" class="param-label" name="params[{{.Index}}][label]" value="{{.Label}}" placeholder="Display label">
+                                    <label class="active">Label</label>
+                                </div>
+                                <div class="col s12 m4">
+                                    <div class="select-source-settings {{if ne .Type "select"}}is-hidden{{end}}">
+                                        <div style="margin-bottom:10px;">
+                                            <div class="muted-small" style="margin-bottom:6px;">Source Type</div>
+                                            <label style="margin-right:16px;">
+                                                <input type="radio" class="param-source-type" name="params[{{.Index}}][source_type]" value="static" {{if eq .SourceType "static"}}checked{{end}}>
+                                                <span>Static Options</span>
+                                            </label>
+                                            <label>
+                                                <input type="radio" class="param-source-type" name="params[{{.Index}}][source_type]" value="sql" {{if eq .SourceType "sql"}}checked{{end}}>
+                                                <span>SQL Query</span>
+                                            </label>
+                                        </div>
+                                        <div class="input-field static-options" style="{{if eq .SourceType "sql"}}display:none;{{else}}display:block;{{end}}">
+                                            <textarea class="materialize-textarea param-options options-input" name="params[{{.Index}}][options]">{{.Options}}</textarea>
+                                            <label class="active">Options (one per line)</label>
+                                        </div>
+                                        <div class="sql-options" style="{{if eq .SourceType "sql"}}display:block;{{else}}display:none;{{end}}">
+                                            <div class="input-field">
+                                                <textarea class="materialize-textarea param-sql sql-input" name="params[{{.Index}}][sql]" placeholder="SELECT label, value FROM table">{{.SQL}}</textarea>
+                                                <label class="active">SQL Query</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 m3">
+                                    <label>
+                                        <input class="param-required" type="checkbox" name="params[{{.Index}}][required]" value="1" {{if .Required}}checked{{end}}>
+                                        <span>Required</span>
+                                    </label>
+                                </div>
+                                <div class="col s12 m4">
+                                    <label>
+                                        <input class="param-multiple" type="checkbox" name="params[{{.Index}}][multiple]" value="1" {{if and (eq .Type "select") .Multiple}}checked{{end}}>
+                                        <span>Allow multiple values</span>
+                                    </label>
+                                </div>
+                                <div class="col s12 m5 right-align">
+                                    <button type="button" class="btn-small waves-effect waves-light red remove-parameter-btn">
+                                        <i class="material-icons left">remove_circle</i>Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+
+                <div id="tab-permissions" class="report-tab-pane is-hidden">
+                    <div class="input-field">
+                        {{if or .AccessGroups .SelectedGroups}}
+                            <select name="access_groups[]" multiple>
+                                {{range .AccessGroups}}
+                                    <option value="{{.}}" {{if index $.SelectedGroups .}}selected{{end}}>{{.}}</option>
+                                {{end}}
+                            </select>
+                            <label>Access Groups</label>
+                            <span class="helper-text">Hold Ctrl/Cmd to select multiple groups.</span>
+                        {{else}}
+                            <p class="muted-small">No access groups are configured.</p>
+                        {{end}}
+                    </div>
+                </div>
+
+                {{if .ShowMapTab}}
+                <div id="tab-map" class="report-tab-pane is-hidden">
+                    <div class="mb-4">
+                        <h2 class="card-title">General</h2>
+                        <div class="jrs-check-row">
+                            <label>
+                                <input type="checkbox" name="map[enabled]" id="map_enabled" value="1" {{if .MapEnabled}}checked{{end}}>
+                                <span>Enable Map</span>
+                            </label>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 m4">
+                                <label for="map_basemap" class="jrs-field-label">Basemap</label>
+                                <select id="map_basemap" name="map[basemap]">
+                                    {{$basemap := mapStr .Map "basemap"}}
+                                    {{range .Basemaps}}
+                                        <option value="{{.Key}}" {{if eq .Key $basemap}}selected{{end}}>{{.Label}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                            <div class="col s12 m4">
+                                <label for="map_geometryColumn" class="jrs-field-label">Geometry Column</label>
+                                <select id="map_geometryColumn" name="map[geometryColumn]">
+                                    {{$geom := mapStr .Map "geometryColumn"}}
+                                    {{if .GeomColumns}}
+                                        {{range .GeomColumns}}
+                                            <option value="{{.}}" {{if eq . $geom}}selected{{end}}>{{.}}</option>
+                                        {{end}}
+                                    {{else}}
+                                        <option value="{{$geom}}" selected>{{$geom}}</option>
+                                    {{end}}
+                                </select>
+                                {{if .LayerError}}
+                                    <div class="helper-text amber-text text-darken-3">{{.LayerError}}</div>
+                                {{else if .LayerTable}}
+                                    <div class="helper-text">Table: <code>{{.LayerTable}}</code></div>
+                                {{end}}
+                            </div>
+                            <div class="col s12 m4">
+                                <label for="map_initialZoom" class="jrs-field-label">Initial Zoom</label>
+                                <select id="map_initialZoom" name="map[initialZoom]">
+                                    {{$zoom := mapStr .Map "initialZoom"}}
+                                    {{range .InitialZooms}}
+                                        <option value="{{.Key}}" {{if eq .Key $zoom}}selected{{end}}>{{.Label}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-4">
+                        <h2 class="card-title">Symbology</h2>
+                        <label class="jrs-field-label">Renderer</label>
+                        <div class="jrs-inline-checks">
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="single" {{if eq .Renderer "single"}}checked{{end}}><span>Single Symbol</span></label></div>
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="categorized" {{if eq .Renderer "categorized"}}checked{{end}}><span>Categorized</span></label></div>
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="graduated" {{if eq .Renderer "graduated"}}checked{{end}}><span>Graduated</span></label></div>
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="choropleth" {{if eq .Renderer "choropleth"}}checked{{end}}><span>Choropleth</span></label></div>
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="heatmap" {{if eq .Renderer "heatmap"}}checked{{end}}><span>Heatmap</span></label></div>
+                            <div class="jrs-check-row"><label><input class="map-renderer" type="radio" name="map[renderer]" value="proportional" {{if eq .Renderer "proportional"}}checked{{end}}><span>Proportional Symbols</span></label></div>
+                        </div>
+
+                        <div id="mapSingleSymbolPanel" class="jrs-panel">
+                            <h3 class="card-title">Single Symbol</h3>
+                            <div class="row">
+                                <div class="col s12 m3">
+                                    <label class="jrs-field-label" for="map_fillColor">Fill Color</label>
+                                    <input type="color" id="map_fillColor" name="map[fillColor]" value="{{mapStr .SingleSymbol "fillColor"}}">
+                                </div>
+                                <div class="col s12 m3">
+                                    <label class="jrs-field-label" for="map_outlineColor">Outline Color</label>
+                                    <input type="color" id="map_outlineColor" name="map[outlineColor]" value="{{mapStr .SingleSymbol "outlineColor"}}">
+                                </div>
+                                <div class="col s12 m3">
+                                    <label class="jrs-field-label" for="map_outlineWidth">Outline Width</label>
+                                    <input type="number" id="map_outlineWidth" name="map[outlineWidth]" min="0" max="20" step="0.5" value="{{mapFloat .SingleSymbol "outlineWidth"}}">
+                                </div>
+                                <div class="col s12 m3">
+                                    <label class="jrs-field-label" for="map_opacity">Opacity</label>
+                                    <input type="number" id="map_opacity" name="map[opacity]" min="0" max="1" step="0.05" value="{{mapFloat .SingleSymbol "opacity"}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mapFieldPanel" class="jrs-panel is-hidden">
+                            <div class="row">
+                                <div class="col s12 m4">
+                                    <label class="jrs-field-label" for="map_field">Field</label>
+                                    <select id="map_field" name="map[field]">
+                                        {{$field := mapStr .Map "field"}}
+                                        <option value=""></option>
+                                        {{range .ReportFields}}
+                                            <option value="{{.Name}}" {{if eq .Name $field}}selected{{end}}>{{.Label}}</option>
+                                        {{end}}
+                                    </select>
+                                    <div class="helper-text">From the report dataset (includes joined tables).</div>
+                                </div>
+                                <div class="col s12 m4 map-class-only">
+                                    <label class="jrs-field-label" for="map_classification">Classification</label>
+                                    <select id="map_classification" name="map[classification]">
+                                        <option value="natural_breaks" {{if eq .Classification "natural_breaks"}}selected{{end}}>Natural Breaks</option>
+                                        <option value="equal_interval" {{if eq .Classification "equal_interval"}}selected{{end}}>Equal Interval</option>
+                                        <option value="quantile" {{if eq .Classification "quantile"}}selected{{end}}>Quantile</option>
+                                        <option value="standard_deviation" {{if eq .Classification "standard_deviation"}}selected{{end}}>Standard Deviation</option>
+                                    </select>
+                                </div>
+                                <div class="col s12 m2 map-class-only">
+                                    <label class="jrs-field-label" for="map_classes">Number of classes</label>
+                                    <input type="number" id="map_classes" name="map[classes]" min="2" max="12" value="{{mapFloat .Map "classes"}}">
+                                </div>
+                                <div class="col s12 m2 map-class-only">
+                                    <label class="jrs-field-label" for="map_colorRamp">Color ramp</label>
+                                    <select id="map_colorRamp" name="map[colorRamp]">
+                                        {{$ramp := mapStr .Map "colorRamp"}}
+                                        {{range .ColorRamps}}
+                                            <option value="{{.}}" {{if eq . $ramp}}selected{{end}}>{{.}}</option>
+                                        {{end}}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="mapCategoriesPanel" class="jrs-panel is-hidden">
+                            <div class="card-actions-row">
+                                <h3 class="card-title" style="margin:0;">Categories</h3>
+                                <button type="button" class="btn-small waves-effect waves-light blue-grey" id="addCategoryBtn">Add Category</button>
+                            </div>
+                            <div id="categoryRows">
+                                {{range .Categories}}
+                                <div class="row align-items-end category-row">
+                                    <div class="col s12 m3"><label class="jrs-field-label">Value</label><input type="text" name="map[categories][{{.Index}}][value]" value="{{.Value}}"></div>
+                                    <div class="col s12 m3"><label class="jrs-field-label">Label</label><input type="text" name="map[categories][{{.Index}}][label]" value="{{.Label}}"></div>
+                                    <div class="col s12 m2"><label class="jrs-field-label">Fill</label><input type="color" name="map[categories][{{.Index}}][fillColor]" value="{{.FillColor}}"></div>
+                                    <div class="col s12 m2"><label class="jrs-field-label">Outline</label><input type="color" name="map[categories][{{.Index}}][outlineColor]" value="{{.OutlineColor}}"></div>
+                                    <div class="col s12 m2"><button type="button" class="btn-small waves-effect waves-light red remove-category-btn">Remove</button></div>
+                                </div>
+                                {{end}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-4">
+                        <h2 class="card-title">Labels</h2>
+                        <div class="jrs-check-row">
+                            <label>
+                                <input type="checkbox" name="map[labels_enabled]" id="map_labels_enabled" value="1" {{if mapBool .Labels "enabled"}}checked{{end}}>
+                                <span>Enable Labels</span>
+                            </label>
+                        </div>
+                        <div class="row" id="mapLabelsFields">
+                            <div class="col s12 m3">
+                                <label class="jrs-field-label" for="map_label_field">Field</label>
+                                <select id="map_label_field" name="map[label_field]">
+                                    {{$lf := mapStr .Labels "field"}}
+                                    <option value=""></option>
+                                    {{range .ReportFields}}
+                                        <option value="{{.Name}}" {{if eq .Name $lf}}selected{{end}}>{{.Label}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                            <div class="col s12 m3">
+                                <label class="jrs-field-label" for="map_label_fontSize">Font Size</label>
+                                <input type="number" id="map_label_fontSize" name="map[label_fontSize]" min="8" max="32" value="{{mapFloat .Labels "fontSize"}}">
+                            </div>
+                            <div class="col s12 m3">
+                                <label class="jrs-field-label" for="map_label_fillColor">Fill Color</label>
+                                <input type="color" id="map_label_fillColor" name="map[label_fillColor]" value="{{mapStr .Labels "fillColor"}}">
+                            </div>
+                            <div class="col s12 m3 d-flex align-items-end">
+                                <div class="jrs-check-row">
+                                    <label>
+                                        <input type="checkbox" name="map[label_halo]" id="map_label_halo" value="1" {{if mapBool .Labels "halo"}}checked{{end}}>
+                                        <span>Halo</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-4">
+                        <h2 class="card-title">Popups</h2>
+                        <div class="jrs-check-row">
+                            <label>
+                                <input type="checkbox" name="map[popups_enabled]" id="map_popups_enabled" value="1" {{if .PopupsEnabled}}checked{{end}}>
+                                <span>Enable Popups</span>
+                            </label>
+                        </div>
+                        <label class="jrs-field-label">Fields</label>
+                        <div class="row" id="mapPopupFields">
+                            {{if not .ReportFields}}
+                                <p class="muted-small">Report dataset fields will appear after the JRXML query is available.</p>
+                            {{else}}
+                                {{range .ReportFields}}
+                                <div class="col s12 m4">
+                                    <div class="jrs-check-row">
+                                        <label>
+                                            <input type="checkbox" name="map[popup_fields][]" value="{{.Name}}" {{if index $.PopupSelected .Name}}checked{{end}}>
+                                            <span>{{.Label}}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {{end}}
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-4">
+                        <h2 class="card-title">Tooltips</h2>
+                        <div class="jrs-check-row">
+                            <label>
+                                <input type="checkbox" name="map[tooltips_enabled]" id="map_tooltips_enabled" value="1" {{if .TooltipsEnabled}}checked{{end}}>
+                                <span>Enable Tooltips</span>
+                            </label>
+                        </div>
+                        <label class="jrs-field-label">Fields</label>
+                        <div class="row" id="mapTooltipFields">
+                            {{if not .ReportFields}}
+                                <p class="muted-small">Report dataset fields will appear after the JRXML query is available.</p>
+                            {{else}}
+                                {{range .ReportFields}}
+                                <div class="col s12 m4">
+                                    <div class="jrs-check-row">
+                                        <label>
+                                            <input type="checkbox" name="map[tooltip_fields][]" value="{{.Name}}" {{if index $.TooltipSelected .Name}}checked{{end}}>
+                                            <span>{{.Label}}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {{end}}
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-2">
+                        <h2 class="card-title">Report Synchronization</h2>
+                        <div class="jrs-check-row"><label><input type="checkbox" name="map[sync_filterMapFromReport]" value="1" {{if mapBool .Sync "filterMapFromReport"}}checked{{end}}><span>Filter map from report</span></label></div>
+                        <div class="jrs-check-row"><label><input type="checkbox" name="map[sync_filterReportFromMap]" value="1" {{if mapBool .Sync "filterReportFromMap"}}checked{{end}}><span>Filter report from map</span></label></div>
+                        <div class="jrs-check-row"><label><input type="checkbox" name="map[sync_zoomToReportResults]" value="1" {{if mapBool .Sync "zoomToReportResults"}}checked{{end}}><span>Zoom to report results</span></label></div>
+                        <div class="jrs-check-row"><label><input type="checkbox" name="map[sync_highlightReturnedFeatures]" value="1" {{if mapBool .Sync "highlightReturnedFeatures"}}checked{{end}}><span>Highlight returned features</span></label></div>
+                    </div>
+
+                    <hr class="section-divider">
+                    <div class="mb-2" id="embeddedMapPanel">
+                        <h2 class="card-title">Embedded Map</h2>
+                        <p class="muted-small">Server-renders a map PNG into PDF/HTML/DOCX via Jasper parameter <code>P_MAP_IMAGE</code>. PostGIS/MySQL use the geometry column from the Map tab; GeoServer uses WMS GetMap.</p>
+                        <div class="jrs-check-row">
+                            <label>
+                                <input type="checkbox" name="embedded_map[enabled]" id="embedded_map_enabled" value="1" {{if .EmbeddedEnabled}}checked{{end}}>
+                                <span>Include Embedded Map</span>
+                            </label>
+                        </div>
+                        <div id="embeddedMapFields">
+                            <div class="mb-3">
+                                <label class="jrs-field-label">Map Source</label>
+                                <div class="jrs-inline-checks">
+                                    {{$renderer := mapStr .Embedded "renderer"}}
+                                    {{if .EmbeddedCaps.PostGIS}}
+                                    <div class="jrs-check-row"><label><input type="radio" class="embedded-map-renderer" name="embedded_map[renderer]" value="postgis" {{if or (eq $renderer "postgis") (eq $renderer "")}}checked{{end}}><span>PostGIS</span></label></div>
+                                    {{end}}
+                                    {{if .EmbeddedCaps.MySQL}}
+                                    <div class="jrs-check-row"><label><input type="radio" class="embedded-map-renderer" name="embedded_map[renderer]" value="mysql" {{if eq $renderer "mysql"}}checked{{end}}><span>MySQL</span></label></div>
+                                    {{end}}
+                                    {{if .EmbeddedCaps.GeoServer}}
+                                    <div class="jrs-check-row"><label><input type="radio" class="embedded-map-renderer" name="embedded_map[renderer]" value="geoserver" {{if eq $renderer "geoserver"}}checked{{end}}><span>GeoServer</span></label></div>
+                                    {{end}}
+                                    {{if .EmbeddedCaps.QGIS}}
+                                    <div class="jrs-check-row"><label><input type="radio" class="embedded-map-renderer" name="embedded_map[renderer]" value="qgis" {{if eq $renderer "qgis"}}checked{{end}}><span>QGIS Server</span></label></div>
+                                    {{end}}
+                                </div>
+                            </div>
+                            <div id="embeddedGeoServerPanel" class="jrs-panel is-hidden">
+                                <h3 class="card-title">GeoServer WMS</h3>
+                                <div class="row">
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_geoserverConnection">Connection</label>
+                                        <select id="embedded_map_geoserverConnection" class="browser-default" name="embedded_map[geoserverConnection]">
+                                            <option value="">— select —</option>
+                                            {{$gsConn := mapStr .Embedded "geoserverConnection"}}
+                                            {{range .GeoServerConnections}}
+                                            <option value="{{.}}" {{if eq $gsConn .}}selected{{end}}>{{.}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_geoserverWorkspace">Workspace</label>
+                                        <input type="text" id="embedded_map_geoserverWorkspace" name="embedded_map[geoserverWorkspace]" value="{{mapStr .Embedded "geoserverWorkspace"}}" placeholder="topp">
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_geoserverLayer">Layer</label>
+                                        <input type="text" id="embedded_map_geoserverLayer" name="embedded_map[geoserverLayer]" value="{{mapStr .Embedded "geoserverLayer"}}" placeholder="states">
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_geoserverStyle">Style (optional)</label>
+                                        <input type="text" id="embedded_map_geoserverStyle" name="embedded_map[geoserverStyle]" value="{{mapStr .Embedded "geoserverStyle"}}">
+                                    </div>
+                                    <div class="col s12 m8">
+                                        <label class="jrs-field-label" for="embedded_map_geoserverBaseUrl">Base URL snapshot</label>
+                                        <input type="text" id="embedded_map_geoserverBaseUrl" name="embedded_map[geoserverBaseUrl]" value="{{mapStr .Embedded "geoserverBaseUrl"}}" placeholder="Saved automatically from the connection">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="jrs-field-label">Filter mappings (optional CQL)</label>
+                                    <p class="muted-small">Map report parameters to GeoServer attribute filters.</p>
+                                    <div id="embeddedGsFilterRows">
+                                        <div class="row embedded-gs-filter-row">
+                                            <div class="col s12 m3">
+                                                <input type="text" name="embedded_map[geoserverFilterMappings][0][reportParameter]" value="" placeholder="Report param" id="embedded_gs_filter_rp0">
+                                            </div>
+                                            <div class="col s12 m3">
+                                                <input type="text" name="embedded_map[geoserverFilterMappings][0][geoserverField]" value="" placeholder="GeoServer field" id="embedded_gs_filter_field0">
+                                            </div>
+                                            <div class="col s12 m2">
+                                                <select class="browser-default" name="embedded_map[geoserverFilterMappings][0][operator]" id="embedded_gs_filter_op0">
+                                                    <option value="=" selected>=</option>
+                                                    <option value="<>">&lt;&gt;</option>
+                                                    <option value=">">&gt;</option>
+                                                    <option value=">=">&gt;=</option>
+                                                    <option value="<">&lt;</option>
+                                                    <option value="<=">&lt;=</option>
+                                                    <option value="LIKE">LIKE</option>
+                                                    <option value="IN">IN</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row embedded-gs-filter-row">
+                                            <div class="col s12 m3">
+                                                <input type="text" name="embedded_map[geoserverFilterMappings][1][reportParameter]" value="" placeholder="Report param">
+                                            </div>
+                                            <div class="col s12 m3">
+                                                <input type="text" name="embedded_map[geoserverFilterMappings][1][geoserverField]" value="" placeholder="GeoServer field">
+                                            </div>
+                                            <div class="col s12 m2">
+                                                <select class="browser-default" name="embedded_map[geoserverFilterMappings][1][operator]">
+                                                    <option value="=" selected>=</option>
+                                                    <option value="<>">&lt;&gt;</option>
+                                                    <option value=">">&gt;</option>
+                                                    <option value=">=">&gt;=</option>
+                                                    <option value="<">&lt;</option>
+                                                    <option value="<=">&lt;=</option>
+                                                    <option value="LIKE">LIKE</option>
+                                                    <option value="IN">IN</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="embeddedQGISPanel" class="jrs-panel is-hidden">
+                                <h3 class="card-title">QGIS Server WMS</h3>
+                                <p class="muted-small">QGIS Desktop designs the map. This panel only selects the served project and layer.</p>
+                                <div class="row">
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_qgisConnection">Connection</label>
+                                        <select id="embedded_map_qgisConnection" class="browser-default" name="embedded_map[qgisConnection]">
+                                            <option value="">— select —</option>
+                                            {{$qgisConn := mapStr .Embedded "qgisConnection"}}
+                                            {{range .QGISConnections}}
+                                            <option value="{{.}}" {{if eq $qgisConn .}}selected{{end}}>{{.}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_qgisProject">Project filename</label>
+                                        <input type="text" id="embedded_map_qgisProject" name="embedded_map[qgisProject]" value="{{mapStr .Embedded "qgisProject"}}" placeholder="planning.qgz">
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_qgisLayer">Layer</label>
+                                        <input type="text" id="embedded_map_qgisLayer" name="embedded_map[qgisLayer]" value="{{mapStr .Embedded "qgisLayer"}}" placeholder="parcels">
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_qgisStyle">Style (optional)</label>
+                                        <input type="text" id="embedded_map_qgisStyle" name="embedded_map[qgisStyle]" value="{{mapStr .Embedded "qgisStyle"}}">
+                                    </div>
+                                    <div class="col s12 m8">
+                                        <label class="jrs-field-label" for="embedded_map_qgisBaseUrl">Base URL snapshot</label>
+                                        <input type="text" id="embedded_map_qgisBaseUrl" name="embedded_map[qgisBaseUrl]" value="{{mapStr .Embedded "qgisBaseUrl"}}" placeholder="Saved automatically from the connection">
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="embeddedThematicPanels">
+                            <div class="mb-3" id="embeddedMapTypeWrap">
+                                <label class="jrs-field-label">Map Type</label>
+                                <div class="jrs-inline-checks">
+                                    {{$embType := mapStr .Embedded "mapType"}}
+                                    {{range .EmbeddedMapTypes}}
+                                    <div class="jrs-check-row">
+                                        <label>
+                                            <input class="embedded-map-type" type="radio" name="embedded_map[mapType]" value="{{.Key}}" {{if eq $embType .Key}}checked{{end}} {{if not (index $.EmbeddedMapReady .Key)}}disabled{{end}}>
+                                            <span>{{.Label}}{{if not (index $.EmbeddedMapReady .Key)}} <span class="new badge">Coming Soon</span>{{end}}</span>
+                                        </label>
+                                    </div>
+                                    {{end}}
+                                </div>
+                            </div>
+                            <div id="embeddedPointSymbolPanel" class="jrs-panel">
+                                <h3 class="card-title">Point Symbol</h3>
+                                <div class="row">
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_point_shape">Symbol</label>
+                                        {{$shape := mapStr (asMap (index .Embedded "pointSymbol")) "shape"}}
+                                        <select id="embedded_map_point_shape" class="browser-default" name="embedded_map[pointSymbol][shape]">
+                                            {{range .EmbeddedPointShapes}}
+                                            <option value="{{.Key}}" {{if eq $shape .Key}}selected{{end}}>{{.Label}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="embeddedChoroplethPanel" class="jrs-panel is-hidden">
+                                <h3 class="card-title" id="embeddedNumericPanelTitle">Choropleth options</h3>
+                                <div class="row">
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_field">Value Field</label>
+                                        <select id="embedded_map_field" class="browser-default" name="embedded_map[field]">
+                                            <option value="">— select —</option>
+                                            {{$field := mapStr .Embedded "field"}}
+                                            {{range .NumericFields}}
+                                            <option value="{{.Name}}" {{if eq $field .Name}}selected{{end}}>{{.Label}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_classification">Classification</label>
+                                        <select id="embedded_map_classification" class="browser-default" name="embedded_map[classification]">
+                                            {{$cls := mapStr .Embedded "classification"}}
+                                            {{range .EmbeddedClassifs}}
+                                            <option value="{{.Key}}" {{if eq $cls .Key}}selected{{end}}>{{.Label}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m2">
+                                        <label class="jrs-field-label" for="embedded_map_classes">Classes</label>
+                                        <select id="embedded_map_classes" class="browser-default" name="embedded_map[classes]">
+                                            {{$n := mapInt .Embedded "classes" 5}}
+                                            <option value="3" {{if eq $n 3}}selected{{end}}>3</option>
+                                            <option value="4" {{if eq $n 4}}selected{{end}}>4</option>
+                                            <option value="5" {{if eq $n 5}}selected{{end}}>5</option>
+                                            <option value="6" {{if eq $n 6}}selected{{end}}>6</option>
+                                            <option value="7" {{if eq $n 7}}selected{{end}}>7</option>
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m2">
+                                        <label class="jrs-field-label" for="embedded_map_colorRamp">Color Ramp</label>
+                                        <select id="embedded_map_colorRamp" class="browser-default" name="embedded_map[colorRamp]">
+                                            {{$ramp := mapStr .Embedded "colorRamp"}}
+                                            {{range .EmbeddedRampIDs}}
+                                            <option value="{{.}}" {{if eq $ramp .}}selected{{end}}>{{.}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="embeddedCategorizedPanel" class="jrs-panel is-hidden">
+                                <h3 class="card-title">Categorized options</h3>
+                                <div class="row">
+                                    <div class="col s12 m6">
+                                        <label class="jrs-field-label" for="embedded_map_cat_field">Category Field</label>
+                                        <select id="embedded_map_cat_field" class="browser-default" name="embedded_map[field]">
+                                            <option value="">— select —</option>
+                                            {{$cfield := mapStr .Embedded "field"}}
+                                            {{range .ReportFields}}
+                                            <option value="{{.Name}}" {{if eq $cfield .Name}}selected{{end}}>{{.Label}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                    <div class="col s12 m6">
+                                        <label class="jrs-field-label" for="embedded_map_cat_colorRamp">Color Ramp</label>
+                                        <select id="embedded_map_cat_colorRamp" class="browser-default" name="embedded_map[colorRamp]">
+                                            {{$cramp := mapStr .Embedded "colorRamp"}}
+                                            {{range .EmbeddedRampIDs}}
+                                            <option value="{{.}}" {{if eq $cramp .}}selected{{end}}>{{.}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="embeddedLocatorPanel" class="jrs-panel">
+                                <h3 class="card-title" id="embeddedLocatorPanelTitle">Highlight &amp; overview</h3>
+                                <div id="embeddedGrayContextWrap" class="jrs-check-row"><label><input type="checkbox" name="embedded_map[grayContext]" value="1" {{if mapBool .Embedded "grayContext"}}checked{{end}}><span>Gray non-selected features / overview context</span></label></div>
+                                <div id="embeddedHighlightWrap" class="jrs-check-row"><label><input type="checkbox" name="embedded_map[highlightSelected]" value="1" {{if mapBool .Embedded "highlightSelected"}}checked{{end}}><span>Highlight selected features</span></label></div>
+                            </div>
+                            </div>
+                            <div class="jrs-panel">
+                                <h3 class="card-title">Common options</h3>
+                                <div class="row">
+                                    <div class="col s12 m4">
+                                        <label class="jrs-field-label" for="embedded_map_basemap">Basemap</label>
+                                        <select id="embedded_map_basemap" class="browser-default" name="embedded_map[basemap]">
+                                            {{$embBasemap := mapStr .Embedded "basemap"}}
+                                            {{range .EmbeddedBasemaps}}
+                                            <option value="{{.Key}}" {{if embBasemapOn .Key $embBasemap}}selected{{end}}>{{.Label}}</option>
+                                            {{end}}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="jrs-check-row"><label><input type="checkbox" name="embedded_map[includeLegend]" id="embedded_map_includeLegend" value="1" {{if mapBool .Embedded "includeLegend"}}checked{{end}}><span>Include Legend</span></label></div>
+                                <div class="jrs-check-row"><label><input type="checkbox" name="embedded_map[showTitle]" id="embedded_map_showTitle" value="1" {{if mapBool .Embedded "showTitle"}}checked{{end}}><span>Show Map Title</span></label></div>
+                                <div class="jrs-check-row" id="embeddedZoomWrap"><label><input type="checkbox" name="embedded_map[zoomToFiltered]" value="1" {{if mapBool .Embedded "zoomToFiltered"}}checked{{end}}><span>Zoom to filtered features</span></label></div>
+                                <div class="row" id="embeddedTitleFields">
+                                    <div class="col s12 m6">
+                                        <label class="jrs-field-label" for="embedded_map_title">Title</label>
+                                        <input type="text" id="embedded_map_title" name="embedded_map[title]" value="{{mapStr .Embedded "title"}}">
+                                    </div>
+                                    <div class="col s12 m3">
+                                        <label class="jrs-field-label" for="embedded_map_background">Background</label>
+                                        <input type="text" id="embedded_map_background" name="embedded_map[background]" value="{{mapStr .Embedded "background"}}">
+                                    </div>
+                                    <div class="col s12 m3">
+                                        <label class="jrs-field-label" for="embedded_map_dpi">DPI</label>
+                                        <input type="number" id="embedded_map_dpi" name="embedded_map[dpi]" min="72" max="600" value="{{mapInt .Embedded "dpi" 96}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 m4">
+                                    <label class="jrs-field-label" for="embedded_map_band">Placement band</label>
+                                    <select id="embedded_map_band" class="browser-default" name="embedded_map[band]">
+                                        {{$band := mapStr .Embedded "band"}}
+                                        {{range .EmbeddedBands}}
+                                        <option value="{{.Key}}" {{if eq $band .Key}}selected{{end}}>{{.Label}}</option>
+                                        {{end}}
+                                    </select>
+                                </div>
+                                <div class="col s12 m4" id="embeddedMapGroupWrap">
+                                    <label class="jrs-field-label" for="embedded_map_groupName">Group name</label>
+                                    <select id="embedded_map_groupName" class="browser-default" name="embedded_map[groupName]">
+                                        <option value="">— first group —</option>
+                                        {{$gn := mapStr .Embedded "groupName"}}
+                                        {{range .JRXMLGroups}}
+                                        <option value="{{.}}" {{if eq $gn .}}selected{{end}}>{{.}}</option>
+                                        {{end}}
+                                    </select>
+                                </div>
+                                <div class="col s12 m2">
+                                    <label class="jrs-field-label" for="embedded_map_width">Width</label>
+                                    <input type="number" id="embedded_map_width" name="embedded_map[width]" min="40" max="2000" value="{{mapInt .Embedded "width" 535}}">
+                                </div>
+                                <div class="col s12 m2">
+                                    <label class="jrs-field-label" for="embedded_map_height">Height</label>
+                                    <input type="number" id="embedded_map_height" name="embedded_map[height]" min="40" max="2000" value="{{mapInt .Embedded "height" 300}}">
+                                </div>
+                                <div class="col s12 m2">
+                                    <label class="jrs-field-label" for="embedded_map_x">X</label>
+                                    <input type="number" id="embedded_map_x" name="embedded_map[x]" min="0" max="2000" value="{{mapInt .Embedded "x" 0}}">
+                                </div>
+                                <div class="col s12 m2">
+                                    <label class="jrs-field-label" for="embedded_map_y">Y</label>
+                                    <input type="number" id="embedded_map_y" name="embedded_map[y]" min="0" max="2000" value="{{mapInt .Embedded "y" 10}}">
+                                </div>
+                                <div class="col s12 m2">
+                                    <label class="jrs-field-label" for="embedded_map_padding">Padding</label>
+                                    <input type="number" id="embedded_map_padding" name="embedded_map[padding]" min="0" max="0.4" step="0.01" value="{{mapFloat .Embedded "padding"}}">
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="embedded_map[parameterName]" value="{{mapStr .Embedded "parameterName"}}">
+                    </div>
+                </div>
+                {{end}}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn waves-effect waves-light teal">
+                    Save
+                    <i class="material-icons right">save</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<template id="parameterRowTemplate">
+    <div class="parameter-row">
+        <div class="row">
+            <div class="input-field col s12 m3">
+                <input type="text" class="param-name" name="params[__INDEX__][name]" placeholder="e.g. parcel_id">
+                <label class="active">Name</label>
+            </div>
+            <div class="input-field col s12 m2">
+                <select class="param-type" name="params[__INDEX__][type]">
+                    <option value="string">Text</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="select">Select (Dropdown)</option>
+                </select>
+                <label>Type</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <input type="text" class="param-label" name="params[__INDEX__][label]" placeholder="Display label">
+                <label class="active">Label</label>
+            </div>
+            <div class="col s12 m4">
+                <div class="select-source-settings is-hidden">
+                    <div style="margin-bottom:10px;">
+                        <div class="muted-small" style="margin-bottom:6px;">Source Type</div>
+                        <label style="margin-right:16px;"><input type="radio" class="param-source-type" name="params[__INDEX__][source_type]" value="static" checked><span>Static Options</span></label>
+                        <label><input type="radio" class="param-source-type" name="params[__INDEX__][source_type]" value="sql"><span>SQL Query</span></label>
+                    </div>
+                    <div class="input-field static-options">
+                        <textarea class="materialize-textarea param-options options-input" name="params[__INDEX__][options]"></textarea>
+                        <label>Options (one per line)</label>
+                    </div>
+                    <div class="sql-options" style="display:none;">
+                        <div class="input-field">
+                            <textarea class="materialize-textarea param-sql sql-input" name="params[__INDEX__][sql]" placeholder="SELECT label, value FROM table"></textarea>
+                            <label class="active">SQL Query</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m3"><label><input class="param-required" type="checkbox" name="params[__INDEX__][required]" value="1"><span>Required</span></label></div>
+            <div class="col s12 m4"><label><input class="param-multiple" type="checkbox" name="params[__INDEX__][multiple]" value="1"><span>Allow multiple values</span></label></div>
+            <div class="col s12 m5 right-align"><button type="button" class="btn-small waves-effect waves-light red remove-parameter-btn"><i class="material-icons left">remove_circle</i>Remove</button></div>
+        </div>
+    </div>
+</template>
+
+<template id="categoryRowTemplate">
+    <div class="row category-row">
+        <div class="input-field col s12 m3"><input type="text" name="map[categories][__INDEX__][value]"><label class="active">Value</label></div>
+        <div class="input-field col s12 m3"><input type="text" name="map[categories][__INDEX__][label]"><label class="active">Label</label></div>
+        <div class="input-field col s12 m2"><label class="active">Fill</label><input type="color" name="map[categories][__INDEX__][fillColor]" value="#9e9e9e"></div>
+        <div class="input-field col s12 m2"><label class="active">Outline</label><input type="color" name="map[categories][__INDEX__][outlineColor]" value="#424242"></div>
+        <div class="col s12 m2 right-align" style="padding-top:24px;"><button type="button" class="btn-small waves-effect waves-light red remove-category-btn">Remove</button></div>
+    </div>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    M.FormSelect.init(document.querySelectorAll("select"));
+    M.updateTextFields();
+});
+window.jrsInitMaterialize = function (root) {
+    root = root || document;
+    if (!window.M) return;
+    M.FormSelect.init(root.querySelectorAll("select"));
+    M.updateTextFields();
+};
+(() => {
+    const dsSelect = document.getElementById('data_source');
+    const cqlField = document.getElementById('cql_query_field');
+    const projectField = document.getElementById('project_json_field');
+    const hasReportQuery = {{if .HasReportQuery}}true{{else}}false{{end}};
+    const syncCassandraFields = () => {
+        if (!dsSelect) return;
+        const opt = dsSelect.options[dsSelect.selectedIndex];
+        const isCassandra = !!(opt && opt.getAttribute('data-cassandra') === '1');
+        if (cqlField) cqlField.style.display = isCassandra ? '' : 'none';
+        // project.json is only for imported reports that lack an embedded Designer query.
+        if (projectField) projectField.style.display = (isCassandra && !hasReportQuery) ? '' : 'none';
+    };
+    if (dsSelect) {
+        dsSelect.addEventListener('change', syncCassandraFields);
+        syncCassandraFields();
+    }
+
+    const activateReportTab = (href) => {
+        if (!href) return;
+        const pane = document.querySelector(href);
+        if (!pane) return;
+        document.querySelectorAll('#reportTabsContent > .report-tab-pane').forEach((el) => el.classList.add('is-hidden'));
+        pane.classList.remove('is-hidden');
+        if (window.jrsInitMaterialize) window.jrsInitMaterialize(pane);
+    };
+    document.querySelectorAll('#reportTabs a').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.querySelectorAll('#reportTabs a').forEach((el) => el.classList.remove('active'));
+            link.classList.add('active');
+            activateReportTab(link.getAttribute('href'));
+        });
+    });
+    if (window.M && M.Tabs) M.Tabs.init(document.querySelectorAll('#reportTabs'));
+
+    const parameterRows = document.getElementById('parameterRows');
+    const addParameterBtn = document.getElementById('addParameterBtn');
+    const template = document.getElementById('parameterRowTemplate');
+    let paramIndex = {{.ParamCount}};
+    const syncRow = (row) => {
+        if (!row) return;
+        const typeSelect = row.querySelector('.param-type');
+        const isSelectType = typeSelect && typeSelect.value === 'select';
+        const selectSourceSettings = row.querySelector('.select-source-settings');
+        const multipleEl = row.querySelector('.param-multiple');
+        const staticBox = row.querySelector('.static-options');
+        const sqlBox = row.querySelector('.sql-options');
+        const sourceType = row.querySelector('.param-source-type:checked');
+        if (selectSourceSettings) selectSourceSettings.classList.toggle('is-hidden', !isSelectType);
+        if (!isSelectType) {
+            if (multipleEl) multipleEl.checked = false;
+            if (staticBox) staticBox.style.display = 'block';
+            if (sqlBox) sqlBox.style.display = 'none';
+            return;
+        }
+        const useSql = sourceType && sourceType.value === 'sql';
+        if (staticBox) staticBox.style.display = useSql ? 'none' : 'block';
+        if (sqlBox) sqlBox.style.display = useSql ? 'block' : 'none';
+    };
+    if (addParameterBtn && template && parameterRows) {
+        addParameterBtn.addEventListener('click', () => {
+            const html = template.innerHTML.replaceAll('__INDEX__', String(paramIndex++));
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            const row = wrapper.firstElementChild;
+            parameterRows.appendChild(row);
+            syncRow(row);
+            if (window.jrsInitMaterialize) window.jrsInitMaterialize(row);
+        });
+    }
+    if (parameterRows) {
+        parameterRows.addEventListener('click', (event) => {
+            const removeButton = event.target.closest('.remove-parameter-btn');
+            if (removeButton) removeButton.closest('.parameter-row')?.remove();
+        });
+        parameterRows.addEventListener('change', (event) => {
+            const row = event.target.closest('.parameter-row');
+            if (row) syncRow(row);
+        });
+        parameterRows.querySelectorAll('.parameter-row').forEach(syncRow);
+    }
+
+    const reportType = document.getElementById('report_type');
+    const mapEnabled = document.getElementById('map_enabled');
+    const syncMapEnable = () => { if (reportType && reportType.value === 'map' && mapEnabled) mapEnabled.checked = true; };
+    if (reportType) reportType.addEventListener('change', syncMapEnable);
+    if (mapEnabled) mapEnabled.addEventListener('change', () => {
+        if (mapEnabled.checked && reportType && reportType.value !== 'map') reportType.value = 'map';
+    });
+
+    const syncRendererPanels = () => {
+        const selected = document.querySelector('.map-renderer:checked');
+        const renderer = selected ? selected.value : 'single';
+        const needsField = ['categorized', 'graduated', 'choropleth', 'heatmap', 'proportional'].includes(renderer);
+        const needsClass = ['graduated', 'choropleth'].includes(renderer);
+        document.getElementById('mapFieldPanel')?.classList.toggle('is-hidden', !needsField);
+        document.getElementById('mapCategoriesPanel')?.classList.toggle('is-hidden', renderer !== 'categorized');
+        document.querySelectorAll('.map-class-only').forEach((el) => el.classList.toggle('is-hidden', !needsClass));
+        document.getElementById('mapSingleSymbolPanel')?.classList.toggle('is-hidden', renderer === 'heatmap');
+    };
+    document.querySelectorAll('.map-renderer').forEach((el) => el.addEventListener('change', syncRendererPanels));
+    syncRendererPanels();
+
+    let categoryIndex = {{.CategoryCount}};
+    const categoryRows = document.getElementById('categoryRows');
+    const categoryTemplate = document.getElementById('categoryRowTemplate');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    if (addCategoryBtn && categoryTemplate && categoryRows) {
+        addCategoryBtn.addEventListener('click', () => {
+            const html = categoryTemplate.innerHTML.replaceAll('__INDEX__', String(categoryIndex++));
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            categoryRows.appendChild(wrapper.firstElementChild);
+            if (window.jrsInitMaterialize) window.jrsInitMaterialize(categoryRows.lastElementChild);
+        });
+        categoryRows.addEventListener('click', (event) => {
+            const removeButton = event.target.closest('.remove-category-btn');
+            if (removeButton) removeButton.closest('.category-row')?.remove();
+        });
+    }
+
+    // Embedded Map (PostGIS / MySQL / GeoServer)
+    window.jrsLayerGeometryKind = {{printf "%q" .LayerGeometryKind}};
+    const readyTypes = {{printf "%q" "locator,choropleth,categorized,graduated_symbols,selected_features,overview_highlight"}}.split(',');
+    const embeddedBand = document.getElementById('embedded_map_band');
+    const embeddedGroupWrap = document.getElementById('embeddedMapGroupWrap');
+    const syncEmbeddedBand = () => {
+        if (embeddedBand && embeddedGroupWrap) {
+            embeddedGroupWrap.classList.toggle('is-hidden', embeddedBand.value !== 'groupHeader');
+        }
+    };
+    if (embeddedBand) {
+        embeddedBand.addEventListener('change', syncEmbeddedBand);
+        syncEmbeddedBand();
+    }
+    const setPanel = (panel, active) => {
+        if (!panel) return;
+        panel.classList.toggle('is-hidden', !active);
+        panel.querySelectorAll('input, select, textarea, button').forEach((el) => { el.disabled = !active; });
+    };
+    const selectedRenderer = () => {
+        const el = document.querySelector('.embedded-map-renderer:checked');
+        return el ? el.value : 'postgis';
+    };
+    const syncEmbeddedRenderer = () => {
+        const renderer = selectedRenderer();
+        const isGS = renderer === 'geoserver';
+        const isQGIS = renderer === 'qgis';
+        setPanel(document.getElementById('embeddedGeoServerPanel'), isGS);
+        setPanel(document.getElementById('embeddedQGISPanel'), isQGIS);
+        const thematic = document.getElementById('embeddedThematicPanels');
+        if (thematic) {
+            thematic.classList.toggle('is-hidden', isGS || isQGIS);
+            thematic.querySelectorAll('input, select, textarea, button').forEach((el) => { el.disabled = isGS || isQGIS; });
+        }
+        if (!isGS && !isQGIS) syncEmbeddedMapType();
+    };
+    // Prefill first GeoServer filter mapping row from saved JSON when present.
+    (function prefillGsFilters() {
+        const mappings = {{printf "%s" .EmbeddedFilterMappingsJSON}};
+        if (!Array.isArray(mappings) || !mappings.length) return;
+        const rp = document.getElementById('embedded_gs_filter_rp0');
+        const field = document.getElementById('embedded_gs_filter_field0');
+        const op = document.getElementById('embedded_gs_filter_op0');
+        if (rp && mappings[0].reportParameter) rp.value = mappings[0].reportParameter;
+        if (field && mappings[0].geoserverField) field.value = mappings[0].geoserverField;
+        if (op && mappings[0].operator) op.value = mappings[0].operator;
+        if (mappings[1]) {
+            const row = document.querySelectorAll('.embedded-gs-filter-row')[1];
+            if (!row) return;
+            const inputs = row.querySelectorAll('input, select');
+            if (inputs[0] && mappings[1].reportParameter) inputs[0].value = mappings[1].reportParameter;
+            if (inputs[1] && mappings[1].geoserverField) inputs[1].value = mappings[1].geoserverField;
+            if (inputs[2] && mappings[1].operator) inputs[2].value = mappings[1].operator;
+        }
+    })();
+    const syncEmbeddedMapType = () => {
+        if (selectedRenderer() === 'geoserver' || selectedRenderer() === 'qgis') return;
+        const selected = document.querySelector('.embedded-map-type:checked');
+        const mapType = selected ? selected.value : 'locator';
+        const isNumeric = ['choropleth', 'graduated_symbols'].includes(mapType);
+        const isCategorized = mapType === 'categorized';
+        const geomKind = window.jrsLayerGeometryKind || 'unknown';
+        const isPointLayer = geomKind === 'point' || geomKind === 'mixed';
+        const isPolygonLayer = geomKind === 'polygon';
+        document.querySelectorAll('.embedded-map-type').forEach((input) => {
+            const comingSoon = !readyTypes.includes(input.value);
+            if (comingSoon) input.disabled = true;
+            else if (input.value === 'choropleth' && isPointLayer && !isPolygonLayer) input.disabled = true;
+            else input.disabled = false;
+            if (input.disabled && input.checked) {
+                const fallback = document.querySelector('.embedded-map-type[value="locator"]');
+                if (fallback) fallback.checked = true;
+            }
+        });
+        const pointPanel = document.getElementById('embeddedPointSymbolPanel');
+        const showPoint = (isPointLayer || geomKind === 'unknown') && mapType !== 'choropleth';
+        setPanel(pointPanel, showPoint);
+        setPanel(document.getElementById('embeddedChoroplethPanel'), isNumeric);
+        setPanel(document.getElementById('embeddedCategorizedPanel'), isCategorized);
+        const numericTitle = document.getElementById('embeddedNumericPanelTitle');
+        if (numericTitle) numericTitle.textContent = mapType === 'graduated_symbols' ? 'Graduated Symbols options' : 'Choropleth options';
+        const locatorTitle = document.getElementById('embeddedLocatorPanelTitle');
+        if (locatorTitle) {
+            const titles = { locator: 'Locator options', selected_features: 'Selected Features options', overview_highlight: 'Overview + Highlight options' };
+            locatorTitle.textContent = titles[mapType] || 'Highlight & overview';
+        }
+        const isOverview = mapType === 'overview_highlight';
+        const isSelected = mapType === 'selected_features';
+        document.getElementById('embeddedGrayContextWrap')?.classList.toggle('is-hidden', isOverview);
+        document.getElementById('embeddedHighlightWrap')?.classList.toggle('is-hidden', isOverview || isSelected);
+        document.getElementById('embeddedZoomWrap')?.classList.toggle('is-hidden', isOverview || isSelected);
+        const embedOn = document.getElementById('embedded_map_enabled');
+        if (embedOn && !embedOn.checked) {
+            document.querySelectorAll('#embeddedMapFields input, #embeddedMapFields select, #embeddedMapFields textarea, #embeddedMapFields button').forEach((el) => { el.disabled = true; });
+        }
+    };
+    document.querySelectorAll('.embedded-map-type').forEach((el) => el.addEventListener('change', syncEmbeddedMapType));
+    document.querySelectorAll('.embedded-map-renderer').forEach((el) => el.addEventListener('change', syncEmbeddedRenderer));
+    const embeddedEnabled = document.getElementById('embedded_map_enabled');
+    const embeddedMapFields = document.getElementById('embeddedMapFields');
+    const syncEmbeddedEnabled = () => {
+        if (!embeddedEnabled || !embeddedMapFields) return;
+        const on = embeddedEnabled.checked;
+        embeddedMapFields.classList.toggle('opacity-50', !on);
+        if (!on) {
+            embeddedMapFields.querySelectorAll('input, select, textarea, button').forEach((el) => { el.disabled = true; });
+            return;
+        }
+        embeddedMapFields.querySelectorAll('input, select, textarea, button').forEach((el) => { el.disabled = false; });
+        syncEmbeddedRenderer();
+    };
+    if (embeddedEnabled) {
+        embeddedEnabled.addEventListener('change', syncEmbeddedEnabled);
+        syncEmbeddedEnabled();
+    }
+    document.querySelector('form')?.addEventListener('submit', () => {
+        if (!embeddedMapFields) return;
+        embeddedMapFields.querySelectorAll('input, select, textarea, button').forEach((el) => { el.disabled = false; });
+        syncEmbeddedRenderer();
+    });
+    const showTitle = document.getElementById('embedded_map_showTitle');
+    const titleFields = document.getElementById('embeddedTitleFields');
+    const syncTitleFields = () => { if (showTitle && titleFields) titleFields.classList.toggle('is-hidden', !showTitle.checked); };
+    if (showTitle) { showTitle.addEventListener('change', syncTitleFields); syncTitleFields(); }
+    syncEmbeddedRenderer();
+})();
+</script>
+</main>
+</body>
+</html>

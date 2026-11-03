@@ -1,0 +1,49 @@
+name: Release Go SDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver tag without leading v (e.g. 0.1.0). Leave empty for instructions only."
+        required: false
+        type: string
+  push:
+    tags:
+      - "go-v*"
+      - "v0.*"
+      - "v1.*"
+
+jobs:
+  note:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Go module publish notes
+        run: |
+          cat <<'EOF'
+          Go modules are consumed via the module proxy / VCS tags — there is no separate
+          package registry push like NuGet or Maven Central.
+
+          To publish a release of github.com/acugis/acugis-report-go:
+
+            1. Ensure sdk/go is ready (tests green, CHANGELOG updated).
+            2. Tag the repository at the commit that contains the release, e.g.:
+                 git tag -a v0.1.0 -m "acugis-report-go v0.1.0"
+                 git push origin v0.1.0
+            3. Consumers install with:
+                 go get github.com/acugis/acugis-report-go@v0.1.0
+
+          If the module path is nested under this monorepo, use a version tag that
+          matches the go.mod module path conventions for your layout.
+
+          This workflow does not create tags automatically.
+          EOF
+
+      - name: Optional tag reminder
+        if: ${{ inputs.version != '' }}
+        run: |
+          echo "Requested version: ${{ inputs.version }}"
+          echo "Create and push tag manually if desired:"
+          echo "  git tag -a v${{ inputs.version }} -m \"acugis-report-go v${{ inputs.version }}\""
+          echo "  git push origin v${{ inputs.version }}"

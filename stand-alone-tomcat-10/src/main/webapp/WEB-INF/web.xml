@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0"
+         metadata-complete="false">
+
+    <display-name>AcuGIS Report Server</display-name>
+
+    <listener>
+        <listener-class>com.acugis.reports.StartupVerifier</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>ReportImageServlet</servlet-name>
+        <servlet-class>com.acugis.reports.ReportImageServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReportImageServlet</servlet-name>
+        <url-pattern>/acugis_report_image</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ReportServlet</servlet-name>
+        <servlet-class>com.acugis.reports.ReportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReportServlet</servlet-name>
+        <url-pattern>/report</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ReportQueryServlet</servlet-name>
+        <servlet-class>com.acugis.reports.ReportQueryServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReportQueryServlet</servlet-name>
+        <url-pattern>/reportQuery</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>ImageServletDebugFilter</filter-name>
+        <filter-class>com.acugis.reports.ImageServletDebugFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ImageServletDebugFilter</filter-name>
+        <url-pattern>/acugis_report_image</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>SessionPingServlet</servlet-name>
+        <servlet-class>com.acugis.reports.SessionPingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SessionPingServlet</servlet-name>
+        <url-pattern>/pingSession</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <servlet>
+        <servlet-name>JasperImageServlet</servlet-name>
+        <servlet-class>net.sf.jasperreports.jakarta.servlets.ImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JasperImageServlet</servlet-name>
+        <url-pattern>/image</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ClearReportCacheServlet</servlet-name>
+        <servlet-class>com.acugis.reports.ClearReportCacheServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ClearReportCacheServlet</servlet-name>
+        <url-pattern>/clearReportCache</url-pattern>
+    </servlet-mapping>
+
+</web-app>

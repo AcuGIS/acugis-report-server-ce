@@ -1,0 +1,66 @@
+{
+    "name": "Median Rents",
+    "report": "nycdata",
+    "datasource": "EndpointNYC",
+    "format": "html",
+    "parameters": [
+        {
+            "name": "p_boro",
+            "type": "select",
+            "label": "Borough",
+            "required": false,
+            "hidden": false,
+            "options": [
+                "Manhattan",
+                "Bronx",
+                "Staten Island",
+                "Brooklyn",
+                "Queens"
+            ],
+            "multiple": true
+        }
+    ],
+    "access_groups": "Administrators,Editors,Public",
+    "description": "Demo Report for AcuGIS Report Server",
+    "type": "jasper",
+    "mapDefinition": {
+        "enabled": true,
+        "basemap": "osm",
+        "geometryColumn": "geom",
+        "initialZoom": "fit",
+        "renderer": "single",
+        "field": null,
+        "classification": "quantile",
+        "classes": 5,
+        "colorRamp": "Blues",
+        "singleSymbol": {
+            "fillColor": "#26a69a",
+            "outlineColor": "#00796b",
+            "outlineWidth": 1.5,
+            "opacity": 0.35,
+            "shape": "circle"
+        },
+        "categories": [],
+        "labels": {
+            "enabled": false,
+            "field": null,
+            "fontSize": 12,
+            "fillColor": "#212121",
+            "halo": true
+        },
+        "popups": {
+            "enabled": false,
+            "fields": []
+        },
+        "tooltips": {
+            "enabled": false,
+            "fields": []
+        },
+        "sync": {
+            "filterMapFromReport": true,
+            "filterReportFromMap": true,
+            "zoomToReportResults": true,
+            "highlightReturnedFeatures": true
+        }
+    }
+}

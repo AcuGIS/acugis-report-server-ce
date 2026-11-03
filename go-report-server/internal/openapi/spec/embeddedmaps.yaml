@@ -1,0 +1,137 @@
+# Embedded map diagnostics
+paths:
+  /api/v1/embedded-map/debug:
+    get:
+      operationId: debugEmbeddedMap
+      tags: [Embedded Maps]
+      summary: Debug embedded map configuration
+      description: |
+        Service-edit + report-edit ACL. Inspects JRXML/Jasper embedded-map
+        wiring for a report. With `format=json` (or Accept JSON) returns JSON;
+        otherwise HTML with a `<pre>` dump. Optional `compile` triggers a
+        compile attempt.
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Report key
+          example: nycdata
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json]
+          description: Force JSON response
+          example: json
+        - name: compile
+          in: query
+          schema:
+            type: string
+          description: Any value triggers compile attempt
+      responses:
+        '200':
+          description: Debug payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                properties:
+                  report:
+                    type: string
+                  embeddedMap:
+                    type: object
+                    additionalProperties: true
+                  layer:
+                    type: object
+                    additionalProperties: true
+                  jrxml:
+                    type: object
+                    additionalProperties: true
+                  jasper:
+                    type: object
+                    additionalProperties: true
+                  compileAttempt:
+                    type: object
+                    additionalProperties: true
+                  runtime:
+                    type: object
+                    additionalProperties: true
+                  render:
+                    type: object
+                    additionalProperties: true
+                  renderError:
+                    type: string
+              example:
+                report: nycdata
+                embeddedMap:
+                  enabled: true
+                layer:
+                  table: parcels
+                  geometry_column: geom
+                  datasource: reporting_db
+                jrxml:
+                  exists: true
+                  hasParameter: true
+                  hasImageElement: true
+                jasper:
+                  exists: true
+                  stale: false
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Missing report key
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Pass ?report=<key>
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /reports/debug_embedded_map.php:
+    get:
+      operationId: debugEmbeddedMapPHP
+      tags: [Embedded Maps]
+      summary: Debug embedded map (PHP alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/embedded-map/debug`.
+      parameters:
+        - name: report
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json]
+        - name: compile
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Debug payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Missing report key
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'

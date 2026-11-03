@@ -1,0 +1,20 @@
+# Example override: use an external PostgreSQL instead of the bundled service.
+#
+# Prerequisites — set in .env (same variables as report-server):
+#   JRS_DB_HOST=my.postgres.example
+#   JRS_DB_PORT=5432
+#   JRS_DB_NAME=jasper_reports
+#   JRS_DB_USER=jasper
+#   JRS_DB_PASS=...
+#
+# Then either:
+#   1. Remove/disable the `postgres` service in compose.yml, or
+#   2. Merge this file: docker compose -f compose.yml -f compose.external-postgres.example.yml up -d
+#
+# The bundled `postgres` service is placed on a profile so it is not started.
+# report-scheduler talks to PostgreSQL only through JRS_DB_* environment
+# variables (no Docker socket / host cron).
+
+services:
+  postgres:
+    profiles: ["bundled-postgres"]

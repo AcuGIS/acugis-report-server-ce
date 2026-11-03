@@ -1,0 +1,11 @@
+# Jobs / executions REST API — pending
+#
+# No /api/v1/executions or /api/v1/jobs list/get endpoints are registered yet.
+# Current HTML/form surfaces (see docs/api-inventory.md § Jobs):
+#   GET  /executions.php           — Per-schedule last status UI (PlatformAdmin)
+#   GET  /history.php              — Execution history UI (query schedule_id; last 200)
+#   POST /action/schedule.php      — Trigger immediate run (form run_now + id)
+#                                    JSON {success,message,execution_id,…}
+#
+# Note: failed run_now may still return HTTP 200 with success:false.
+paths: {}

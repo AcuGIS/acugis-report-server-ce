@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+      window.JRS_AUTH_API = {{.APIBaseJS}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+.profile-tabs { margin-bottom: 20px; }
+.pat-secret { display:block; word-break:break-all; background:#eceff1; padding:12px 14px; border-radius:4px; margin:12px 0; font-size:0.95rem; }
+.pat-created { border:1px solid #80cbc4; background:#e0f2f1; border-radius:6px; padding:16px; margin-bottom:20px; }
+.pat-created.hide { display:none; }
+.table-scroll { overflow-x:auto; }
+.connections-table { font-size:0.9rem; }
+.connections-table thead th { background:#eceff1; white-space:nowrap; }
+.muted-small { color:var(--subtle-text); font-size:0.9rem; }
+#profile-message.is-error { color:#c62828; }
+.profile-section { display:none; }
+.profile-section.is-active { display:block; }
+    </style>
+</head>
+<body data-federation-app="{{.FederationApp}}" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Profile</h1>
+        <p class="page-subtitle">Signed in as <strong>{{.Username}}</strong>{{if .Email}} ({{.Email}}){{end}}</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.CatalogURL}}" class="btn-flat waves-effect">Catalog</a>
+        <a href="{{.LogoutURL}}" class="btn-flat waves-effect">Sign out</a>
+    </div>
+</header>
+
+<ul class="tabs profile-tabs">
+    <li class="tab"><a href="#section-profile" class="active">Profile</a></li>
+    <li class="tab"><a href="#section-password">Password</a></li>
+    <li class="tab"><a href="#section-tokens">API Tokens</a></li>
+</ul>
+
+<div id="profile-message" class="muted-small" role="status" aria-live="polite" style="min-height:1.2em;margin-bottom:12px;"></div>
+
+<section id="section-profile" class="profile-section is-active">
+    <div class="card"><div class="card-content">
+        <span class="card-title">Account</span>
+        <p><strong>Username:</strong> {{.Username}}</p>
+        <p><strong>Email:</strong> {{if .Email}}{{.Email}}{{else}}—{{end}}</p>
+        <p><strong>Admin:</strong> {{if .IsAdmin}}Yes{{else}}No{{end}}</p>
+        <p><strong>Groups:</strong>
+            {{if .Groups}}{{range $i, $g := .Groups}}{{if $i}}, {{end}}{{$g}}{{end}}{{else}}—{{end}}
+        </p>
+    </div></div>
+</section>
+
+<section id="section-password" class="profile-section">
+    <div class="card"><div class="card-content">
+        <span class="card-title">Password</span>
+        <p class="muted-small">Password changes are managed by a platform administrator under Administration → Users. Browser sessions continue to use username/password login.</p>
+    </div></div>
+</section>
+
+<section id="section-tokens" class="profile-section">
+    <div class="row">
+        <div class="col s12 l4">
+            <div class="card"><div class="card-content">
+                <span class="card-title">Create token</span>
+                <p class="muted-small">Tokens authenticate the Python SDK, CLI, CI/CD, and automation. They inherit your full permissions.</p>
+                <form id="pat-form">
+                    <div class="input-field">
+                        <input id="pat-name" type="text" required maxlength="120" autocomplete="off">
+                        <label for="pat-name">Name</label>
+                    </div>
+                    <div class="input-field">
+                        <textarea id="pat-description" class="materialize-textarea" maxlength="500"></textarea>
+                        <label for="pat-description">Description (optional)</label>
+                    </div>
+                    <div class="input-field">
+                        <select id="pat-expires-in">
+                            <option value="never" selected>Never</option>
+                            <option value="30d">30 days</option>
+                            <option value="90d">90 days</option>
+                            <option value="1y">1 year</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                        <label>Expiration</label>
+                    </div>
+                    <div class="input-field hide" id="pat-custom-wrap">
+                        <input id="pat-expires" type="date">
+                        <label for="pat-expires" class="active">Custom expiration date</label>
+                    </div>
+                    <button class="btn waves-effect waves-light teal" type="submit">
+                        <i class="material-icons left">vpn_key</i>Generate token
+                    </button>
+                </form>
+            </div></div>
+        </div>
+        <div class="col s12 l8">
+            <div class="card"><div class="card-content">
+                <span class="card-title">API Tokens</span>
+                <p class="muted-small">The plaintext token is shown only once at creation. Revoking a token does not affect browser sessions or other tokens.</p>
+
+                <div id="pat-created" class="pat-created hide" role="status">
+                    <h3 style="margin-top:0;font-size:1.1rem;">API Token</h3>
+                    <code id="pat-secret" class="pat-secret"></code>
+                    <p class="muted-small"><strong>This token will only be shown once.</strong> After closing it cannot be viewed again.</p>
+                    <button type="button" class="btn-flat waves-effect" id="pat-copy-secret"><i class="material-icons left">content_copy</i>Copy</button>
+                    <button type="button" class="btn-flat waves-effect" id="pat-dismiss-secret">Dismiss</button>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="striped connections-table" id="pat-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Created</th>
+                                <th>Last Used</th>
+                                <th>Expires</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="pat-tbody">
+                            <tr><td colspan="6">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div></div>
+        </div>
+    </div>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var API = typeof window.JRS_AUTH_API === 'string' ? window.JRS_AUTH_API : '';
+  var lastSecret = '';
+
+  function escapeHTML(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function notify(message, isError) {
+    var el = document.getElementById('profile-message');
+    if (el) {
+      el.textContent = message || '';
+      el.classList.toggle('is-error', !!isError);
+    }
+    if (message && typeof M !== 'undefined' && M.toast) {
+      M.toast({ html: escapeHTML(message), classes: isError ? 'red darken-1' : 'teal darken-1' });
+    }
+  }
+
+  function request(path, options) {
+    options = options || {};
+    options.credentials = 'same-origin';
+    options.headers = Object.assign(
+      { 'Content-Type': 'application/json', Accept: 'application/json' },
+      options.headers || {}
+    );
+    return fetch(API + path, options).then(function (res) {
+      if (res.status === 401) {
+        window.location.href = (window.BASE_PATH || '') + '/login?next=' + encodeURIComponent(window.location.pathname);
+        return Promise.reject(new Error('authentication required'));
+      }
+      if (res.status === 204) return null;
+      return res.text().then(function (text) {
+        var payload = null;
+        if (text) {
+          try { payload = JSON.parse(text); }
+          catch (e) { throw new Error('server returned non-JSON response'); }
+        }
+        if (!res.ok) {
+          throw new Error((payload && payload.error) || ('request failed: ' + res.status));
+        }
+        return payload || {};
+      });
+    });
+  }
+
+  function formatDate(value) {
+    if (!value) return 'Never';
+    var d = new Date(value);
+    if (isNaN(d.getTime())) return 'Never';
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function statusLabel(token) {
+    return token.active ? 'Active' : 'Expired';
+  }
+
+  function renderTokens(tokens) {
+    var tbody = document.getElementById('pat-tbody');
+    if (!tbody) return;
+    if (!tokens || !tokens.length) {
+      tbody.innerHTML = '<tr><td colspan="6">No API tokens yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = tokens.map(function (token) {
+      return '<tr>' +
+        '<td>' + escapeHTML(token.name) +
+          (token.description ? '<div class="muted-small">' + escapeHTML(token.description) + '</div>' : '') +
+          '<div class="muted-small"><code>' + escapeHTML(token.token_prefix) + '…</code></div></td>' +
+        '<td>' + escapeHTML(formatDate(token.created_at)) + '</td>' +
+        '<td>' + escapeHTML(formatDate(token.last_used_at)) + '</td>' +
+        '<td>' + escapeHTML(token.expires_at ? formatDate(token.expires_at) : 'Never') + '</td>' +
+        '<td>' + escapeHTML(statusLabel(token)) + '</td>' +
+        '<td style="white-space:nowrap;">' +
+          '<button type="button" class="btn-flat waves-effect" data-rename="' + token.id + '" data-name="' + escapeHTML(token.name) + '">Rename</button>' +
+          '<button type="button" class="btn-flat waves-effect red-text text-darken-1" data-revoke="' + token.id + '">Revoke</button>' +
+          '<button type="button" class="btn-flat waves-effect red-text text-darken-1" data-delete="' + token.id + '">Delete</button>' +
+        '</td></tr>';
+    }).join('');
+  }
+
+  function loadTokens() {
+    return request('/tokens').then(function (payload) {
+      renderTokens(payload.tokens || []);
+    }).catch(function (err) {
+      notify(err.message || 'Could not load tokens', true);
+      var tbody = document.getElementById('pat-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="6">Could not load tokens.</td></tr>';
+    });
+  }
+
+  function showSecret(secret) {
+    lastSecret = secret || '';
+    var box = document.getElementById('pat-created');
+    var code = document.getElementById('pat-secret');
+    if (code) code.textContent = lastSecret;
+    if (box) box.classList.remove('hide');
+  }
+
+  function hideSecret() {
+    lastSecret = '';
+    var box = document.getElementById('pat-created');
+    var code = document.getElementById('pat-secret');
+    if (code) code.textContent = '';
+    if (box) box.classList.add('hide');
+  }
+
+  function showSection(hash) {
+    var id = (hash || '#section-tokens').replace(/^#/, '');
+    if (id !== 'section-profile' && id !== 'section-password' && id !== 'section-tokens') {
+      id = 'section-tokens';
+    }
+    document.querySelectorAll('.profile-section').forEach(function (el) {
+      el.classList.toggle('is-active', el.id === id);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof M !== 'undefined') {
+      M.Tabs.init(document.querySelectorAll('.tabs'));
+      M.FormSelect.init(document.querySelectorAll('select'));
+      M.updateTextFields();
+    }
+    showSection(window.location.hash || '#section-tokens');
+    window.addEventListener('hashchange', function () { showSection(window.location.hash); });
+
+    var expiresIn = document.getElementById('pat-expires-in');
+    var customWrap = document.getElementById('pat-custom-wrap');
+    if (expiresIn && customWrap) {
+      expiresIn.addEventListener('change', function () {
+        customWrap.classList.toggle('hide', expiresIn.value !== 'custom');
+      });
+    }
+
+    var form = document.getElementById('pat-form');
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var nameEl = document.getElementById('pat-name');
+        var descEl = document.getElementById('pat-description');
+        var body = {
+          name: nameEl ? nameEl.value.trim() : '',
+          description: descEl ? descEl.value.trim() : '',
+          expires_in: expiresIn ? expiresIn.value : 'never'
+        };
+        var expiresEl = document.getElementById('pat-expires');
+        if (body.expires_in === 'custom' && expiresEl && expiresEl.value) {
+          body.expires_at = expiresEl.value;
+        }
+        request('/tokens', { method: 'POST', body: JSON.stringify(body) }).then(function (payload) {
+          notify('Token created');
+          if (nameEl) nameEl.value = '';
+          if (descEl) descEl.value = '';
+          if (expiresEl) expiresEl.value = '';
+          if (expiresIn) expiresIn.value = 'never';
+          if (customWrap) customWrap.classList.add('hide');
+          if (typeof M !== 'undefined') {
+            M.FormSelect.init(document.querySelectorAll('select'));
+            M.updateTextFields();
+          }
+          showSecret(payload.token);
+          return loadTokens();
+        }).catch(function (err) {
+          notify(err.message || 'Could not create token', true);
+        });
+      });
+    }
+
+    var tbody = document.getElementById('pat-tbody');
+    if (tbody) {
+      tbody.addEventListener('click', function (event) {
+        var renameBtn = event.target.closest('[data-rename]');
+        if (renameBtn) {
+          var rid = renameBtn.getAttribute('data-rename');
+          var current = renameBtn.getAttribute('data-name') || '';
+          var next = window.prompt('Rename token', current);
+          if (next === null) return;
+          next = String(next).trim();
+          if (!next) { notify('Name is required', true); return; }
+          request('/tokens/' + rid, { method: 'PUT', body: JSON.stringify({ name: next }) }).then(function () {
+            notify('Token renamed');
+            return loadTokens();
+          }).catch(function (err) { notify(err.message || 'Could not rename', true); });
+          return;
+        }
+        var revokeBtn = event.target.closest('[data-revoke]');
+        if (revokeBtn) {
+          var id = revokeBtn.getAttribute('data-revoke');
+          if (!window.confirm('Revoke this token? It will stop working immediately.')) return;
+          request('/tokens/' + id, { method: 'DELETE' }).then(function () {
+            notify('Token revoked');
+            return loadTokens();
+          }).catch(function (err) { notify(err.message || 'Could not revoke', true); });
+          return;
+        }
+        var deleteBtn = event.target.closest('[data-delete]');
+        if (deleteBtn) {
+          var did = deleteBtn.getAttribute('data-delete');
+          if (!window.confirm('Permanently delete this token? It will stop working immediately.')) return;
+          request('/tokens/' + did + '?purge=1', { method: 'DELETE' }).then(function () {
+            notify('Token deleted');
+            return loadTokens();
+          }).catch(function (err) {
+            notify(err.message || 'Could not delete', true);
+          });
+        }
+      });
+    }
+
+    var copyBtn = document.getElementById('pat-copy-secret');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        if (!lastSecret) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(lastSecret).then(function () {
+            notify('Token copied to clipboard');
+          }).catch(function () { notify('Could not copy token', true); });
+        } else {
+          notify('Clipboard unavailable — select the token and copy manually', true);
+        }
+      });
+    }
+    var dismissBtn = document.getElementById('pat-dismiss-secret');
+    if (dismissBtn) dismissBtn.addEventListener('click', hideSecret);
+
+    loadTokens();
+  });
+})();
+</script>
+</body>
+</html>

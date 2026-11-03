@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: AcuGIS Report Server API
+  version: 0.1.0-foundation
+  description: |
+    Official OpenAPI 3.0 contract for the AcuGIS Report Server REST API.
+
+    This specification documents **existing** programmatic endpoints only.
+    HTML UI pages and form-only admin surfaces are intentionally omitted.
+
+    **Authentication:** Session cookie `jrs_session` or Bearer personal access
+    token (`Authorization: Bearer jrs_…`). Both produce the same authenticated
+    user. Prefer `/api/v1/*` routes for new clients.
+
+    **Version:** `info.version` matches `JRS_APP_VERSION` / product release when
+    served from the Report Server (`GET /api/openapi.yaml`).
+
+    **Modular sources:** Path modules and `schemas.yaml` are merged at serve time.
+  contact:
+    name: AcuGIS
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+
+servers:
+  - url: /
+    description: Default mount (JRS_BASE_PATH=/)
+  - url: /go
+    description: Typical reverse-proxy mount (JRS_BASE_PATH=/go)
+
+security:
+  - BearerAuth: []
+  - SessionCookie: []
+
+tags:
+  - name: Authentication
+    description: Login, logout, current user, and personal access tokens
+  - name: Reports
+    description: Report catalog CRUD, configuration, and thumbnails
+  - name: Execution
+    description: Jasper report render and report images (binary)
+  - name: Parameters
+    description: Cascading parameter option lookup
+  - name: Folders
+    description: Content folders, browse, search, permissions, favorites
+  - name: Resources
+    description: Content resources, images, download, and resource sync
+  - name: Datasources
+    description: Datasource list/create/delete and Jasper context.xml generation
+  - name: Embedded Maps
+    description: Embedded map diagnostics
+  - name: Health
+    description: Liveness, readiness, diagnostics, and Jasper gateway status
+  - name: Administration
+    description: Placeholder for future users/groups/schedules REST APIs
+
+paths: {}
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: jrs_PAT
+      description: |
+        Personal access token with prefix `jrs_`.
+        Create tokens via `POST /api/v1/auth/tokens` or the Profile UI.
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: jrs_session
+      description: Browser session cookie created by `POST /api/v1/auth/login`.

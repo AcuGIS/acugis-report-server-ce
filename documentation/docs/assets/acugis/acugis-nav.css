@@ -1,0 +1,983 @@
+/* ============================================
+   AcuGIS shared global navigation
+   Isolated from Materialize / Tailwind / page CSS
+   ============================================ */
+
+nav.acugis-gn {
+  background: #fff !important;
+  background-color: #fff !important;
+  height: auto !important;
+  line-height: 1.45 !important;
+  box-shadow: none !important;
+  color: #1f2937 !important;
+}
+
+nav.acugis-gn ul a {
+  color: inherit;
+  background: transparent;
+  height: auto;
+  line-height: inherit;
+}
+
+.acugis-gn {
+  --acugis-gn-height: 72px;
+  --acugis-gn-blue: #1565c0;
+  --acugis-gn-blue-hover: #1976d2;
+  --acugis-gn-navy: #0f4c75;
+  --acugis-gn-navy-deep: #071e33;
+  --acugis-gn-text: #1f2937;
+  --acugis-gn-muted: #64748b;
+  --acugis-gn-line: #e5e7eb;
+  --acugis-gn-bg: #ffffff;
+  --acugis-gn-soft: #f8fafc;
+  --acugis-gn-radius: 12px;
+  --acugis-gn-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --acugis-gn-shadow: 0 8px 24px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --acugis-gn-shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --acugis-cloud: #1565c0;
+  --acugis-cloud-soft: #eef4fb;
+  --acugis-report: #5b4cdb;
+  --acugis-report-soft: #f3f0ff;
+  --acugis-agent: #1b7f8a;
+  --acugis-agent-soft: #eef7f8;
+  --acugis-geosiem: #0f4c75;
+  --acugis-geosiem-soft: #eef4f8;
+  --acugis-geosync: #0d9488;
+  --acugis-geosync-soft: #eef8f6;
+  --acugis-qgis-publisher: #0d652d;
+  --acugis-qgis-publisher-soft: #eef6f0;
+  --acugis-atlas-survey: #0f766e;
+  --acugis-atlas-survey-soft: #e7f5f3;
+  --acugis-gn-z: 2000;
+
+  position: sticky;
+  top: 0;
+  z-index: var(--acugis-gn-z);
+  width: 100%;
+  font-family: var(--acugis-gn-font);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--acugis-gn-text);
+  background: var(--acugis-gn-bg);
+  border-bottom: 1px solid var(--acugis-gn-line);
+  box-shadow: none;
+  height: auto;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+.acugis-gn--overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.acugis-gn--static {
+  position: relative;
+  z-index: auto;
+}
+
+.acugis-gn *,
+.acugis-gn *::before,
+.acugis-gn *::after {
+  box-sizing: border-box;
+}
+
+.acugis-gn ul,
+.acugis-gn ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+
+.acugis-gn li {
+  float: none;
+  line-height: inherit;
+}
+
+.acugis-gn a,
+.acugis-gn button {
+  font-family: inherit;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.acugis-gn a:hover,
+.acugis-gn a:focus {
+  text-decoration: none;
+  background: none;
+}
+
+.acugis-gn img,
+.acugis-gn svg {
+  display: block;
+  max-width: 100%;
+}
+
+.acugis-gn-bar {
+  position: relative;
+  z-index: 2;
+  background: var(--acugis-gn-bg);
+}
+
+.acugis-gn-inner {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  height: var(--acugis-gn-height);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.acugis-gn-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--acugis-gn-blue) !important;
+  line-height: 1;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.acugis-gn-logo:hover,
+.acugis-gn-logo:focus {
+  color: var(--acugis-gn-navy) !important;
+}
+
+.acugis-gn-desktop {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+}
+
+.acugis-gn-links {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  margin: 0 auto 0 12px;
+  height: var(--acugis-gn-height);
+}
+
+.acugis-gn-item {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: var(--acugis-gn-height);
+}
+
+.acugis-gn-trigger,
+a.acugis-gn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+  padding: 0 12px;
+  color: var(--acugis-gn-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.acugis-gn-trigger:hover,
+.acugis-gn-trigger:focus-visible,
+.acugis-gn-item.is-open .acugis-gn-trigger,
+a.acugis-gn-link:hover,
+a.acugis-gn-link:focus-visible,
+a.acugis-gn-link.is-current {
+  color: var(--acugis-gn-blue);
+  background: transparent;
+  border-bottom-color: var(--acugis-gn-blue);
+}
+
+.acugis-gn-item--products .acugis-gn-trigger {
+  font-weight: 600;
+}
+
+.acugis-gn-trigger:focus-visible,
+.acugis-gn-link:focus-visible,
+.acugis-gn-logo:focus-visible,
+.acugis-gn-doc:focus-visible,
+.acugis-gn-cta:focus-visible,
+.acugis-gn-burger:focus-visible,
+.acugis-gn-card:focus-visible,
+.acugis-gn-project:focus-visible,
+.acugis-gn-list a:focus-visible,
+.acugis-gn-mega-foot a:focus-visible,
+.acugis-gn-mobile a:focus-visible,
+.acugis-gn-accordion-btn:focus-visible {
+  outline: 3px solid rgba(21, 101, 192, 0.4);
+  outline-offset: 2px;
+}
+
+.acugis-gn-caret {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.acugis-gn-item.is-open .acugis-gn-caret {
+  transform: rotate(180deg);
+}
+
+.acugis-gn-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.acugis-gn-doc {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--acugis-gn-muted) !important;
+  padding: 0 !important;
+  height: auto !important;
+  line-height: 1;
+}
+
+.acugis-gn-doc:hover,
+.acugis-gn-doc:focus,
+.acugis-gn-doc.is-current {
+  color: var(--acugis-gn-blue) !important;
+}
+
+.acugis-gn-cta {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  background: var(--acugis-gn-blue) !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  height: auto !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.acugis-gn-cta:hover,
+.acugis-gn-cta:focus {
+  background: var(--acugis-gn-blue-hover) !important;
+  color: #fff !important;
+  box-shadow: var(--acugis-gn-shadow) !important;
+}
+
+.acugis-gn-burger {
+  display: none;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--acugis-gn-text);
+}
+
+.acugis-gn-burger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.acugis-gn.is-mobile-open .acugis-gn-burger-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.acugis-gn.is-mobile-open .acugis-gn-burger-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.acugis-gn.is-mobile-open .acugis-gn-burger-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---------- Desktop panels ---------- */
+.acugis-gn-panels {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.acugis-gn-mega,
+.acugis-gn-dropdown {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+.acugis-gn-dropdown {
+  transform: translateY(-6px);
+}
+
+.acugis-gn-item.is-open .acugis-gn-dropdown,
+.acugis-gn.is-open .acugis-gn-mega.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.acugis-gn-item.is-open .acugis-gn-dropdown {
+  transform: translateY(0);
+}
+
+.acugis-gn-mega {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0;
+  background: var(--acugis-gn-bg);
+  border: 1px solid var(--acugis-gn-line);
+  border-radius: var(--acugis-gn-radius);
+  box-shadow: var(--acugis-gn-shadow-lg);
+  transform: translateX(-50%) translateY(-6px);
+}
+
+.acugis-gn.is-open .acugis-gn-mega.is-visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.acugis-gn-mega.is-visible::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 10px;
+}
+
+.acugis-gn-mega-body {
+  display: grid;
+  grid-template-columns: minmax(0, 3.2fr) minmax(150px, 0.9fr) minmax(150px, 0.9fr);
+  gap: 8px 24px;
+  padding: 22px 24px 18px;
+}
+
+.acugis-gn-mega-body--products,
+.acugis-gn-mega-body--opensource {
+  display: block;
+}
+
+.acugis-gn-mega--opensource {
+  width: min(860px, calc(100vw - 32px));
+}
+
+.acugis-gn-col-label {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.acugis-gn-product-grid--row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.acugis-gn-os-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 8px 40px;
+}
+
+.acugis-gn-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acugis-gn-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 16px;
+  grid-template-rows: auto auto auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 12px 14px 10px;
+  border: 1px solid var(--acugis-gn-line);
+  border-radius: 10px;
+  background: var(--acugis-gn-bg);
+  min-height: 0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.acugis-gn-card:hover,
+.acugis-gn-card:focus-visible {
+  border-color: var(--card-accent, var(--acugis-gn-blue));
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  background: var(--card-soft, var(--acugis-gn-soft));
+}
+
+.acugis-gn-card.is-active {
+  border-color: var(--card-accent, var(--acugis-gn-blue));
+  background: var(--card-soft, var(--acugis-gn-soft));
+}
+
+.acugis-gn-card[data-accent="cloud"] {
+  --card-accent: var(--acugis-cloud);
+  --card-soft: var(--acugis-cloud-soft);
+}
+
+.acugis-gn-card[data-accent="report-server"],
+.acugis-gn-card[data-accent="report-designer"] {
+  --card-accent: var(--acugis-report);
+  --card-soft: var(--acugis-report-soft);
+}
+
+.acugis-gn-card[data-accent="agent"] {
+  --card-accent: var(--acugis-agent);
+  --card-soft: var(--acugis-agent-soft);
+}
+
+.acugis-gn-card[data-accent="geosiem"] {
+  --card-accent: var(--acugis-geosiem);
+  --card-soft: var(--acugis-geosiem-soft);
+}
+
+.acugis-gn-card[data-accent="geosync"] {
+  --card-accent: var(--acugis-geosync);
+  --card-soft: var(--acugis-geosync-soft);
+}
+
+.acugis-gn-card[data-accent="qgis-publisher"],
+.acugis-gn-card[data-accent="atlas"] {
+  --card-accent: var(--acugis-qgis-publisher);
+  --card-soft: var(--acugis-qgis-publisher-soft);
+}
+
+.acugis-gn-card[data-accent="atlas-survey"] {
+  --card-accent: var(--acugis-atlas-survey);
+  --card-soft: var(--acugis-atlas-survey-soft);
+}
+
+.acugis-gn-card-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.acugis-gn-card-icon svg,
+.acugis-gn-card-icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.acugis-gn-card-name {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--acugis-gn-navy-deep);
+  line-height: 1.25;
+}
+
+.acugis-gn-card-cat {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--acugis-gn-muted));
+}
+
+.acugis-gn-card-media {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: block;
+  margin: 10px 0 2px;
+  width: 100%;
+  aspect-ratio: 350 / 250;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eef1f4;
+}
+
+.acugis-gn-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.acugis-gn-card-desc {
+  grid-column: 1 / 3;
+  grid-row: 4;
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-arrow {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: currentColor;
+  transition: transform 0.15s ease;
+}
+
+.acugis-gn-card-arrow {
+  grid-column: 3;
+  grid-row: 4;
+  align-self: end;
+  justify-self: end;
+  width: 16px;
+  height: 16px;
+  color: var(--acugis-gn-blue);
+  transition: transform 0.15s ease;
+}
+
+.acugis-gn-card:hover .acugis-gn-card-arrow,
+.acugis-gn-card:focus-visible .acugis-gn-card-arrow {
+  transform: translateX(3px);
+}
+
+.acugis-gn-project {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 8px;
+  margin: 0 -8px;
+  border-radius: 8px;
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+
+a.acugis-gn-project:hover,
+a.acugis-gn-project:focus-visible {
+  background: var(--acugis-gn-soft);
+}
+
+.acugis-gn-project--static {
+  cursor: default;
+}
+
+.acugis-gn-project-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.acugis-gn-project-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.acugis-gn-project-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acugis-gn-project-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--acugis-gn-navy-deep);
+}
+
+.acugis-gn-project-desc {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-side {
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.acugis-gn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.acugis-gn-list a {
+  display: block;
+  padding: 7px 8px !important;
+  margin: 0 -8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--acugis-gn-text) !important;
+  line-height: 1.35;
+  height: auto !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.acugis-gn-list a:hover,
+.acugis-gn-list a:focus-visible {
+  background: var(--acugis-gn-soft);
+  color: var(--acugis-gn-blue) !important;
+}
+
+.acugis-gn-mega-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--acugis-gn-soft);
+  border-top: 1px solid var(--acugis-gn-line);
+  border-radius: 0 0 11px 11px;
+}
+
+.acugis-gn-mega-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--acugis-gn-blue) !important;
+}
+
+.acugis-gn-mega-foot a svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.15s ease;
+}
+
+.acugis-gn-mega-foot a:hover svg {
+  transform: translateX(3px);
+}
+
+.acugis-gn-mega-foot p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-mega-foot-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.acugis-gn-mega-foot--links ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.acugis-gn-mega-foot--links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--acugis-gn-muted) !important;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.acugis-gn-mega-foot--links a:hover,
+.acugis-gn-mega-foot--links a:focus-visible {
+  color: var(--acugis-gn-blue) !important;
+  background: rgba(21, 101, 192, 0.06);
+}
+
+.acugis-gn-mega-foot--os {
+  padding: 10px 24px;
+}
+
+.acugis-gn-dropdown {
+  position: absolute;
+  top: calc(100% - 2px);
+  left: 0;
+  z-index: 3;
+  min-width: 220px;
+  padding: 10px 8px;
+  background: var(--acugis-gn-bg);
+  border: 1px solid var(--acugis-gn-line);
+  border-radius: 10px;
+  box-shadow: var(--acugis-gn-shadow-lg);
+}
+
+.acugis-gn-dropdown--wide {
+  min-width: 760px;
+  padding: 18px 18px 14px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+.acugis-gn-dropdown--wide .acugis-gn-col-label {
+  margin-bottom: 8px;
+}
+
+/* ---------- Mobile ---------- */
+.acugis-gn-mobile {
+  display: none;
+  background: var(--acugis-gn-bg);
+  border-top: 1px solid var(--acugis-gn-line);
+  max-height: calc(100vh - var(--acugis-gn-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.acugis-gn-mobile-inner {
+  padding: 8px 20px 24px;
+}
+
+.acugis-gn-accordion {
+  border-bottom: 1px solid var(--acugis-gn-line);
+}
+
+.acugis-gn-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--acugis-gn-text);
+  cursor: pointer;
+}
+
+.acugis-gn-plus {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.acugis-gn-plus::before,
+.acugis-gn-plus::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--acugis-gn-muted);
+  border-radius: 1px;
+}
+
+.acugis-gn-plus::before {
+  width: 14px;
+  height: 2px;
+  transform: translate(-50%, -50%);
+}
+
+.acugis-gn-plus::after {
+  width: 2px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.acugis-gn-accordion.is-open .acugis-gn-plus::after {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.acugis-gn-accordion-panel {
+  display: none;
+  padding: 0 0 12px;
+}
+
+.acugis-gn-accordion.is-open .acugis-gn-accordion-panel {
+  display: block;
+}
+
+.acugis-gn-mobile-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  color: var(--acugis-gn-text) !important;
+}
+
+.acugis-gn-mobile-product.is-active {
+  background: var(--acugis-gn-soft);
+}
+
+.acugis-gn-mobile-product-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.acugis-gn-mobile-product-icon svg,
+.acugis-gn-mobile-product-icon img {
+  width: 36px;
+  height: 36px;
+}
+
+.acugis-gn-mobile-product-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--acugis-gn-navy-deep);
+}
+
+.acugis-gn-mobile-product-cat {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-mobile-group {
+  margin: 10px 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acugis-gn-muted);
+}
+
+.acugis-gn-mobile-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 2px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--acugis-gn-text) !important;
+}
+
+.acugis-gn-mobile-link.is-current {
+  color: var(--acugis-gn-blue) !important;
+  font-weight: 600;
+}
+
+.acugis-gn-mobile-link--static {
+  color: var(--acugis-gn-muted) !important;
+  cursor: default;
+}
+
+.acugis-gn-mobile-cta {
+  display: flex;
+  margin-top: 16px;
+}
+
+.acugis-gn-mobile-cta .acugis-gn-cta {
+  width: 100%;
+  min-height: 48px;
+}
+
+@media (max-width: 1200px) {
+  .acugis-gn-mega-body {
+    gap: 8px 20px;
+    padding: 18px 18px 14px;
+  }
+
+  .acugis-gn-card-desc {
+    font-size: 12.5px;
+  }
+
+  .acugis-gn-dropdown--wide {
+    min-width: 640px;
+  }
+
+  .acugis-gn-os-grid {
+    gap: 8px 24px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .acugis-gn-desktop,
+  .acugis-gn-panels {
+    display: none !important;
+  }
+
+  .acugis-gn-burger {
+    display: inline-flex;
+  }
+
+  .acugis-gn.is-mobile-open .acugis-gn-mobile {
+    display: block;
+  }
+
+  .acugis-gn-inner {
+    width: calc(100% - 32px);
+  }
+}
+
+@media (max-width: 720px) {
+  .acugis-gn {
+    --acugis-gn-height: 64px;
+  }
+
+  .acugis-gn-logo {
+    font-size: 20px;
+  }
+
+  .acugis-gn-mega-foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acugis-gn-mega,
+  .acugis-gn-dropdown,
+  .acugis-gn-card,
+  .acugis-gn-card-arrow,
+  .acugis-gn-caret,
+  .acugis-gn-burger-bar {
+    transition: none;
+  }
+}
+
+body.acugis-gn-lock {
+  overflow: hidden;
+}

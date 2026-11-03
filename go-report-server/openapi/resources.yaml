@@ -1,0 +1,712 @@
+# Content resources, images, download, and resource sync
+paths:
+  /api/v1/resources:
+    get:
+      operationId: listResources
+      tags: [Resources]
+      summary: List content resources
+      description: |
+        Lists resources visible via folder ACL. Optional filters by folder,
+        resource type, and display-name search.
+      parameters:
+        - name: folder_id
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Limit to a folder; omitted returns across visible folders
+          example: 12
+        - name: resource_type
+          in: query
+          schema:
+            type: string
+            enum: [public_key, private_key, client_certificate, ca_certificate, generic_file, image]
+          example: image
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search display name / filename
+          example: logo
+      responses:
+        '200':
+          description: Resource list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/Resource'
+              example:
+                items:
+                  - uuid: 550e8400-e29b-41d4-a716-446655440000
+                    display_name: Company Logo
+                    resource_type: image
+                    mime_type: image/png
+                    size_bytes: 24576
+                    folder_id: 12
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          description: Resources store unavailable
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: resources unavailable
+    post:
+      operationId: createResource
+      tags: [Resources]
+      summary: Create content resource
+      description: |
+        Create via JSON (pasted text `content`) or multipart (`file` upload).
+        Requires folder edit ACL. `folder_id` ≤ 0 uses Home.
+        Multipart max ~16 MiB (non-image); images use the image endpoints (32 MiB).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/ResourceCreateJSON'
+            example:
+              folder_id: 12
+              display_name: SSH Public Key
+              resource_type: public_key
+              content: |
+                ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQ… user@host
+              original_filename: id_rsa.pub
+              extension: pub
+              mime_type: text/plain
+          multipart/form-data:
+            schema:
+              type: object
+              required: [display_name, resource_type]
+              properties:
+                folder_id:
+                  type: integer
+                  format: int64
+                display_name:
+                  type: string
+                resource_type:
+                  type: string
+                  enum: [public_key, private_key, client_certificate, ca_certificate, generic_file, image]
+                file:
+                  type: string
+                  format: binary
+                content:
+                  type: string
+                  description: Text content when not uploading a file
+                original_filename:
+                  type: string
+                extension:
+                  type: string
+                mime_type:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+              example:
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+                display_name: SSH Public Key
+                resource_type: public_key
+                folder_id: 12
+                size_bytes: 412
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          description: Resources store unavailable
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: resources unavailable
+
+  /api/v1/resources/images:
+    get:
+      operationId: listImageResources
+      tags: [Resources]
+      summary: List image resources
+      description: |
+        Lists `resource_type=image` resources. Response includes
+        `supported_formats`: png, jpeg, gif, svg, webp.
+      parameters:
+        - name: folder_id
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: q
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image resources and supported formats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/Resource'
+                  supported_formats:
+                    type: array
+                    items:
+                      type: string
+                    example: [png, jpeg, gif, svg, webp]
+              example:
+                items:
+                  - uuid: 660e8400-e29b-41d4-a716-446655440001
+                    display_name: Map Marker
+                    resource_type: image
+                    mime_type: image/png
+                    width: 64
+                    height: 64
+                supported_formats: [png, jpeg, gif, svg, webp]
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          description: Resources store unavailable
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: resources unavailable
+    post:
+      operationId: uploadImage
+      tags: [Resources]
+      summary: Upload image resource
+      description: |
+        Multipart upload only. Max file size 32 MiB.
+        Supported formats: png, jpeg, gif, svg, webp.
+        `display_name` defaults from the uploaded filename when omitted.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                folder_id:
+                  type: integer
+                  format: int64
+                display_name:
+                  type: string
+                extension:
+                  type: string
+                mime_type:
+                  type: string
+            encoding:
+              file:
+                contentType: image/png, image/jpeg, image/gif, image/svg+xml, image/webp
+      responses:
+        '201':
+          description: Created image resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+              example:
+                uuid: 660e8400-e29b-41d4-a716-446655440001
+                display_name: marker.png
+                resource_type: image
+                mime_type: image/png
+                size_bytes: 8192
+                width: 64
+                height: 64
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+
+  /api/v1/resources/images/{uuid}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    get:
+      operationId: getImageResource
+      tags: [Resources]
+      summary: Get image resource metadata
+      responses:
+        '200':
+          description: Image resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          description: Not an image or missing
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: image resource not found
+    put:
+      operationId: replaceImage
+      tags: [Resources]
+      summary: Replace image file
+      description: Multipart `file` required. Max 32 MiB. Resource must already be an image.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                extension:
+                  type: string
+                mime_type:
+                  type: string
+      responses:
+        '200':
+          description: Updated image resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    delete:
+      operationId: deleteImageResource
+      tags: [Resources]
+      summary: Delete image resource
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+                uuid: 660e8400-e29b-41d4-a716-446655440001
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/resources/images/{uuid}/download:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    get:
+      operationId: downloadImage
+      tags: [Resources]
+      summary: Download image bytes
+      parameters:
+        - name: inline
+          in: query
+          schema:
+            type: string
+            enum: ['1']
+          description: When `1`, use Content-Disposition inline
+        - name: disposition
+          in: query
+          schema:
+            type: string
+            enum: [inline, attachment]
+          description: "`inline` forces inline disposition"
+      responses:
+        '200':
+          description: Image binary
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/resources/{uuid}:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    get:
+      operationId: getResource
+      tags: [Resources]
+      summary: Get resource metadata
+      responses:
+        '200':
+          description: Resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+              example:
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+                display_name: SSH Public Key
+                resource_type: public_key
+                folder_id: 12
+                sha256: e3b0c44298fc1c149afbf4c8996fb924…
+                size_bytes: 412
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    put:
+      operationId: updateResource
+      tags: [Resources]
+      summary: Update resource metadata
+      description: |
+        Updates display name, type, and/or folder. Moving requires edit ACL
+        on both source and destination folders.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas.yaml#/components/schemas/ResourceUpdateRequest'
+            example:
+              display_name: Production SSH Key
+              folder_id: 15
+      responses:
+        '200':
+          description: Updated resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+    delete:
+      operationId: deleteResource
+      tags: [Resources]
+      summary: Delete resource
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/SuccessResponse'
+              example:
+                ok: true
+                uuid: 550e8400-e29b-41d4-a716-446655440000
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/resources/{uuid}/content:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    put:
+      operationId: replaceResourceContent
+      tags: [Resources]
+      summary: Replace resource file content
+      description: |
+        Multipart `file` required. Non-image max ~16 MiB; image resources
+        accept up to 32 MiB. Optional `extension` / `mime_type` override.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                extension:
+                  type: string
+                mime_type:
+                  type: string
+      responses:
+        '200':
+          description: Updated resource
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Resource'
+        '400':
+          $ref: './schemas.yaml#/components/responses/BadRequest'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/resources/{uuid}/download:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    get:
+      operationId: downloadResource
+      tags: [Resources]
+      summary: Download resource bytes
+      description: |
+        Returns the stored file. Default Content-Disposition is attachment.
+        Use `inline=1` or `disposition=inline` for inline display.
+      parameters:
+        - name: inline
+          in: query
+          schema:
+            type: string
+            enum: ['1']
+          description: When `1`, use Content-Disposition inline
+        - name: disposition
+          in: query
+          schema:
+            type: string
+            enum: [inline, attachment]
+      responses:
+        '200':
+          description: Resource binary
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            text/plain:
+              schema:
+                type: string
+            application/x-pem-file:
+              schema:
+                type: string
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: './schemas.yaml#/components/responses/NotFound'
+
+  /api/v1/resources/{uuid}/thumbnail:
+    parameters:
+      - $ref: './schemas.yaml#/components/parameters/ResourceUUID'
+    get:
+      operationId: getResourceThumbnail
+      tags: [Resources]
+      summary: Get resource thumbnail
+      description: |
+        Returns a PNG thumbnail when available (`Cache-Control: private, max-age=300`).
+        For images without a generated thumb, may return original bytes inline.
+        Non-image resources without a thumbnail return 404.
+      responses:
+        '200':
+          description: Thumbnail image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '404':
+          description: Thumbnail not found
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/Error'
+              example:
+                error: thumbnail not found
+
+  /api/v1/resource-sync:
+    get:
+      operationId: getResourceSyncHint
+      tags: [Resources]
+      summary: Resource sync hint
+      description: Platform-admin only. Returns how to trigger a sync.
+      responses:
+        '200':
+          description: Sync hint
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                  hint:
+                    type: string
+              example:
+                ok: true
+                service: acugis-report-server-go
+                hint: POST to run resource sync
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+    post:
+      operationId: runResourceSync
+      tags: [Resources]
+      summary: Run resource sync
+      description: |
+        Platform-admin only. Registers filesystem/content resources into the
+        application database. Returns sync statistics.
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+                  registered:
+                    type: integer
+                  already_exists:
+                    type: integer
+                  errors:
+                    type: integer
+                  skipped:
+                    type: integer
+                  reason:
+                    type: string
+              example:
+                ok: true
+                service: acugis-report-server-go
+                registered: 3
+                already_exists: 12
+                errors: 0
+                skipped: 1
+        '401':
+          $ref: './schemas.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+
+  /api/resource-sync/:
+    get:
+      operationId: getResourceSyncAlias
+      tags: [Resources]
+      summary: Resource sync hint (legacy alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/resource-sync`.
+      responses:
+        '200':
+          description: Sync hint
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+    post:
+      operationId: runResourceSyncAlias
+      tags: [Resources]
+      summary: Run resource sync (legacy alias)
+      deprecated: true
+      description: Prefer `POST /api/v1/resource-sync`.
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'
+
+  /api/resource-sync/index.php:
+    get:
+      operationId: getResourceSyncIndexPHP
+      tags: [Resources]
+      summary: Resource sync hint (PHP alias)
+      deprecated: true
+      description: Prefer `GET /api/v1/resource-sync`.
+      responses:
+        '200':
+          description: Sync hint
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+    post:
+      operationId: runResourceSyncIndexPHP
+      tags: [Resources]
+      summary: Run resource sync (PHP alias)
+      deprecated: true
+      description: Prefer `POST /api/v1/resource-sync`.
+      responses:
+        '200':
+          description: Sync completed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '403':
+          $ref: './schemas.yaml#/components/responses/Forbidden'
+        '503':
+          $ref: './schemas.yaml#/components/responses/ServiceUnavailable'

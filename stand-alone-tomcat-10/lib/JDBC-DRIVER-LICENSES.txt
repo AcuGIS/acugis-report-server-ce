@@ -1,0 +1,36 @@
+JDBC driver binaries under this directory that are redistributed with AcuGIS Report Server CE.
+
+snowflake-jdbc.jar
+  Coordinates: net.snowflake:snowflake-jdbc:3.22.0
+  Origin: https://repo1.maven.org/maven2/net/snowflake/snowflake-jdbc/3.22.0/snowflake-jdbc-3.22.0.jar
+  Size: 81047319
+  SHA1: 6146724d047b9fe34e0ce576d39feb7177e14b45
+  Published POM license name: The Apache Software License, Version 2.0
+  Published POM license URL: http://www.apache.org/licenses/LICENSE-2.0.txt
+  Upstream license text: snowflake-jdbc-3.22.0-LICENSE.txt
+  Upstream license source: https://github.com/snowflakedb/snowflake-jdbc/blob/v3.22.0/LICENSE.txt
+  The JAR in this directory matches the Maven Central SHA1 above.
+  Tag v3.22.0 has LICENSE.txt and no NOTICE file.
+  Third-party license and NOTICE entries shipped inside the JAR are left in place.
+  The JAR is not packaged into the WAR. Packaging and the Docker image copy it to Tomcat's shared lib.
+
+mssql-jdbc.jar
+  Coordinates: com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11
+  Origin: https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/12.8.1.jre11/mssql-jdbc-12.8.1.jre11.jar
+  Size: 1476685
+  SHA1: 1f641274a8cc1ff71d05eb6d5c9f8e8a6d217c54
+  Published POM license name: MIT License
+  Published POM license URL: http://www.opensource.org/licenses/mit-license.php
+  JAR manifest: Bundle-License: http://www.opensource.org/licenses/mit-license.php
+  JAR manifest: Bundle-Vendor: Microsoft Corporation
+  JAR manifest: Bundle-Version: 12.8.1
+  The JAR has no standalone LICENSE entry.
+  Upstream license text: mssql-jdbc-12.8.1-LICENSE.txt
+  Upstream license source: https://github.com/microsoft/mssql-jdbc/blob/v12.8.1/LICENSE
+  That upstream file does not contain a separate copyright line.
+  The JAR in this directory matches the Maven Central SHA1 above.
+
+mysql-connector-j-9.7.0.jar
+  The license text is inside the JAR as LICENSE.
+  It identifies GPLv2 with the Universal FOSS Exception.
+  Do not remove or replace that entry.

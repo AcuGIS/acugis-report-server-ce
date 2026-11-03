@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.PageTitle}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+    </style>
+</head>
+<body data-federation-app="{{.FederationApp}}" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">{{.PageTitle}}</h1>
+        <p class="page-subtitle">Configure JDBC, Cassandra/Astra, Google BigQuery, DuckDB, ArcGIS Feature Server, GeoServer, or a CSV, JSON, Excel, or XML document.</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.BackURL}}" class="btn btn-flat waves-effect">
+            <i class="material-icons left">arrow_back</i>Back
+        </a>
+    </div>
+</header>
+
+{{range .Errors}}
+    <div class="card-panel red lighten-4 red-text text-darken-4">{{.}}</div>
+{{end}}
+{{if .Message}}
+    <div class="card-panel green lighten-4 green-text text-darken-4">{{.Message}}</div>
+{{end}}
+
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title" id="datasourceFormTitle">Add Datasource</span>
+            <form method="post" id="datasourceForm" enctype="multipart/form-data">
+                <div class="input-field">
+                    <input type="text" id="name" name="name" required placeholder="MainPG">
+                    <label for="name" class="active">Datasource Name</label>
+                </div>
+                <div class="input-field">
+                    <select id="db_type" name="db_type" required>
+                        {{range .DBTypes}}
+                            <option value="{{.Key}}"
+                                data-port="{{.Port}}"
+                                data-schema="{{.Schema}}"
+                                data-dbname-label="{{.DBNameLabel}}"
+                                {{if eq .Key "postgresql"}}selected{{end}}>
+                                {{.Label}}
+                            </option>
+                        {{end}}
+                    </select>
+                    <label>Database Type</label>
+                </div>
+                <div class="input-field" id="service_url_field" style="display:none;">
+                    <input type="text" id="service_url" name="service_url" placeholder="https://services.example.com/arcgis/rest/services/Neighborhoods/FeatureServer">
+                    <label for="service_url" id="service_url_label" class="active">Service URL</label>
+                    <span class="helper-text" id="service_url_help">FeatureServer or MapServer URL. A layer URL such as .../FeatureServer/0 is accepted. Username and password are optional for public services.</span>
+                </div>
+                <div class="input-field" id="cassandra_method_field" style="display:none;">
+                    <select id="connection_method" name="connection_method">
+                        <option value="standard" selected>Standard Cassandra</option>
+                        <option value="astra">DataStax Astra</option>
+                    </select>
+                    <label>Connection Method</label>
+                </div>
+                <div class="row" id="host_port_row">
+                    <div class="input-field col s12 m8" id="host_field_wrap">
+                        <input type="text" id="host" name="host" required placeholder="host.docker.internal">
+                        <label for="host" id="host_label" class="active">Host</label>
+                    </div>
+                    <div class="input-field col s12 m4" id="port_field_wrap">
+                        <input type="number" id="port" name="port" value="5432" required>
+                        <label for="port" class="active">Port</label>
+                    </div>
+                </div>
+                <div class="input-field" id="dbname_field">
+                    <input type="text" id="dbname" name="dbname" required>
+                    <label for="dbname" id="dbname_label" class="active">Database</label>
+                    <span class="helper-text" id="dbname_help">For Oracle, enter the service name (or sid:ORCL for SID).</span>
+                </div>
+                <div class="input-field" id="schema_field">
+                    <input type="text" id="schema_name" name="schema_name" value="public">
+                    <label for="schema_name" class="active">Schema</label>
+                </div>
+                <div class="input-field" id="local_dc_field" style="display:none;">
+                    <input type="text" id="local_datacenter" name="local_datacenter" placeholder="datacenter1">
+                    <label for="local_datacenter" class="active">Local Datacenter</label>
+                </div>
+                <div class="input-field" id="bq_location_field" style="display:none;">
+                    <input type="text" id="location" name="location" placeholder="US">
+                    <label for="location" class="active">Location (optional)</label>
+                    <span class="helper-text">e.g. US, EU, us-central1 — applied to BigQuery query jobs when set.</span>
+                </div>
+                <div class="input-field" id="username_field">
+                    <input type="text" id="username" name="username" required>
+                    <label for="username">Username</label>
+                    <span class="helper-text" id="username_help" style="display:none;">Optional. Leave blank for a public Feature Server.</span>
+                </div>
+
+                <div class="auth-block" id="auth_block">
+                    <p style="margin:0 0 8px;font-weight:500;">Authentication</p>
+                    <p>
+                        <label><input name="auth_type" type="radio" value="password" checked /><span>Password</span></label>
+                    </p>
+                    <p>
+                        <label><input name="auth_type" type="radio" value="oauth" /><span>OAuth</span></label>
+                    </p>
+                    <p>
+                        <label><input name="auth_type" type="radio" value="key_pair" /><span>Key Pair</span></label>
+                    </p>
+                </div>
+
+                <div class="input-field" id="password_field">
+                    <input type="password" id="password" name="password" autocomplete="new-password">
+                    <label for="password" id="password_label">Password</label>
+                    <span class="helper-text" id="password_help">Used for password authentication.</span>
+                </div>
+
+                <div id="bq_credentials_field" style="display:none;">
+                    <div class="input-field">
+                        <select id="credentials_resource_uuid" name="credentials_resource_uuid">
+                            <option value="" selected>Select Resource…</option>
+                        </select>
+                        <label>Service Account JSON</label>
+                        <span class="helper-text" id="bq_credentials_help">Upload a Service Account JSON resource under Resources, then select it here. Credentials are never written to JRXML or returned to the browser.</span>
+                    </div>
+                </div>
+
+                <div id="duckdb_fields" style="display:none;">
+                    <div class="input-field">
+                        <select id="duckdb_mode" name="duckdb_mode">
+                            <option value="database" selected>DuckDB Database</option>
+                            <option value="files">Data Files</option>
+                        </select>
+                        <label>Mode</label>
+                    </div>
+                    <div class="input-field" id="duckdb_remote_field" style="display:none;">
+                        <input type="text" id="duckdb_remote_source" name="duckdb_remote_source" placeholder="https://example.com/data/sales.parquet">
+                        <label for="duckdb_remote_source" class="active">Remote Source</label>
+                        <span class="helper-text">HTTP(S) URL. Queried directly by DuckDB (not downloaded into Report Server).</span>
+                    </div>
+                    <div class="input-field" id="duckdb_format_field" style="display:none;">
+                        <select id="duckdb_format" name="duckdb_format">
+                            <option value="auto" selected>Auto Detect</option>
+                            <option value="parquet">Parquet</option>
+                            <option value="csv">CSV</option>
+                            <option value="json">JSON</option>
+                        </select>
+                        <label>Format</label>
+                    </div>
+                    <div class="input-field" id="duckdb_auth_field" style="display:none;">
+                        <select id="duckdb_auth_type" name="duckdb_auth_type">
+                            <option value="none" selected>None</option>
+                            <option value="basic">Basic Auth</option>
+                            <option value="bearer">Bearer Token</option>
+                            <option value="headers">Custom HTTP Headers</option>
+                        </select>
+                        <label>Authentication</label>
+                    </div>
+                    <div class="input-field" id="duckdb_header_keys_field" style="display:none;">
+                        <input type="text" id="duckdb_header_keys" name="duckdb_header_keys" placeholder="X-API-Key, Authorization">
+                        <label for="duckdb_header_keys" class="active">Header Names</label>
+                        <span class="helper-text">Comma-separated header names. Values go in the secret field below (JSON map or single value).</span>
+                    </div>
+                </div>
+
+                <div id="document_fields" style="display:none;">
+                    <input type="hidden" id="document_resource" name="document_resource" value="{{if .EditRow}}{{.EditRow.DocResource}}{{end}}">
+                    <div class="input-field" id="json_source_field" style="display:none;">
+                        <select id="json_source" name="json_source">
+                            <option value="file" selected>File</option>
+                            <option value="url">URL</option>
+                        </select>
+                        <label>JSON Source</label>
+                    </div>
+                    <div class="input-field" id="json_url_field" style="display:none;">
+                        <input type="text" id="json_url" name="json_url" placeholder="https://example.com/orders.json">
+                        <label for="json_url" class="active">JSON URL</label>
+                        <span class="helper-text">One HTTP(S) JSON document. This is not a REST API connection.</span>
+                    </div>
+                    <div class="file-field input-field" id="document_file_field">
+                        <div class="btn">
+                            <span>File</span>
+                            <input type="file" id="document" name="document">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" id="document_filename" placeholder="Upload a document">
+                        </div>
+                        <span class="helper-text" id="document_file_help">Stored in the datasource catalog. Leave unchanged to keep the current file.</span>
+                        <p class="helper-text" id="document_current"></p>
+                    </div>
+                    <div class="input-field" id="delimiter_field" style="display:none;">
+                        <select id="delimiter" name="delimiter">
+                            <option value="comma" selected>Comma</option>
+                            <option value="tab">Tab</option>
+                            <option value="semicolon">Semicolon</option>
+                            <option value="pipe">Pipe</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                        <label>Delimiter</label>
+                    </div>
+                    <div class="input-field" id="sheet_field" style="display:none;">
+                        <select id="sheet" name="sheet">
+                            <option value="">Select worksheet…</option>
+                        </select>
+                        <label>Worksheet</label>
+                    </div>
+                    <div class="input-field" id="collection_field" style="display:none;">
+                        <input type="text" id="collection" name="collection" placeholder="/customers/customer">
+                        <label for="collection" class="active">Record Collection</label>
+                        <span class="helper-text" id="collection_help">Leave blank when the document has one collection.</span>
+                    </div>
+                    <button type="button" class="btn waves-effect waves-light blue-grey" id="documentDiscoverBtn">
+                        Discover
+                    </button>
+                    <p id="documentDiscoverResult" class="helper-text"></p>
+                </div>
+
+                <div id="keypair_fields" style="display:none;">
+                    <div class="input-field">
+                        <select id="public_key_resource_uuid" name="public_key_resource_uuid">
+                            <option value="" selected>Select public key resource…</option>
+                        </select>
+                        <label>Public Key</label>
+                    </div>
+                    <div class="input-field">
+                        <select id="private_key_resource_uuid" name="private_key_resource_uuid">
+                            <option value="" selected>Select private key resource…</option>
+                        </select>
+                        <label>Private Key</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="password" id="key_passphrase" name="password" autocomplete="new-password">
+                        <label for="key_passphrase">Private key passphrase (optional)</label>
+                        <span class="helper-text" id="key_passphrase_help">Required only if the .p8 / PEM key is encrypted. Leave blank for unencrypted keys.</span>
+                    </div>
+                    <p class="helper-text">After saving, click <strong>Generate Context XML</strong>, then restart Tomcat so Jasper uses key-pair auth.</p>
+                </div>
+
+                <button type="submit" class="btn waves-effect waves-light teal" id="datasourceSaveBtn">
+                    Save Datasource
+                    <i class="material-icons right">save</i>
+                </button>
+                <button type="button" class="btn waves-effect waves-light indigo" id="datasourceTestBtn" style="display:none;margin-left:8px;">
+                    Test Connection
+                    <i class="material-icons right">network_check</i>
+                </button>
+                <a href="{{.BackURL}}" class="btn waves-effect waves-light blue-grey" id="datasourceClearBtn" style="display:none;margin-left:8px;">
+                    Cancel
+                    <i class="material-icons right">clear</i>
+                </a>
+                <p id="datasourceTestResult" class="helper-text" style="margin-top:12px;"></p>
+            </form>
+        </div>
+    </div>
+
+    {{if .EditRow}}
+    <button type="button" id="editBootstrap" class="edit-ds-btn" style="display:none"
+        data-name="{{.EditRow.Name}}"
+        data-db-type="{{.EditRow.DBType}}"
+        data-host="{{.EditRow.Host}}"
+        data-port="{{.EditRow.Port}}"
+        data-dbname="{{.EditRow.DBName}}"
+        data-schema="{{.EditRow.SchemaName}}"
+        data-username="{{.EditRow.Username}}"
+        data-auth-type="{{.EditRow.AuthType}}"
+        data-public-key="{{.EditRow.PublicKeyResourceUUID}}"
+        data-private-key="{{.EditRow.PrivateKeyResourceUUID}}"
+        data-has-password="{{if .EditRow.HasPassword}}1{{else}}0{{end}}"
+        data-connection-method="{{.EditRow.ConnectionMethod}}"
+        data-local-datacenter="{{.EditRow.LocalDatacenter}}"
+        data-credentials-resource="{{.EditRow.CredentialsResourceUUID}}"
+        data-location="{{.EditRow.Location}}"
+        data-has-credentials="{{if .EditRow.HasCredentials}}1{{else}}0{{end}}"
+        data-duck-mode="{{.EditRow.DuckMode}}"
+        data-duck-remote="{{.EditRow.DuckRemoteSource}}"
+        data-duck-format="{{.EditRow.DuckFormat}}"
+        data-duck-auth="{{.EditRow.DuckAuthType}}"
+        data-duck-headers="{{.EditRow.DuckHeaderKeys}}"
+        data-doc-source="{{.EditRow.DocSource}}"
+        data-doc-resource="{{.EditRow.DocResource}}"
+        data-doc-delimiter="{{.EditRow.DocDelimiter}}"
+        data-doc-collection="{{.EditRow.DocCollection}}"
+        data-doc-sheet="{{.EditRow.DocSheet}}"
+        data-doc-url="{{.EditRow.DocURL}}"
+        data-doc-filename="{{.EditRow.DocFilename}}"></button>
+    {{end}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+    (function () {
+        var typeSelect = document.getElementById('db_type');
+        var portInput = document.getElementById('port');
+        var hostInput = document.getElementById('host');
+        var hostLabel = document.getElementById('host_label');
+        var hostPortRow = document.getElementById('host_port_row');
+        var usernameInput = document.getElementById('username');
+        var usernameField = document.getElementById('username_field');
+        var schemaField = document.getElementById('schema_field');
+        var schemaInput = document.getElementById('schema_name');
+        var dbnameLabel = document.getElementById('dbname_label');
+        var dbnameHelp = document.getElementById('dbname_help');
+        var formTitle = document.getElementById('datasourceFormTitle');
+        var clearBtn = document.getElementById('datasourceClearBtn');
+        var testBtn = document.getElementById('datasourceTestBtn');
+        var testResult = document.getElementById('datasourceTestResult');
+        var form = document.getElementById('datasourceForm');
+        var methodSelect = document.getElementById('connection_method');
+        var methodField = document.getElementById('cassandra_method_field');
+        var localDCField = document.getElementById('local_dc_field');
+        var localDCInput = document.getElementById('local_datacenter');
+        var bqLocationField = document.getElementById('bq_location_field');
+        var bqLocationInput = document.getElementById('location');
+        var bqCredField = document.getElementById('bq_credentials_field');
+        var bqCredSelect = document.getElementById('credentials_resource_uuid');
+        var bqCredHelp = document.getElementById('bq_credentials_help');
+        var portFieldWrap = document.getElementById('port_field_wrap');
+        var serviceURLField = document.getElementById('service_url_field');
+        var serviceURLInput = document.getElementById('service_url');
+        var serviceURLLabel = document.getElementById('service_url_label');
+        var serviceURLHelp = document.getElementById('service_url_help');
+        var dbnameField = document.getElementById('dbname_field');
+        var dbnameInput = document.getElementById('dbname');
+        var usernameHelp = document.getElementById('username_help');
+        var authBlock = document.getElementById('auth_block');
+        var duckFields = document.getElementById('duckdb_fields');
+        var duckModeSelect = document.getElementById('duckdb_mode');
+        var duckRemoteField = document.getElementById('duckdb_remote_field');
+        var duckFormatField = document.getElementById('duckdb_format_field');
+        var duckAuthField = document.getElementById('duckdb_auth_field');
+        var duckHeaderKeysField = document.getElementById('duckdb_header_keys_field');
+        var duckAuthSelect = document.getElementById('duckdb_auth_type');
+        var duckRemoteInput = document.getElementById('duckdb_remote_source');
+        var duckFormatSelect = document.getElementById('duckdb_format');
+        var duckHeaderKeysInput = document.getElementById('duckdb_header_keys');
+        var documentFields = document.getElementById('document_fields');
+        var jsonSourceField = document.getElementById('json_source_field');
+        var jsonSourceSelect = document.getElementById('json_source');
+        var jsonURLField = document.getElementById('json_url_field');
+        var jsonURLInput = document.getElementById('json_url');
+        var documentFileField = document.getElementById('document_file_field');
+        var documentInput = document.getElementById('document');
+        var delimiterField = document.getElementById('delimiter_field');
+        var delimiterSelect = document.getElementById('delimiter');
+        var sheetField = document.getElementById('sheet_field');
+        var sheetSelect = document.getElementById('sheet');
+        var collectionField = document.getElementById('collection_field');
+        var collectionInput = document.getElementById('collection');
+        var documentResource = document.getElementById('document_resource');
+        var documentCurrent = document.getElementById('document_current');
+        var documentDiscoverBtn = document.getElementById('documentDiscoverBtn');
+        var documentDiscoverResult = document.getElementById('documentDiscoverResult');
+        var editing = false;
+        var pendingPublicKey = '';
+        var pendingPrivateKey = '';
+        var pendingCredentials = '';
+        if (!typeSelect || !portInput) return;
+        function isAstraSelected() {
+            return typeSelect.value === 'cassandra' && methodSelect && methodSelect.value === 'astra';
+        }
+        function syncTypeDefaults() {
+            var option = typeSelect.options[typeSelect.selectedIndex];
+            if (!option) return;
+            var port = option.getAttribute('data-port') || '5432';
+            var schema = option.getAttribute('data-schema') || '';
+            var label = option.getAttribute('data-dbname-label') || 'Database';
+            var type = option.value;
+            var isSqlite = type === 'sqlite';
+            var isCassandra = type === 'cassandra';
+            var isBigQuery = type === 'bigquery';
+            var isDuckDB = type === 'duckdb';
+            var isArcGIS = type === 'arcgis';
+            var isGeoServer = type === 'geoserver';
+            var isCSV = type === 'csv';
+            var isJSON = type === 'json';
+            var isExcel = type === 'excel';
+            var isXML = type === 'xml';
+            var isDocument = isCSV || isJSON || isExcel || isXML;
+            var jsonURL = isJSON && jsonSourceSelect && jsonSourceSelect.value === 'url';
+            var isService = isArcGIS || isGeoServer;
+            var isAstra = isAstraSelected();
+            var duckFiles = isDuckDB && duckModeSelect && duckModeSelect.value === 'files';
+            if (serviceURLField) serviceURLField.style.display = isService ? '' : 'none';
+            if (serviceURLLabel) serviceURLLabel.textContent = isGeoServer ? 'GeoServer URL' : 'Service URL';
+            if (serviceURLHelp) {
+                serviceURLHelp.textContent = isGeoServer
+                    ? 'GeoServer base URL, for example https://host/geoserver. Username and password are optional.'
+                    : 'FeatureServer or MapServer URL. A layer URL such as .../FeatureServer/0 is accepted. Username and password are optional for public services.';
+            }
+            if (serviceURLInput) {
+                serviceURLInput.placeholder = isGeoServer
+                    ? 'https://host.example.com/geoserver'
+                    : 'https://services.example.com/arcgis/rest/services/Neighborhoods/FeatureServer';
+                if (isService) serviceURLInput.setAttribute('required', 'required');
+                else serviceURLInput.removeAttribute('required');
+            }
+            if (dbnameField) dbnameField.style.display = (isService || isDocument) ? 'none' : '';
+            if (dbnameInput) {
+                var dbnameRequired = !(isService || isDocument || (isDuckDB && duckFiles));
+                dbnameInput.required = dbnameRequired;
+                dbnameInput.disabled = isService || isDocument;
+            }
+            if (usernameHelp) {
+                usernameHelp.style.display = isService ? '' : 'none';
+                usernameHelp.textContent = isGeoServer
+                    ? 'Optional. Leave blank for anonymous WFS access.'
+                    : 'Optional. Leave blank for a public Feature Server.';
+            }
+            if (methodField) methodField.style.display = isCassandra ? '' : 'none';
+            if (localDCField) localDCField.style.display = (isCassandra && !isAstra) ? '' : 'none';
+            if (bqLocationField) bqLocationField.style.display = isBigQuery ? '' : 'none';
+            if (bqCredField) bqCredField.style.display = isBigQuery ? '' : 'none';
+            if (duckFields) duckFields.style.display = isDuckDB ? '' : 'none';
+            if (duckRemoteField) duckRemoteField.style.display = duckFiles ? '' : 'none';
+            if (duckFormatField) duckFormatField.style.display = duckFiles ? '' : 'none';
+            if (duckAuthField) duckAuthField.style.display = duckFiles ? '' : 'none';
+            syncDuckAuthFields();
+            if (authBlock) authBlock.style.display = (isCassandra || isBigQuery || isDuckDB || isService || isDocument) ? 'none' : '';
+            if (testBtn) testBtn.style.display = (isCassandra || isBigQuery || isDuckDB || isService || isDocument) ? '' : 'none';
+            if (!isCassandra && !isBigQuery && !isDuckDB && !isService && !isDocument && testResult) testResult.textContent = '';
+            if (documentFields) documentFields.style.display = isDocument ? '' : 'none';
+            if (jsonSourceField) jsonSourceField.style.display = isJSON ? '' : 'none';
+            if (jsonURLField) jsonURLField.style.display = jsonURL ? '' : 'none';
+            if (documentFileField) documentFileField.style.display = (isDocument && !jsonURL) ? '' : 'none';
+            if (delimiterField) delimiterField.style.display = isCSV ? '' : 'none';
+            if (sheetField) sheetField.style.display = isExcel ? '' : 'none';
+            if (collectionField) collectionField.style.display = (isJSON || isXML) ? '' : 'none';
+            if (documentDiscoverBtn) documentDiscoverBtn.style.display = (isJSON || isExcel || isXML) ? '' : 'none';
+            if (!portInput.dataset.touched) portInput.value = isCassandra && !isAstra ? '9042' : port;
+            if (dbnameLabel) {
+                if (isDuckDB && duckFiles) dbnameLabel.textContent = 'Logical Alias (optional)';
+                else if (isDuckDB) dbnameLabel.textContent = 'Database File';
+                else dbnameLabel.textContent = label;
+            }
+            if (dbnameHelp) {
+                if (type === 'oracle') {
+                    dbnameHelp.textContent = 'For Oracle, enter the service name (or sid:ORCL for SID).';
+                    dbnameHelp.style.display = '';
+                } else if (type === 'snowflake') {
+                    dbnameHelp.textContent = 'For Snowflake, Host is the account identifier (e.g. xy12345.us-east-1).';
+                    dbnameHelp.style.display = '';
+                } else if (isSqlite) {
+                    dbnameHelp.textContent = 'Absolute path to a .sqlite, .db, or .gpkg file on the report server.';
+                    dbnameHelp.style.display = '';
+                } else if (isCassandra && isAstra) {
+                    dbnameHelp.textContent = 'Astra keyspace (default: default_keyspace).';
+                    dbnameHelp.style.display = '';
+                } else if (isCassandra) {
+                    dbnameHelp.textContent = 'Cassandra keyspace name.';
+                    dbnameHelp.style.display = '';
+                } else if (isBigQuery) {
+                    dbnameHelp.textContent = 'Google Cloud project ID (e.g. flawless-spirit-386523).';
+                    dbnameHelp.style.display = '';
+                } else if (isDuckDB && duckFiles) {
+                    dbnameHelp.textContent = 'Optional logical alias (defaults from the remote URL basename). Remote URL is configured below.';
+                    dbnameHelp.style.display = '';
+                } else if (isDuckDB) {
+                    dbnameHelp.textContent = 'Absolute path to a .duckdb file on the Report Server filesystem (not a Designer Windows path).';
+                    dbnameHelp.style.display = '';
+                } else {
+                    dbnameHelp.style.display = 'none';
+                }
+            }
+            if (hostLabel) {
+                if (isAstra) hostLabel.textContent = 'API Endpoint';
+                else if (type === 'snowflake') hostLabel.textContent = 'Account';
+                else hostLabel.textContent = 'Host';
+            }
+            if (hostPortRow) hostPortRow.style.display = (isSqlite || isBigQuery || isDuckDB || isService || isDocument) ? 'none' : '';
+            if (portFieldWrap) portFieldWrap.style.display = (isSqlite || isAstra || isBigQuery || isDuckDB || isService || isDocument) ? 'none' : '';
+            if (usernameField) {
+                var showDuckUser = isDuckDB && duckFiles && duckAuthSelect && duckAuthSelect.value === 'basic';
+                usernameField.style.display = (isSqlite || isAstra || isBigQuery || isDocument || (isDuckDB && !showDuckUser)) ? 'none' : '';
+            }
+            if (hostInput) {
+                if (isSqlite || isBigQuery || isDuckDB || isService || isDocument) { hostInput.removeAttribute('required'); hostInput.value = hostInput.value || ''; }
+                else hostInput.setAttribute('required', 'required');
+            }
+            if (portInput) {
+                if (isSqlite || isAstra || isBigQuery || isDuckDB || isService || isDocument) portInput.removeAttribute('required');
+                else portInput.setAttribute('required', 'required');
+            }
+            if (usernameInput) {
+                var needUser = !(isSqlite || isAstra || isBigQuery || isDuckDB || isService || isDocument) || (isDuckDB && duckFiles && duckAuthSelect && duckAuthSelect.value === 'basic');
+                if (!needUser) usernameInput.removeAttribute('required');
+                else if (!(isDuckDB && duckFiles)) usernameInput.setAttribute('required', 'required');
+                else usernameInput.removeAttribute('required');
+            }
+            // Schema field = Default Dataset for BigQuery (optional).
+            var showSchema = type === 'postgresql' || type === 'snowflake' || isBigQuery;
+            if (schemaField) schemaField.style.display = showSchema ? '' : 'none';
+            var schemaLabel = schemaField ? schemaField.querySelector('label') : null;
+            if (schemaLabel) {
+                schemaLabel.textContent = isBigQuery ? 'Default Dataset (optional)' : 'Schema';
+            }
+            if (schemaInput && showSchema && !isBigQuery && schemaInput.value === '') {
+                schemaInput.value = schema || (type === 'snowflake' ? 'PUBLIC' : 'public');
+            }
+            if (isCassandra) {
+                setAuth('password');
+                if (isAstra && dbnameInput && !dbnameInput.value) dbnameInput.value = 'default_keyspace';
+            }
+            if (isBigQuery) {
+                setAuth('password');
+                loadBigQueryCredentialPicker();
+            }
+            if (isDuckDB || isService || isDocument) {
+                setAuth('password');
+            }
+        }
+        function syncDuckAuthFields() {
+            var isDuckDB = typeSelect.value === 'duckdb';
+            var duckFiles = isDuckDB && duckModeSelect && duckModeSelect.value === 'files';
+            var auth = duckAuthSelect ? duckAuthSelect.value : 'none';
+            if (duckHeaderKeysField) duckHeaderKeysField.style.display = (duckFiles && auth === 'headers') ? '' : 'none';
+        }
+        portInput.addEventListener('input', function () { portInput.dataset.touched = '1'; });
+        typeSelect.addEventListener('change', function () { delete portInput.dataset.touched; syncTypeDefaults(); syncAuthUI(); });
+        if (methodSelect) methodSelect.addEventListener('change', function () { delete portInput.dataset.touched; syncTypeDefaults(); syncAuthUI(); });
+        if (duckModeSelect) duckModeSelect.addEventListener('change', function () { syncTypeDefaults(); syncAuthUI(); });
+        if (duckAuthSelect) duckAuthSelect.addEventListener('change', function () { syncTypeDefaults(); syncAuthUI(); });
+
+        var passwordField = document.getElementById('password_field');
+        var passwordLabel = document.getElementById('password_label');
+        var passwordHelp = document.getElementById('password_help');
+        var keypairFields = document.getElementById('keypair_fields');
+        var apiBase = (window.BASE_PATH || '').replace(/\/$/, '');
+
+        function selectedAuth() {
+            var el = document.querySelector('input[name="auth_type"]:checked');
+            return el ? el.value : 'password';
+        }
+        function setAuth(auth) {
+            var radio = document.querySelector('input[name="auth_type"][value="' + auth + '"]');
+            if (radio) radio.checked = true;
+            else {
+                var fallback = document.querySelector('input[name="auth_type"][value="password"]');
+                if (fallback) fallback.checked = true;
+            }
+        }
+        function refreshMaterialize() {
+            if (window.M) {
+                if (M.FormSelect) M.FormSelect.init(document.querySelectorAll('select'));
+                if (M.updateTextFields) M.updateTextFields();
+            }
+        }
+        function setEditMode(on, name) {
+            editing = !!on;
+            if (formTitle) formTitle.textContent = editing ? ('Edit Datasource' + (name ? ': ' + name : '')) : 'Add Datasource';
+            if (clearBtn) clearBtn.style.display = editing ? '' : 'none';
+            updatePasswordHelp();
+        }
+        function updatePasswordHelp() {
+            var auth = selectedAuth();
+            if (!passwordHelp) return;
+            if (typeSelect.value === 'bigquery') {
+                return;
+            }
+            if (typeSelect.value === 'duckdb') {
+                var duckFiles = duckModeSelect && duckModeSelect.value === 'files';
+                var auth = duckAuthSelect ? duckAuthSelect.value : 'none';
+                if (!duckFiles || auth === 'none') {
+                    passwordHelp.textContent = duckFiles
+                        ? 'No authentication — use for public or already-presigned URLs.'
+                        : 'Database mode does not use a password.';
+                    return;
+                }
+                if (auth === 'basic') {
+                    passwordHelp.textContent = editing
+                        ? 'Leave blank to keep the current password.'
+                        : 'Basic Auth password.';
+                } else if (auth === 'bearer') {
+                    passwordHelp.textContent = editing
+                        ? 'Leave blank to keep the current Bearer token.'
+                        : 'Bearer token (without the “Bearer ” prefix).';
+                } else if (auth === 'headers') {
+                    passwordHelp.textContent = editing
+                        ? 'Leave blank to keep current header values. New values: JSON map {\"X-API-Key\":\"…\"} or a single value for one header.'
+                        : 'Header secret values as JSON map {\"X-API-Key\":\"…\"}, or a single value when one header name is configured.';
+                }
+                return;
+            }
+            if (typeSelect.value === 'arcgis') {
+                passwordHelp.textContent = editing
+                    ? 'Optional. Leave blank to keep the saved password, or clear the username for anonymous access.'
+                    : 'Optional. Leave blank for a public Feature Server.';
+                return;
+            }
+            if (typeSelect.value === 'geoserver') {
+                passwordHelp.textContent = editing
+                    ? 'Optional. Leave blank to keep the saved password, or clear the username for anonymous access.'
+                    : 'Optional. Leave blank for anonymous WFS access.';
+                return;
+            }
+            if (typeSelect.value === 'cassandra') {
+                if (isAstraSelected()) {
+                    passwordHelp.textContent = editing
+                        ? 'Leave blank to keep the current Astra token.'
+                        : 'Astra application token (AstraCS:…).';
+                } else if (editing) {
+                    passwordHelp.textContent = 'Leave blank to keep the current password.';
+                } else {
+                    passwordHelp.textContent = 'Cassandra password.';
+                }
+                return;
+            }
+            if (auth === 'oauth') {
+                passwordHelp.textContent = editing
+                    ? 'Leave blank to keep the current client secret / token.'
+                    : 'OAuth client secret or access token.';
+            } else if (auth === 'key_pair') {
+                passwordHelp.textContent = '';
+            } else if (editing) {
+                passwordHelp.textContent = 'Leave blank to keep the current password.';
+            } else {
+                passwordHelp.textContent = 'Used for password authentication.';
+            }
+            var keyPassHelp = document.getElementById('key_passphrase_help');
+            if (keyPassHelp && auth === 'key_pair') {
+                keyPassHelp.textContent = editing
+                    ? 'Leave blank to keep the current passphrase. Required only if the .p8 / PEM key is encrypted.'
+                    : 'Required only if the .p8 / PEM key is encrypted. Leave blank for unencrypted keys.';
+            }
+        }
+        function syncAuthUI() {
+            var docType = typeSelect.value === 'csv' || typeSelect.value === 'json' || typeSelect.value === 'excel' || typeSelect.value === 'xml';
+            if (docType) {
+                if (keypairFields) keypairFields.style.display = 'none';
+                if (passwordField) passwordField.style.display = 'none';
+                var docPassword = document.getElementById('password');
+                var docKey = document.getElementById('key_passphrase');
+                if (docPassword) {
+                    docPassword.disabled = true;
+                    docPassword.removeAttribute('name');
+                }
+                if (docKey) {
+                    docKey.disabled = true;
+                    docKey.removeAttribute('name');
+                }
+                return;
+            }
+            if (typeSelect.value === 'bigquery') {
+                if (keypairFields) keypairFields.style.display = 'none';
+                if (passwordField) passwordField.style.display = 'none';
+                var passwordInput = document.getElementById('password');
+                var keyPass = document.getElementById('key_passphrase');
+                if (passwordInput) {
+                    passwordInput.disabled = true;
+                    passwordInput.removeAttribute('name');
+                }
+                if (keyPass) {
+                    keyPass.disabled = true;
+                    keyPass.removeAttribute('name');
+                }
+                if (bqCredHelp) {
+                    bqCredHelp.textContent = editing
+                        ? 'Leave as “Select Resource…” to keep the current Service Account credential.'
+                        : 'Upload a Service Account JSON resource under Resources, then select it here. Credentials are never written to JRXML or returned to the browser.';
+                }
+                loadBigQueryCredentialPicker();
+                return;
+            }
+            if (typeSelect.value === 'duckdb') {
+                if (keypairFields) keypairFields.style.display = 'none';
+                var duckFiles = duckModeSelect && duckModeSelect.value === 'files';
+                var auth = duckAuthSelect ? duckAuthSelect.value : 'none';
+                var showSecret = duckFiles && auth !== 'none';
+                if (passwordField) passwordField.style.display = showSecret ? '' : 'none';
+                var passwordInput = document.getElementById('password');
+                var keyPass = document.getElementById('key_passphrase');
+                if (passwordInput) {
+                    passwordInput.disabled = !showSecret;
+                    if (showSecret) passwordInput.setAttribute('name', 'password');
+                    else passwordInput.removeAttribute('name');
+                }
+                if (keyPass) {
+                    keyPass.disabled = true;
+                    keyPass.removeAttribute('name');
+                }
+                if (passwordLabel) {
+                    if (auth === 'bearer') passwordLabel.textContent = 'Bearer Token';
+                    else if (auth === 'headers') passwordLabel.textContent = 'Header Values';
+                    else passwordLabel.textContent = 'Password';
+                }
+                updatePasswordHelp();
+                return;
+            }
+            if (typeSelect.value === 'arcgis' || typeSelect.value === 'geoserver' || typeSelect.value === 'cassandra') {
+                if (keypairFields) keypairFields.style.display = 'none';
+                if (passwordField) passwordField.style.display = '';
+                var passwordInput = document.getElementById('password');
+                var keyPass = document.getElementById('key_passphrase');
+                if (passwordInput) {
+                    passwordInput.disabled = false;
+                    passwordInput.setAttribute('name', 'password');
+                }
+                if (keyPass) {
+                    keyPass.disabled = true;
+                    keyPass.removeAttribute('name');
+                }
+                if (passwordLabel) {
+                    passwordLabel.textContent = (typeSelect.value === 'cassandra' && isAstraSelected()) ? 'Token' : 'Password';
+                }
+                updatePasswordHelp();
+                return;
+            }
+            var auth = selectedAuth();
+            if (keypairFields) keypairFields.style.display = auth === 'key_pair' ? '' : 'none';
+            if (passwordField) passwordField.style.display = auth === 'key_pair' ? 'none' : '';
+            var passwordInput = document.getElementById('password');
+            var keyPass = document.getElementById('key_passphrase');
+            if (passwordInput) {
+                passwordInput.disabled = auth === 'key_pair';
+                if (auth === 'key_pair') passwordInput.removeAttribute('name');
+                else passwordInput.setAttribute('name', 'password');
+            }
+            if (keyPass) {
+                keyPass.disabled = auth !== 'key_pair';
+                if (auth === 'key_pair') keyPass.setAttribute('name', 'password');
+                else keyPass.removeAttribute('name');
+            }
+            if (passwordLabel) {
+                passwordLabel.textContent = auth === 'oauth' ? 'Client secret / token' : 'Password';
+            }
+            updatePasswordHelp();
+            if (auth === 'key_pair') loadResourcePickers();
+        }
+        document.querySelectorAll('input[name="auth_type"]').forEach(function (r) {
+            r.addEventListener('change', syncAuthUI);
+        });
+
+        function optionLabel(item, nameCounts) {
+            var name = item.display_name || item.uuid;
+            var path = (item.folder_path || '').replace(/\s*>\s*/g, '/');
+            if (nameCounts[name] > 1 && path) return path + '/' + name;
+            return name;
+        }
+        function fillSelect(selectEl, items, nameCounts, selected) {
+            if (!selectEl) return;
+            var keep = selected != null ? selected : selectEl.value;
+            while (selectEl.options.length > 1) selectEl.remove(1);
+            (items || []).forEach(function (it) {
+                var opt = document.createElement('option');
+                opt.value = it.uuid;
+                opt.textContent = optionLabel(it, nameCounts);
+                selectEl.appendChild(opt);
+            });
+            if (keep) selectEl.value = keep;
+            if (window.M && M.FormSelect) M.FormSelect.init(selectEl);
+        }
+        function countNames(items) {
+            var counts = {};
+            (items || []).forEach(function (it) {
+                var n = it.display_name || it.uuid;
+                counts[n] = (counts[n] || 0) + 1;
+            });
+            return counts;
+        }
+        function loadResourcePickers() {
+            function load(type, selectId, selected) {
+                return fetch(apiBase + '/api/v1/resources?resource_type=' + encodeURIComponent(type), {
+                    credentials: 'same-origin',
+                    headers: {'Accept': 'application/json'}
+                }).then(function (res) { return res.json(); }).then(function (data) {
+                    var items = data.items || [];
+                    fillSelect(document.getElementById(selectId), items, countNames(items), selected);
+                }).catch(function () {});
+            }
+            load('public_key', 'public_key_resource_uuid', pendingPublicKey);
+            load('private_key', 'private_key_resource_uuid', pendingPrivateKey);
+        }
+        function loadBigQueryCredentialPicker() {
+            if (!bqCredSelect) return;
+            var selected = pendingCredentials || bqCredSelect.value || '';
+            // Prefer dedicated service_account_json; also include generic_file JSON keys.
+            Promise.all([
+                fetch(apiBase + '/api/v1/resources?resource_type=service_account_json', {
+                    credentials: 'same-origin', headers: {'Accept': 'application/json'}
+                }).then(function (res) { return res.json(); }).catch(function () { return {items: []}; }),
+                fetch(apiBase + '/api/v1/resources?resource_type=generic_file', {
+                    credentials: 'same-origin', headers: {'Accept': 'application/json'}
+                }).then(function (res) { return res.json(); }).catch(function () { return {items: []}; })
+            ]).then(function (results) {
+                var items = [];
+                var seen = {};
+                (results || []).forEach(function (data) {
+                    (data.items || []).forEach(function (it) {
+                        if (!it || !it.uuid || seen[it.uuid]) return;
+                        var name = (it.original_filename || it.display_name || '').toLowerCase();
+                        var typ = (it.resource_type || '').toLowerCase();
+                        if (typ === 'service_account_json' || name.indexOf('.json') >= 0 || name.indexOf('json') >= 0) {
+                            seen[it.uuid] = true;
+                            items.push(it);
+                        }
+                    });
+                });
+                var placeholder = editing && pendingCredentials
+                    ? 'Keep current credential'
+                    : 'Select Resource…';
+                while (bqCredSelect.options.length > 0) bqCredSelect.remove(0);
+                var opt0 = document.createElement('option');
+                opt0.value = '';
+                opt0.textContent = placeholder;
+                bqCredSelect.appendChild(opt0);
+                fillSelect(bqCredSelect, items, countNames(items), selected);
+            });
+        }
+
+        function fillFormFromButton(btn) {
+            if (!btn || !form) return;
+            var name = btn.getAttribute('data-name') || '';
+            var dbType = btn.getAttribute('data-db-type') || 'postgresql';
+            var host = btn.getAttribute('data-host') || '';
+            var port = btn.getAttribute('data-port') || '';
+            var dbname = btn.getAttribute('data-dbname') || '';
+            var schema = btn.getAttribute('data-schema') || '';
+            var username = btn.getAttribute('data-username') || '';
+            var authType = btn.getAttribute('data-auth-type') || 'password';
+            var connMethod = btn.getAttribute('data-connection-method') || 'standard';
+            var localDC = btn.getAttribute('data-local-datacenter') || '';
+            var location = btn.getAttribute('data-location') || '';
+            var duckMode = btn.getAttribute('data-duck-mode') || 'database';
+            var duckRemote = btn.getAttribute('data-duck-remote') || '';
+            var duckFormat = btn.getAttribute('data-duck-format') || 'auto';
+            var duckAuth = btn.getAttribute('data-duck-auth') || 'none';
+            var duckHeaders = btn.getAttribute('data-duck-headers') || '';
+            pendingPublicKey = btn.getAttribute('data-public-key') || '';
+            pendingPrivateKey = btn.getAttribute('data-private-key') || '';
+            pendingCredentials = btn.getAttribute('data-credentials-resource') || '';
+
+            document.getElementById('name').value = name;
+            typeSelect.value = dbType;
+            if (methodSelect) methodSelect.value = connMethod === 'astra' ? 'astra' : 'standard';
+            if (localDCInput) localDCInput.value = localDC;
+            if (bqLocationInput) bqLocationInput.value = location;
+            if (duckModeSelect) duckModeSelect.value = duckMode === 'files' ? 'files' : 'database';
+            if (duckRemoteInput) duckRemoteInput.value = duckRemote;
+            if (duckFormatSelect) duckFormatSelect.value = duckFormat || 'auto';
+            if (duckAuthSelect) duckAuthSelect.value = duckAuth || 'none';
+            if (duckHeaderKeysInput) {
+                var hk = duckHeaders || '';
+                if (hk.indexOf('[') === 0) {
+                    try {
+                        var arr = JSON.parse(hk);
+                        hk = Array.isArray(arr) ? arr.join(', ') : hk;
+                    } catch (e) {}
+                }
+                duckHeaderKeysInput.value = hk;
+            }
+            if (delimiterSelect && btn.getAttribute('data-doc-delimiter')) delimiterSelect.value = btn.getAttribute('data-doc-delimiter');
+            if (jsonSourceSelect) jsonSourceSelect.value = btn.getAttribute('data-doc-source') === 'url' ? 'url' : 'file';
+            if (jsonURLInput) jsonURLInput.value = btn.getAttribute('data-doc-url') || '';
+            if (collectionInput) collectionInput.value = btn.getAttribute('data-doc-collection') || '';
+            if (sheetSelect) ensureOption(sheetSelect, btn.getAttribute('data-doc-sheet') || '');
+            if (documentResource) documentResource.value = btn.getAttribute('data-doc-resource') || '';
+            if (documentCurrent) {
+                var currentName = btn.getAttribute('data-doc-filename') || '';
+                documentCurrent.textContent = currentName ? ('Current file: ' + currentName) : '';
+            }
+            if (hostInput) hostInput.value = host;
+            if (serviceURLInput && (dbType === 'arcgis' || dbType === 'geoserver')) serviceURLInput.value = host;
+            if (portInput) {
+                portInput.value = port || '';
+                portInput.dataset.touched = '1';
+            }
+            document.getElementById('dbname').value = dbname;
+            if (schemaInput) schemaInput.value = schema;
+            if (usernameInput) usernameInput.value = username;
+            var passwordInput = document.getElementById('password');
+            var keyPass = document.getElementById('key_passphrase');
+            if (passwordInput) passwordInput.value = '';
+            if (keyPass) keyPass.value = '';
+            if (testResult) testResult.textContent = '';
+            setAuth(authType);
+            setEditMode(true, name);
+            syncTypeDefaults();
+            syncAuthUI();
+            refreshMaterialize();
+        }
+
+        function runTestConnection() {
+            if (!form || !testResult) return;
+            testResult.textContent = 'Testing…';
+            testResult.style.color = '';
+            var fd = new FormData(form);
+            fetch(apiBase + '/api/v1/datasources/test', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {'Accept': 'application/json'},
+                body: fd
+            }).then(function (res) { return res.json().then(function (data) { return {ok: res.ok, data: data}; }); })
+            .then(function (r) {
+                var msg = (r.data && (r.data.message || r.data.error)) || (r.ok ? 'Connected' : 'Test failed');
+                testResult.textContent = msg;
+                testResult.style.color = r.ok && r.data && r.data.ok ? '#2e7d32' : '#c62828';
+            }).catch(function () {
+                testResult.textContent = 'Test request failed.';
+                testResult.style.color = '#c62828';
+            });
+        }
+
+        function ensureOption(select, value) {
+            if (!select || !value) return;
+            var found = false;
+            for (var i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === value) found = true;
+            }
+            if (!found) {
+                var opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                select.appendChild(opt);
+            }
+            select.value = value;
+        }
+        function fillSelect(select, values, placeholder) {
+            if (!select) return;
+            var current = select.value;
+            select.innerHTML = '';
+            var blank = document.createElement('option');
+            blank.value = '';
+            blank.textContent = placeholder;
+            select.appendChild(blank);
+            (values || []).forEach(function (value) {
+                var opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                select.appendChild(opt);
+            });
+            if (current) ensureOption(select, current);
+            if ((values || []).length === 1) select.value = values[0];
+        }
+        function discoverDocument() {
+            if (!documentDiscoverResult) return;
+            documentDiscoverResult.textContent = 'Discovering…';
+            var fd = new FormData();
+            fd.append('db_type', typeSelect.value);
+            fd.append('name', (document.getElementById('name') || {}).value || '');
+            if (jsonSourceSelect) fd.append('json_source', jsonSourceSelect.value || 'file');
+            if (jsonURLInput) fd.append('json_url', jsonURLInput.value || '');
+            if (documentInput && documentInput.files && documentInput.files[0]) fd.append('document', documentInput.files[0]);
+            fetch(apiBase + '/api/v1/datasources/document/discover', {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: fd
+            }).then(function (res) { return res.json(); }).then(function (data) {
+                if (!data || !data.ok) {
+                    documentDiscoverResult.textContent = (data && data.message) || 'Discovery failed.';
+                    return;
+                }
+                if (typeSelect.value === 'excel') fillSelect(sheetSelect, data.sheets || [], 'Select worksheet…');
+                if (typeSelect.value === 'json' || typeSelect.value === 'xml') {
+                    var names = data.collections || [];
+                    if (names.length === 1 && collectionInput) collectionInput.value = names[0];
+                    documentDiscoverResult.textContent = names.length ? names.join(', ') : 'No collections found.';
+                    refreshMaterialize();
+                    return;
+                }
+                documentDiscoverResult.textContent = (data.sheets || []).join(', ');
+                refreshMaterialize();
+            }).catch(function () {
+                documentDiscoverResult.textContent = 'Discovery request failed.';
+            });
+        }
+        if (documentDiscoverBtn) documentDiscoverBtn.addEventListener('click', discoverDocument);
+        if (jsonSourceSelect) jsonSourceSelect.addEventListener('change', function () { syncTypeDefaults(); });
+        if (documentInput) documentInput.addEventListener('change', function () {
+            if (typeSelect.value === 'excel' || typeSelect.value === 'xml' || typeSelect.value === 'json') discoverDocument();
+        });
+        if (testBtn) testBtn.addEventListener('click', runTestConnection);
+
+        var boot = document.getElementById('editBootstrap');
+        if (boot) {
+            fillFormFromButton(boot);
+        } else {
+            syncTypeDefaults();
+            syncAuthUI();
+            refreshMaterialize();
+        }
+    })();
+    </script>
+</main>
+</body>
+</html>

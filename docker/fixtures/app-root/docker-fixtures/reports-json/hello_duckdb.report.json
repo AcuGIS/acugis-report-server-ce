@@ -1,0 +1,10 @@
+{
+  "name": "Docker DuckDB Hello",
+  "description": "Docker packaging DuckDB demo against /data/demo.duckdb",
+  "report": "hello_duckdb",
+  "type": "jasper",
+  "datasource": "DemoDuckDB",
+  "format": "pdf",
+  "parameters": [],
+  "access_groups": "Administrators,Public"
+}

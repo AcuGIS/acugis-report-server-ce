@@ -1,0 +1,115 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="NYC_Data" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dec1c8c9-9647-41e7-945d-e6db39192d08">
+	<parameter name="p_boro" forPrompting="false" class="java.util.Collection">
+		<defaultValueExpression><![CDATA[java.util.Arrays.asList("Manhattan","Bronx","Staten Island","Queens","Brooklyn")]]></defaultValueExpression>
+	</parameter>
+	<query language="SQL"><![CDATA[SELECT
+    id,
+    borough,
+    neighborhood,
+    median_rent_2010,
+    median_rent_2016,
+    rent_increase_percent
+FROM nyc_data
+WHERE $X{IN, borough, p_boro}
+ORDER BY borough, neighborhood]]></query>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="borough" class="java.lang.String"/>
+	<field name="neighborhood" class="java.lang.String"/>
+	<field name="median_rent_2010" class="java.lang.Integer"/>
+	<field name="median_rent_2016" class="java.lang.Integer"/>
+	<field name="rent_increase_percent" class="java.lang.Integer"/>
+	<group name="Group1">
+		<expression><![CDATA[$F{borough}]]></expression>
+		<groupHeader>
+			<band height="33">
+				<element kind="textField" uuid="919bcde7-fd00-4aae-8422-759d49c5bb44" mode="Opaque" x="0" y="0" width="550" height="32" forecolor="#006699" backcolor="#FFFFFF" fontSize="24.0" bold="true">
+					<expression><![CDATA[$F{borough}]]></expression>
+				</element>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="8"/>
+		</groupFooter>
+	</group>
+	<background/>
+	<title height="72">
+		<element kind="frame" uuid="667a382a-3c16-47e1-a896-b7d47a3d8e19" mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#42A5F5">
+			<element kind="staticText" uuid="83bf90f5-52f2-429a-a2d7-9279c40cf89f" x="20" y="20" width="390" height="43" forecolor="#FFFFFF" fontName="Roboto" fontSize="26.0" bold="true">
+				<text><![CDATA[Median Rent Increase]]></text>
+			</element>
+			<element kind="staticText" uuid="33e34fd5-61ce-45dd-96cb-543fd13ce212" x="395" y="31" width="180" height="20" forecolor="#FFFFFF" fontName="Roboto" fontSize="14.0" bold="false" hTextAlign="Right">
+				<text><![CDATA[Rent Changes]]></text>
+			</element>
+			<element kind="staticText" uuid="f95b91fa-077e-47ea-95b6-01e7a7b029b8" x="240" y="61" width="335" height="20" forecolor="#FFFFFF" fontName="Roboto" fontSize="14.0" bold="false" hTextAlign="Right">
+				<text><![CDATA[AcuGIS Jasper Service. Cited, Inc.]]></text>
+			</element>
+		</element>
+	</title>
+	<pageHeader height="13"/>
+	<columnHeader height="21">
+		<element kind="staticText" uuid="6d38f2f9-3ea6-4746-97a1-b61c867d5eac" mode="Opaque" x="0" y="0" width="189" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Neighborhood]]></text>
+		</element>
+		<element kind="staticText" uuid="bde575f1-dcd0-4af4-9204-d2a85c2aadf1" mode="Opaque" x="189" y="0" width="122" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Median Rent (2010)]]></text>
+		</element>
+		<element kind="staticText" uuid="1f9e18be-faff-437c-8f3d-4f90c64d51df" mode="Opaque" x="309" y="0" width="120" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Median Rent (2016)]]></text>
+		</element>
+		<element kind="staticText" uuid="86f51898-1ef1-4bba-95d3-24a41a59c95e" mode="Opaque" x="430" y="0" width="120" height="20" forecolor="#006699" backcolor="#E6E6E6" fontSize="14.0" bold="true" hTextAlign="Left">
+			<text><![CDATA[Percent Increase]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="20">
+			<element kind="line" uuid="5c3302b4-4d33-4ac9-b21d-e34e345c4605" positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1"/>
+			<element kind="textField" uuid="0a64aa0e-72dc-4570-b1ba-09f8a8a3dfef" x="0" y="0" width="189" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{neighborhood}]]></expression>
+			</element>
+			<element kind="textField" uuid="e8a791b2-6994-4070-95b1-8a2210c07707" x="189" y="0" width="122" height="20" fontSize="14.0" textAdjust="StretchHeight" pattern="¤#,##0.00;¤-#,##0.00">
+				<expression><![CDATA[$F{median_rent_2010}]]></expression>
+			</element>
+			<element kind="textField" uuid="f1d91460-cdcb-439a-8d68-c21c56f5142e" x="309" y="0" width="120" height="20" fontSize="14.0" textAdjust="StretchHeight" pattern="¤#,##0.00;¤-#,##0.00">
+				<expression><![CDATA[$F{median_rent_2016}]]></expression>
+			</element>
+			<element kind="textField" uuid="026b88ae-8d17-41f5-bbec-9780a5f6f54b" x="430" y="0" width="120" height="20" fontSize="14.0" textAdjust="StretchHeight">
+				<expression><![CDATA[$F{rent_increase_percent}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter/>
+	<pageFooter height="17">
+		<element kind="textField" uuid="56e84e03-f15e-4311-8f1c-166c4046f2b8" mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" hTextAlign="Right">
+			<expression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></expression>
+		</element>
+		<element kind="textField" uuid="a30d27e0-9ebd-49e5-b1d5-da02fae98380" mode="Opaque" x="515" y="4" width="40" height="13" backcolor="#E6E6E6" evaluationTime="Report">
+			<expression><![CDATA[" " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+		<element kind="textField" uuid="c571225c-8a4c-4c89-953b-0e6c1f91b7d4" x="0" y="4" width="100" height="13" pattern="EEEEE dd MMMMM yyyy">
+			<expression><![CDATA[new java.util.Date()]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="232">
+		<element kind="chart" chartType="bar" uuid="d6bf0105-d1ee-421f-824f-829a313bf9c5" x="30" y="30" width="453" height="200" evaluationTime="Report">
+			<dataset kind="category">
+				<series>
+					<seriesExpression><![CDATA["2010"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{borough}]]></categoryExpression>
+					<valueExpression><![CDATA[$F{median_rent_2010}]]></valueExpression>
+				</series>
+				<series>
+					<seriesExpression><![CDATA["2016"]]></seriesExpression>
+					<categoryExpression><![CDATA[$F{borough}]]></categoryExpression>
+					<valueExpression><![CDATA[$F{median_rent_2016}]]></valueExpression>
+				</series>
+			</dataset>
+			<plot categoryAxisLabelColor="#000000" categoryAxisTickLabelColor="#000000" categoryAxisLineColor="#000000" valueAxisLabelColor="#000000" valueAxisTickLabelColor="#000000" valueAxisLineColor="#000000">
+				<itemLabel/>
+			</plot>
+		</element>
+		<element kind="staticText" uuid="339eb373-3044-4c20-a7ad-04ce5b56ea57" x="43" y="3" width="400" height="30" fontSize="14.0" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[Rent Increase:  2010 - 2016]]></text>
+		</element>
+	</summary>
+</jasperReport>

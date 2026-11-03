@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AcuGIS Embed — Token Auth</title></head>
+<body>
+  <p>Embed tokens (<code>emb_</code>) are required. Mint them on your backend with a PAT — never put <code>jrs_</code> tokens in this page.</p>
+  <div id="report" style="height:80vh"></div>
+  <script src="http://localhost:9088/sdk/acugis-report.js"></script>
+  <script>
+    AcuGIS.embedReport({
+      server: "http://localhost:9088",
+      target: "#report",
+      reportId: "REPORT_KEY",
+      auth: { type: "token", token: "emb_REPLACE_ME" }
+    });
+  </script>
+</body>
+</html>

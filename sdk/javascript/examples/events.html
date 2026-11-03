@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>AcuGIS Embed — Events</title></head>
+<body>
+  <pre id="log"></pre>
+  <div id="report" style="height:70vh"></div>
+  <script src="http://localhost:9088/sdk/acugis-report.js"></script>
+  <script>
+    const log = (m) => { document.getElementById("log").textContent += m + "\n"; };
+    const report = AcuGIS.embedReport({
+      server: "http://localhost:9088",
+      target: "#report",
+      reportId: "REPORT_KEY",
+      token: "emb_REPLACE_ME"
+    });
+    report.on("load", () => log("load"));
+    report.on("error", (e) => log("error " + e.code + " " + e.message));
+    report.on("parameterChange", (e) => log("params " + JSON.stringify(e.parameters)));
+  </script>
+</body>
+</html>

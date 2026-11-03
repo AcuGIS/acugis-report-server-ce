@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - {{.ProductName}}</title>
+<style id="fed-shell-critical">
+.fed-shell-menu-btn{display:none!important}
+.fed-shell-backdrop{display:none!important}
+body.fed-shell-body{margin:0;padding-left:var(--fed-shell-sidebar-width,250px);box-sizing:border-box}
+.fed-shell-sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--fed-shell-sidebar-width,250px);z-index:1000;overflow:hidden;background:#f0f4f9}
+@media (max-width:992px){
+body.fed-shell-body{padding-left:0}
+.fed-shell-sidebar{transform:translateX(-100%)}
+body.fed-shell-open .fed-shell-sidebar{transform:translateX(0)}
+body.fed-shell-open .fed-shell-backdrop{display:block!important}
+.fed-shell-menu-btn{display:flex!important;align-items:center;justify-content:center;position:fixed;top:12px;left:12px;z-index:1002;width:44px;height:44px;border:none;border-radius:50%;background:#fff;cursor:pointer}
+}
+</style>
+    <link rel="stylesheet" href="{{.AssetsURL}}/shell.css?v=20260727f" id="fed-shell-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script>
+      window.FEDERATION_SHELL_MOUNT = {{.ShellMount}};
+      window.BASE_PATH = {{.ShellMount}};
+      window.FEDERATION_PHP_MOUNT = {{.PHPMount}};
+      window.FEDERATION_SHELL_ASSETS = {{.AssetsBase}};
+    </script>
+    <script src="{{.AssetsURL}}/shell-bootstrap.js?v=20261011b"></script>
+    <style>{{.CSS}}
+.connections-table-wrap { overflow-x: auto; max-width: 100%; }
+.connections-table { font-size: 0.86rem; margin: 0; }
+.connections-table thead th { background: #eceff1; color: #263238; white-space: nowrap; padding: 10px 12px; }
+.connections-table td { padding: 8px 12px; vertical-align: middle; }
+.empty-state { text-align: center; padding: 56px 20px; color: var(--subtle-text); }
+    </style>
+</head>
+<body data-federation-app="jasper" class="fed-shell-body">
+<aside id="fed-shell-sidebar" class="fed-shell-sidebar" aria-label="Application navigation">
+    {{if .ShowSidebarBrand}}<a class="fed-shell-sidebar-brand" href="{{.BrandHome}}"><i class="material-icons">assessment</i><span>{{.ProductName}}</span></a>{{end}}
+    <div class="fed-shell-nav-scroll" data-fed-shell-nav-mount></div>
+</aside>
+<button type="button" class="fed-shell-menu-btn" aria-label="Open menu" hidden><i class="material-icons">menu</i></button>
+<div class="fed-shell-backdrop"></div>
+<main class="main-content">
+<header class="page-header">
+    <div>
+        <h1 class="page-title">Recipients</h1>
+        <p class="page-subtitle">Directory of email addresses used when building schedules.</p>
+    </div>
+    <div class="header-actions">
+        <a href="{{.EditURL}}" class="btn waves-effect waves-light teal"><i class="material-icons left">add</i>Add recipient</a>
+    </div>
+</header>
+
+{{if .Error}}
+    <div class="card-panel red lighten-4">{{.Error}}</div>
+{{else}}
+<div class="card"><div class="card-content connections-table-wrap">
+    {{if not .Rows}}
+        <div class="empty-state"><p>No recipients yet.</p></div>
+    {{else}}
+    <table class="striped highlight connections-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Notes</th><th></th></tr></thead>
+        <tbody>
+        {{range .Rows}}
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Email}}</td>
+            <td>{{.Notes}}</td>
+            <td class="card-actions-row">
+                <a class="btn-small" href="{{$.EditURL}}?id={{.ID}}"><i class="material-icons">edit</i></a>
+                <button type="button" class="btn-small red rcpt-delete" data-id="{{.ID}}"><i class="material-icons">delete</i></button>
+            </td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+    {{end}}
+</div></div>
+{{end}}
+</main>
+<script>
+document.querySelectorAll('.rcpt-delete').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        if (!confirm('Delete recipient?')) return;
+        fetch('action/recipient', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'delete=1&id=' + encodeURIComponent(btn.getAttribute('data-id')),
+            credentials: 'same-origin'
+        }).then(function (r) { return r.json(); }).then(function (res) {
+            if (res.success) location.reload();
+            else alert(res.message || 'Failed');
+        });
+    });
+});
+</script>
+</body>
+</html>

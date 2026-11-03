@@ -1,0 +1,38 @@
+# Example: single public host (e.g. https://endpoint.acugis.cloud) with Central and Jasper behind Apache.
+# Adjust upstream ports, paths, and TLS paths before use.
+#
+# Goals:
+#   - GET /login  -> Central (owns acugis_session; Path=/, HttpOnly, SameSite=Lax from shared/auth)
+#   - GET /jasper-report-services/ -> PHP Jasper tree (validates same session via CENTRAL_DATABASE_URL)
+#   - Forward cookies and X-Forwarded-* so Central sets Secure cookie and correct redirects.
+#
+# If Central is mounted with BASE_PATH (e.g. /central), expose that path to Central and set on Jasper:
+#   SetEnv CENTRAL_LOGIN_URL /central/login
+
+<IfModule ssl_module>
+RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+</IfModule>
+ProxyPreserveHost On
+ProxyRequests Off
+
+# Central Go process (example)
+Define CENTRAL_UPSTREAM http://127.0.0.1:8888
+# PHP / Jasper docroot containing qcarta-jasper-service (example)
+Define JASPER_UPSTREAM http://127.0.0.1:9080
+
+# Central owns platform login/logout
+ProxyPass        /login       ${CENTRAL_UPSTREAM}/login
+ProxyPassReverse /login       ${CENTRAL_UPSTREAM}/login
+ProxyPass        /logout      ${CENTRAL_UPSTREAM}/logout
+ProxyPassReverse /logout      ${CENTRAL_UPSTREAM}/logout
+
+# Optional: Central static/API under same host (uncomment and extend as needed)
+# ProxyPass        /api/        ${CENTRAL_UPSTREAM}/api/
+# ProxyPassReverse /api/        ${CENTRAL_UPSTREAM}/api/
+
+# Jasper PHP application (adjust second path if Alias differs)
+ProxyPass        /jasper-report-services/ ${JASPER_UPSTREAM}/jasper-report-services/
+ProxyPassReverse /jasper-report-services/ ${JASPER_UPSTREAM}/jasper-report-services/
+
+# Cookie domain: default is host-only (good for one hostname). For subdomains use
+# ACUGIS_SESSION_COOKIE_DOMAIN on Central (see shared/auth/cookies.go) — not Jasper.
