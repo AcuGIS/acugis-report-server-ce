@@ -49,51 +49,41 @@ See [Licensing](documentation/docs/administration/licensing.md) and the [compati
 
 ## Quick start
 
-Supported installs are Docker and apt.
+AcuGIS Report Server Community Edition can be installed using Docker or the AcuGIS apt repository.
 
 ### Docker
 
+Clone the Docker deployment repository and run the interactive setup:
+
 ```bash
-git clone https://github.com/AcuGIS/report-server-docker
+git clone https://github.com/AcuGIS/report-server-docker.git
 cd report-server-docker
 docker compose run --rm -it report-server-setup
 docker compose up -d
 ```
 
-The Professional package is a separate proprietary product and is not built from this source tree.
+Once the services are running, open:
 
-Open `http://127.0.0.1:9088/`.
+http://localhost:9088/
 
+### Debian / Ubuntu (apt)
 
-### apt
-
-The tarball is a precompiled Open Source archive. `<edition>` is `oss`.
+Add the AcuGIS package repository and install Report Server:
 
 ```bash
-curl -fsSL https://apt.acugis.com/acugis-archive-keyring.gpg \
-    -o /usr/share/keyrings/acugis-archive-keyring.gpg
+sudo curl -fsSL https://apt.acugis.com/acugis-archive-keyring.gpg \
+  -o /usr/share/keyrings/acugis-archive-keyring.gpg
 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/acugis-archive-keyring.gpg] https://apt.acugis.com stable main" \
-    > /etc/apt/sources.list.d/acugis.list
+  | sudo tee /etc/apt/sources.list.d/acugis.list > /dev/null
 
-apt update
-
-apt install acugis-report-server
+sudo apt update
+sudo apt install acugis-report-server
 ```
 
-`install.sh` expects packaged artifacts, including `bin/jrs-server`. It refuses to run from a source checkout.
+For advanced installation, configuration, upgrades, and building from source, see the [Installation Guide](documentation/docs/administration/installation.md).
 
-### Release tarball
-
-The tarball is a precompiled Open Source archive. `<edition>` is `oss`.
-
-```bash
-tar -xzf acugis-report-server-<edition>-<version>-linux-amd64.tar.gz
-cd acugis-report-server
-sudo ./install.sh
-```
-
-`install.sh` expects packaged artifacts, including `bin/jrs-server`. It refuses to run from a source checkout.
+AcuGIS Report Server Professional is a separate commercial edition and is not built from this repository.
 
 ## Documentation
 
