@@ -1,10 +1,15 @@
-# AcuGIS Report Server 1.0.21
+# AcuGIS Report Server 1.0.22
 
 AcuGIS Report Server publishes, runs, and manages JasperReports. It provides a web catalog, scheduling, a versioned REST API, and client libraries for automation.
 
 The server application is written in Go. JasperReports runs under Tomcat 10. PostgreSQL stores the application data. A native package deployment puts Apache in front of the Go process. Docker Compose is also supported.
 
 Report Designer Desktop is the separate application used to author JRXML. Designer Web is a separate browser editor that Report Server can proxy when it is installed and licensed on its own. A Report Server Professional license does not license Designer Web.
+
+
+![AcuGIS Report Server](documentation/acugis-report-server-ce.png)
+
+
 
 ## Features
 
@@ -20,6 +25,8 @@ Report Designer Desktop is the separate application used to author JRXML. Design
 - QGIS, ArcGIS, Data Explorer, dashboards, Map Reports, Dataset Intelligence, audit administration, usage analytics, governance, audit export, OpenID Connect, SAML, and MCP are Professional features. Their source is not in this tree.
 
 Edition boundaries are in the [compatibility matrix](documentation/docs/reference/compatibility-matrix.md). Datasource behavior is in [Supported datasources](documentation/docs/reference/supported-datasources.md).
+
+
 
 ## Architecture
 
@@ -49,51 +56,41 @@ See [Licensing](documentation/docs/administration/licensing.md) and the [compati
 
 ## Quick start
 
-Supported installs are a local Debian package, a release tarball, or Docker Compose. Full steps, upgrades, and verification are in [Installation](documentation/docs/administration/installation.md).
+AcuGIS Report Server Community Edition can be installed using Docker or the AcuGIS apt repository.
 
-### Debian or Ubuntu package
+### Docker
 
-Install the `.deb` you downloaded. `apt-get` pulls dependencies.
-
-```bash
-sudo apt-get -y install ./acugis-report-server_<version>_amd64.deb
-```
-
-The Professional package is a separate proprietary product and is not built from this source tree.
-
-Open `http://127.0.0.1:9088/`.
-
-### Release tarball
-
-The tarball is a precompiled Open Source archive. `<edition>` is `oss`.
+Clone the Docker deployment repository and run the interactive setup:
 
 ```bash
-tar -xzf acugis-report-server-<edition>-<version>-linux-amd64.tar.gz
-cd acugis-report-server
-sudo ./install.sh
-```
-
-`install.sh` expects packaged artifacts, including `bin/jrs-server`. It refuses to run from a source checkout.
-
-### Docker Compose
-
-Edit `.env` before the first start. Replace the example passwords. There is no password-generation step.
-
-```bash
-git clone https://github.com/AcuGIS/report-server-docker
+git clone https://github.com/AcuGIS/report-server-docker.git
 cd report-server-docker
-
-nano .env
+docker compose run --rm -it report-server-setup
 docker compose up -d
 ```
 
-Set strong, unique values for `JRS_DB_PASS` (PostgreSQL password used by Report Server) and `JRS_ADMIN_PASSWORD` (initial administrator password). `JRS_ADMIN_USER` defaults to `admin`. The example `change-me-*` values cannot be used to start Report Server.
+Once the services are running, open:
 
-This source repository also keeps Compose files under `docker/` for a local source build. The standard installation is the Docker deployment repository above.
+http://localhost:9088/
 
-Open `http://127.0.0.1:9088/`.
+### Debian / Ubuntu (apt)
 
-The Compose file pulls `acugis/report-server:1.0.21-oss`. Professional modules are not in this tree. A local source build is `docker compose -f compose.yml -f compose.build.yml up -d --build`. Optional services are documented in [Docker](documentation/docs/administration/docker.md).
+Add the AcuGIS package repository and install Report Server:
+
+```bash
+sudo curl -fsSL https://apt.acugis.com/acugis-archive-keyring.gpg \
+  -o /usr/share/keyrings/acugis-archive-keyring.gpg
+
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/acugis-archive-keyring.gpg] https://apt.acugis.com stable main" \
+  | sudo tee /etc/apt/sources.list.d/acugis.list > /dev/null
+
+sudo apt update
+sudo apt install acugis-report-server
+```
+
+For advanced installation, configuration, upgrades, and building from source, see the [Installation Guide](documentation/docs/administration/installation.md).
+
+AcuGIS Report Server Professional is a separate commercial edition and is not built from this repository.
 
 ## Documentation
 
