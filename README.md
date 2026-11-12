@@ -121,8 +121,7 @@ The MkDocs are available at [acugis.com/documentation/report-server](https://www
 | Licensing | [Licensing](https://www.acugis.com/documentation/report-server/administration/licensing/) |
 | Editions | [Compatibility matrix](https://www.acugis.com/documentation/report-server/reference/compatibility-matrix/?h=compat) |
 | Authentication | [Authentication](documentation/docs/administration/authentication.md) |
-| Report Designer Desktop | [Designer overview](documentation/docs/user-guide/designer/overview.md) |
-| Designer Web | [Designer Web](documentation/docs/administration/designer-web.md) |
+| Report Designer Desktop | [Designer overview](https://www.acugis.com/report-designer/) 
 
 ## Development
 
