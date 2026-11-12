@@ -1,4 +1,4 @@
-# AcuGIS Report Server 1.0.22
+# AcuGIS Report Server 1.0.28
 
 AcuGIS Report Server publishes, runs, and manages JasperReports. It provides a web catalog, scheduling, a versioned REST API, and client libraries for automation.
 
@@ -73,6 +73,14 @@ Once the services are running, open:
 
 http://localhost:9088/
 
+Login as user 'admin'.  An admin password is automatically generated and saved to:
+
+```bash
+<docker-compose-directory>/.env
+```
+
+
+
 ### Debian / Ubuntu (apt)
 
 Add the AcuGIS package repository and install Report Server:
@@ -86,6 +94,12 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/acugis-archive-keyring.gpg] 
 
 sudo apt update
 sudo apt install acugis-report-server
+```
+
+Login as user 'admin'.  An admin password is automatically generated and saved to:
+
+```bash
+/etc/acugis-report-server/initial-credentials
 ```
 
 For advanced installation, configuration, upgrades, and building from source, see the [Installation Guide](documentation/docs/administration/installation.md).
