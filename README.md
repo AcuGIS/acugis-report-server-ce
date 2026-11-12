@@ -114,9 +114,10 @@ The MkDocs are available at [acugis.com/documentation/report-server](https://www
 
 | Topic | Page |
 |-------|------|
-| Product overview | [Overview](documentation/docs/getting-started/overview.md) |
-| Run a report | [Quickstart](documentation/docs/getting-started/quickstart.md) |
+| Product overview | [Overview](https://www.acugis.com/documentation/report-server/getting-started/overview/) |
 | Installation | [Installation](https://www.acugis.com/documentation/report-server/administration/installation/) |
+| Add Data Source | [Quickstart](https://www.acugis.com/report-server/quick-start/#add-data-source) |
+| Publish a report | [Quickstart](https://www.acugis.com/report-server/quick-start/#publish-report)) |
 | Docker | [Docker](documentation/docs/administration/docker.md) |
 | Licensing | [Licensing](documentation/docs/administration/licensing.md) |
 | Datasources | [Supported datasources](documentation/docs/reference/supported-datasources.md) |
