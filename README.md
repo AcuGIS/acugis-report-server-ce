@@ -108,13 +108,15 @@ AcuGIS Report Server Professional is a separate commercial edition and is not bu
 
 ## Documentation
 
-The MkDocs source under [`documentation/docs/`](documentation/docs/index.md) is the authoritative documentation. Preview it locally with the steps in [`documentation/README.md`](documentation/README.md).
+The MkDocs are available at [acugis.com/documentation/report-server](https://www.acugis.com/documentation/report-server/)
+
+
 
 | Topic | Page |
 |-------|------|
 | Product overview | [Overview](documentation/docs/getting-started/overview.md) |
 | Run a report | [Quickstart](documentation/docs/getting-started/quickstart.md) |
-| Installation | [Installation](documentation/docs/administration/installation.md) |
+| Installation | [Installation](https://www.acugis.com/documentation/report-server/administration/installation/) |
 | Docker | [Docker](documentation/docs/administration/docker.md) |
 | Licensing | [Licensing](documentation/docs/administration/licensing.md) |
 | Datasources | [Supported datasources](documentation/docs/reference/supported-datasources.md) |
