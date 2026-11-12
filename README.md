@@ -1,13 +1,41 @@
-# AcuGIS Report Server 1.0.22
+# AcuGIS Report Server 1.0.28
 
 AcuGIS Report Server publishes, runs, and manages JasperReports. It provides a web catalog, scheduling, a versioned REST API, and client libraries for automation.
 
 The server application is written in Go. JasperReports runs under Tomcat 10. PostgreSQL stores the application data. A native package deployment puts Apache in front of the Go process. Docker Compose is also supported.
 
-Report Designer Desktop is the separate application used to author JRXML. Designer Web is a separate browser editor that Report Server can proxy when it is installed and licensed on its own. A Report Server Professional license does not license Designer Web.
+Reports can be created using [AcuGIS Report Designer](https://www.acugis.com/report-designer/), Jaspersoft Studio, or other JRXML-compatible tools. AcuGIS Report Designer is available in Desktop and Web editions and provides a visual interface for creating reports with tables, charts, maps, parameters, and multiple data sources.
+
+Report Designer is a separate commercial product. Designer Web can be integrated with Report Server when separately installed and licensed; a Report Server Professional license does not include Designer Web.
 
 
 ![AcuGIS Report Server](documentation/acugis-report-server-ce.png)
+
+
+## Creating Reports
+
+AcuGIS Report Server supports standard JasperReports JRXML templates. You can create reports using **Jaspersoft Studio**, **AcuGIS Report Designer**, or other JRXML-compatible tools.
+
+### AcuGIS Report Designer
+
+[AcuGIS Report Designer](https://www.acugis.com/report-designer/) provides a visual report builder for creating and editing JasperReports templates without manually writing XML.
+
+Available in **Desktop and Web editions**, Report Designer includes:
+
+- **Visual Report Builder** — Design reports with drag-and-drop elements, tables, charts, and parameters.
+- **Multiple Data Sources** — Connect to PostgreSQL, MySQL, SQL Server, Oracle, SQLite, and more.
+- **Maps and Charts** — Create geographic visualizations, charts, and data-driven reports.
+- **JasperReports Compatibility** — Create and edit JRXML templates for publishing to Report Server.
+
+**[Explore AcuGIS Report Designer](https://www.acugis.com/report-designer/)**
+
+![AcuGIS Report Server](documentation/acugis-report-designer.png)
+
+### Jaspersoft Studio
+
+You can also use [Jaspersoft Studio](https://community.jaspersoft.com/) to create and edit JRXML reports. Reports created with Jaspersoft Studio can be uploaded, managed, scheduled, and executed using AcuGIS Report Server, subject to JasperReports engine compatibility.
+
+*AcuGIS Report Designer is a separately licensed commercial product. Neither Designer nor Jaspersoft Studio is required to run AcuGIS Report Server.*
 
 
 
@@ -73,6 +101,14 @@ Once the services are running, open:
 
 http://localhost:9088/
 
+Login as user 'admin'.  An admin password is automatically generated and saved to:
+
+```bash
+<docker-compose-directory>/.env
+```
+
+
+
 ### Debian / Ubuntu (apt)
 
 Add the AcuGIS package repository and install Report Server:
@@ -88,26 +124,32 @@ sudo apt update
 sudo apt install acugis-report-server
 ```
 
+Login as user 'admin'.  An admin password is automatically generated and saved to:
+
+```bash
+/etc/acugis-report-server/initial-credentials
+```
+
 For advanced installation, configuration, upgrades, and building from source, see the [Installation Guide](documentation/docs/administration/installation.md).
 
 AcuGIS Report Server Professional is a separate commercial edition and is not built from this repository.
 
 ## Documentation
 
-The MkDocs source under [`documentation/docs/`](documentation/docs/index.md) is the authoritative documentation. Preview it locally with the steps in [`documentation/README.md`](documentation/README.md).
+The MkDocs are available at [acugis.com/documentation/report-server](https://www.acugis.com/documentation/report-server/)
+
+
 
 | Topic | Page |
 |-------|------|
-| Product overview | [Overview](documentation/docs/getting-started/overview.md) |
-| Run a report | [Quickstart](documentation/docs/getting-started/quickstart.md) |
-| Installation | [Installation](documentation/docs/administration/installation.md) |
-| Docker | [Docker](documentation/docs/administration/docker.md) |
-| Licensing | [Licensing](documentation/docs/administration/licensing.md) |
-| Datasources | [Supported datasources](documentation/docs/reference/supported-datasources.md) |
-| Editions | [Compatibility matrix](documentation/docs/reference/compatibility-matrix.md) |
+| Product overview | [Overview](https://www.acugis.com/documentation/report-server/getting-started/overview/) |
+| Installation | [Installation](https://www.acugis.com/documentation/report-server/administration/installation/) |
+| Add Data Source | [Quickstart](https://www.acugis.com/report-server/quick-start/#add-data-source) |
+| Publish a report | [Quickstart](https://www.acugis.com/report-server/quick-start/#publish-report)) |
+| Licensing | [Licensing](https://www.acugis.com/documentation/report-server/administration/licensing/) |
+| Editions | [Compatibility matrix](https://www.acugis.com/documentation/report-server/reference/compatibility-matrix/?h=compat) |
 | Authentication | [Authentication](documentation/docs/administration/authentication.md) |
-| Report Designer Desktop | [Designer overview](documentation/docs/user-guide/designer/overview.md) |
-| Designer Web | [Designer Web](documentation/docs/administration/designer-web.md) |
+| Report Designer Desktop | [Designer overview](https://www.acugis.com/report-designer/) 
 
 ## Development
 
