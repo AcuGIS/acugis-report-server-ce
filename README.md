@@ -4,10 +4,38 @@ AcuGIS Report Server publishes, runs, and manages JasperReports. It provides a w
 
 The server application is written in Go. JasperReports runs under Tomcat 10. PostgreSQL stores the application data. A native package deployment puts Apache in front of the Go process. Docker Compose is also supported.
 
-Report Designer Desktop is the separate application used to author JRXML. Designer Web is a separate browser editor that Report Server can proxy when it is installed and licensed on its own. A Report Server Professional license does not license Designer Web.
+Reports can be created using [AcuGIS Report Designer](https://www.acugis.com/report-designer/), Jaspersoft Studio, or other JRXML-compatible tools. AcuGIS Report Designer is available in Desktop and Web editions and provides a visual interface for creating reports with tables, charts, maps, parameters, and multiple data sources.
+
+Report Designer is a separate commercial product. Designer Web can be integrated with Report Server when separately installed and licensed; a Report Server Professional license does not include Designer Web.
 
 
 ![AcuGIS Report Server](documentation/acugis-report-server-ce.png)
+
+
+## Creating Reports
+
+AcuGIS Report Server supports standard JasperReports JRXML templates. You can create reports using **Jaspersoft Studio**, **AcuGIS Report Designer**, or other JRXML-compatible tools.
+
+### AcuGIS Report Designer
+
+[AcuGIS Report Designer](https://www.acugis.com/report-designer/) provides a visual report builder for creating and editing JasperReports templates without manually writing XML.
+
+Available in **Desktop and Web editions**, Report Designer includes:
+
+- **Visual Report Builder** — Design reports with drag-and-drop elements, tables, charts, and parameters.
+- **Multiple Data Sources** — Connect to PostgreSQL, MySQL, SQL Server, Oracle, SQLite, and more.
+- **Maps and Charts** — Create geographic visualizations, charts, and data-driven reports.
+- **JasperReports Compatibility** — Create and edit JRXML templates for publishing to Report Server.
+
+**[Explore AcuGIS Report Designer](https://www.acugis.com/report-designer/)**
+
+![AcuGIS Report Server](documentation/acugis-report-designer.png)
+
+### Jaspersoft Studio
+
+You can also use [Jaspersoft Studio](https://community.jaspersoft.com/) to create and edit JRXML reports. Reports created with Jaspersoft Studio can be uploaded, managed, scheduled, and executed using AcuGIS Report Server, subject to JasperReports engine compatibility.
+
+*AcuGIS Report Designer is a separately licensed commercial product. Neither Designer nor Jaspersoft Studio is required to run AcuGIS Report Server.*
 
 
 
